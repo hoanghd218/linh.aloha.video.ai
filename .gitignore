@@ -37,3 +37,7 @@ Thumbs.db
 # Cache
 .turbo/
 .cache/
+/workspace/data/CAO XÀ LÁ
+
+# Claude Code agent worktrees (transient)
+.claude/worktrees/

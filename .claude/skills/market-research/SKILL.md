@@ -50,20 +50,24 @@ Phase 3 only. Reference [tam-sam-som-vn.md](./references/tam-sam-som-vn.md).
 
 Model có cutoff. Search volume + competitor list + pricing thay đổi mỗi quý. Đoán = sai.
 
-### Step 1 — Mỗi research bắt buộc chạy 5/8 query này
+### Step 1 — Mỗi research bắt buộc chạy 6/10 query này
 
-Thay `$NICHE` bằng keyword tiếng Việt + tiếng Anh để cross-check. Today's date: 2026-05-14.
+Thay `$NICHE` bằng keyword tiếng Việt + tiếng Anh để cross-check. Date-stamp mọi finding bằng today (lấy từ context, không hardcode trong report).
 
 ```
-"$NICHE khóa học vietnam 2026"               → Có ai đang dạy / sell course
+"$NICHE khóa học vietnam"                     → Có ai đang dạy / sell course
 "$NICHE shopee.vn"                            → Marketplace activity (sales, reviews)
 "$NICHE unica.vn OR edumall.vn OR gitiho.vn"  → Course platform VN (số học viên, giá)
+"$NICHE tiktok.com vietnam"                   → TikTok hashtag + creator (discovery #1 Gen Z VN 2026)
+"$NICHE threads.net vietnam"                  → Threads VN (creator AI/tech đang shift sang, ít competition)
+"$NICHE zalo OR shopee live vietnam"          → Zalo Mini App + livestream sale (kênh native VN)
 "$NICHE site:reddit.com OR site:facebook.com" → Pain points + sentiment
 "$NICHE facebook group vietnam"               → Community signal
-"$NICHE google trends vietnam 2026"           → Trend direction
+"$NICHE google trends vietnam"                → Trend direction
 "$NICHE giá bao nhiêu"                         → Pricing benchmark
-"$NICHE freelancer.com OR upwork OR fiverr"   → Service-side demand
 ```
+
+**Bắt buộc:** ≥1 query phải là TikTok/Threads — kênh discovery thực tế của buyer VN 2026 đã dịch chuyển khỏi Google search cho nhiều niche (AI tool, beauty, finance, parenting). Bỏ qua = miss demand signal lớn nhất.
 
 ### Step 2 — WebFetch để extract số chính xác
 
@@ -90,13 +94,17 @@ Chi tiết step-by-step + threshold đọc số: [vn-data-sources.md](./referenc
 
 5 chiều × 20 điểm. Mỗi score **bắt buộc có evidence** (URL + số cụ thể), không "tôi nghĩ".
 
-| Dimension | Score 20 (max) | Score 0 (min) |
+| Dimension | Score 20 (max) — VN calibrated | Score 0 (min) |
 |---|---|---|
-| **Search Demand** | Primary keyword ≥5K/tháng + portfolio ≥20K | <500/tháng hoặc không data |
-| **Trend Direction** | Rising ≥50% / 2 năm (Google Trends) | Falling rõ hoặc fad spike rồi tụt |
-| **Competition Sweet Spot** | 3-10 competitor mid-quality, có gap để differentiate | 50+ saturated OR 0 (no market signal) |
-| **Monetization Proven** | CPC $2+ HOẶC marketplace top seller 500+ sales HOẶC course 1K+ học viên | Free content only, no paid signals |
+| **Search Demand** | Primary ≥2K/tháng + portfolio ≥10K (Vi+En cộng dồn) | <80 primary AND <400 portfolio |
+| **Trend Direction** | Rising ≥50% / 2 năm (Google Trends VN) HOẶC TikTok hashtag +200% / 12 tháng | Falling rõ HOẶC fad spike rồi tụt |
+| **Competition Sweet Spot** | 3-10 **active** competitor (update ≤12 tháng) + gap rõ — HOẶC 50+ tổng nhưng top course stale >18 tháng (de facto opportunity) | Dominated 1-2 brand cố thủ HOẶC zero (no market signal) |
+| **Monetization Proven** | CPC ≥10K VND HOẶC marketplace top seller 500+ sales HOẶC course platform top 800+ học viên | Free content only, no paid signals |
 | **Personal Alignment** | Expert/passion + network access + sustain được 2 năm | Beginner, không passion, không network |
+
+> **VN volume note:** Threshold Search Demand thấp hơn US-mindset ~60% — VN keyword volume thường = 15-30% US cho cùng concept. Nếu audience là tech-savvy (lập trình viên, designer), volume En có thể chiếm 50-70% portfolio → cộng dồn cả 2 ngôn ngữ.
+>
+> **Saturation flip:** Đếm "active competitor 12 tháng gần" thay vì tổng. Unica/Edumall thường show 50+ course nhưng top course đã 18-24 tháng tuổi, instructor không update → de facto sweet spot (18-20pts), không phải saturated. Filter: course update <12 tháng + last review <6 tháng = "active".
 
 **Decision tier:**
 

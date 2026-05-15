@@ -1,6 +1,6 @@
 ---
 name: mkt-full-video-with-11-hyperframe-heygen
-description: End-to-end short-video pipeline — từ kịch bản (Việt/Anh) ra MP4 TikTok/Reels 9:16 hoàn chỉnh. Orchestrator 3 phase ghép 3 skill có sẵn — (1) `mkt-elevenlabs-tts-to-mp3` đọc script bằng voice của Hoàng, (2) checkpoint user duyệt MP3, (3) `heygen-mp3-to-mp4` lip-sync avatar HeyGen, (4) delegate Phase 3 packaging cho sub-agent `mkt-full-video-phase3-packager` (transcribe + scene outline + checkpoint + fan-out N scene writers parallel + scaffold + preview Studio). USE WHEN user nói "tạo full video từ script", "script to tiktok video", "pipeline full video heygen + hyperframe", "tạo video từ kịch bản đến mp4", "elevenlabs heygen hyperframe full pipeline", "kịch bản ra video tiktok", hoặc có sẵn 1 script + (optional) ảnh b-roll và muốn ra MP4 9:16 đóng gói có captions, SFX, b-roll.
+description: End-to-end short-video pipeline — từ kịch bản (Việt/Anh) ra MP4 TikTok/Reels 9:16 hoàn chỉnh. Orchestrator 3 phase ghép skill có sẵn — (1) TTS provider chọn được giữa `mkt-elevenlabs-tts-to-mp3` (default, voice của Hoàng) hoặc `mkt-video-script-to-mp3` (MiniMax speech-2.8-hd), (2) checkpoint user duyệt MP3, (3) `heygen-mp3-to-mp4` lip-sync avatar HeyGen, (4) delegate Phase 3 packaging cho sub-agent `mkt-full-video-phase3-packager` (transcribe + scene outline + checkpoint + fan-out N scene writers parallel + scaffold + preview Studio). API key + voice ID cho cả 2 provider lưu ở `.env`. USE WHEN user nói "tạo full video từ script", "script to tiktok video", "pipeline full video heygen + hyperframe", "tạo video từ kịch bản đến mp4", "elevenlabs heygen hyperframe full pipeline", "minimax heygen pipeline", "kịch bản ra video tiktok", hoặc có sẵn 1 script + (optional) ảnh b-roll và muốn ra MP4 9:16 đóng gói có captions, SFX, b-roll.
 ---
 
 # mkt-full-video-with-11-hyperframe-heygen
@@ -26,10 +26,10 @@ Không dùng skill này nếu:
 ## Pipeline overview
 
 ```
-Script (text + optional b-roll)
+Script (text + optional b-roll + tts_provider)
     │
     ▼
-Phase 1 ── mkt-elevenlabs-tts-to-mp3 ───► voiceover.mp3
+Phase 1 ── TTS (elevenlabs | minimax) ──► voiceover.mp3
     │                                         │
     │                                         ▼
     │                              CHECKPOINT #1 — user nghe + duyệt MP3
@@ -63,7 +63,9 @@ User duyệt preview → "render" → final MP4
 | Script text | Yes | File path (`.txt`/`.md`) hoặc inline string. ≤ 5000 ký tự. |
 | Slug project | No | Auto-derive từ 5 từ đầu của script. Lowercase, ASCII, dash. |
 | B-roll list | No | Array `[{path: "...", purpose: "Bài học 1 — minh họa X"}, ...]`. |
-| Voice settings override | No | `{stability, similarity_boost, style}` cho ElevenLabs. |
+| `tts_provider` | No | `elevenlabs` (default — voice của Hoàng, expressive) hoặc `minimax` (speech-2.8-hd, rẻ hơn, đọc Việt natural). User nói "dùng minimax" / "dùng eleven" → set theo. |
+| Voice ID override | No | Override mặc định từ `.env`. ElevenLabs đọc `ELEVENLABS_VOICE_ID`, MiniMax đọc `MINIMAX_VOICE_ID`. CLI flag `--voice_id` cho cả 2. |
+| Voice settings override | No | ElevenLabs: `{stability, similarity_boost, style}`. MiniMax: `{speed, vol, pitch}`. |
 | Avatar look | No | 1 ID lấy từ `HEYGEN_AVATAR_LOOKS` env (.env, comma-separated). Random nếu không chọn. |
 | `auto_scenes` | No | Default `false`. `true` để skip scenes-outline checkpoint trong Phase 3. |
 
@@ -95,11 +97,19 @@ workspace/content/YYYY-MM-DD/<slug>/
 
 1. Validate `len(script_text) <= 5000`. Vượt → stop, yêu cầu user split semantic.
 2. Derive slug nếu thiếu: 5 từ đầu → lowercase → bỏ dấu → space→dash.
-3. Tạo `workspace/content/YYYY-MM-DD/<slug>/`. Save `script.txt`.
-4. Nếu user có b-roll: tạo `<folder>/broll/`, copy file giữ tên gốc.
-5. Báo user: "Workspace tạo tại `<folder>`. Bắt đầu Phase 1 — ElevenLabs TTS."
+3. **Resolve TTS provider** — read `tts_provider` từ user input (default `elevenlabs`). Nếu user nói "dùng minimax" / "đổi sang minimax" → `minimax`. Nếu user nói "dùng eleven" / "elevenlabs" → `elevenlabs`. Validate api key tương ứng có trong `.env`:
+   - `elevenlabs` → cần `ELEVENLABS_API_KEY` (optional `ELEVENLABS_VOICE_ID` để override default `K7ewtjKRNtwwt3lKQ6M0`).
+   - `minimax` → cần `MINIMAX_API_KEY` (optional `MINIMAX_VOICE_ID` để override default `moss_audio_c56d6120-ef9c-11f0-9649-8ee40147f116`).
+   Thiếu key → stop, báo user thêm vào `.env`.
+4. Tạo `workspace/content/YYYY-MM-DD/<slug>/`. Save `script.txt`.
+5. Nếu user có b-roll: tạo `<folder>/broll/`, copy file giữ tên gốc.
+6. Báo user: "Workspace tạo tại `<folder>`. TTS provider: `<elevenlabs|minimax>`. Bắt đầu Phase 1."
 
-### Step 1 — Phase 1: Script → MP3 (ElevenLabs)
+### Step 1 — Phase 1: Script → MP3 (TTS)
+
+Chạy đúng 1 trong 2 nhánh tuỳ `tts_provider`:
+
+**Nhánh A — ElevenLabs (default):**
 
 ```bash
 uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
@@ -107,9 +117,23 @@ uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
   -o workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
 ```
 
-Voice settings overrides → thêm `--stability` / `--similarity_boost` / `--style`.
+Voice ID: tự động đọc `ELEVENLABS_VOICE_ID` từ `.env` (fallback default Hoàng's brand voice). Override CLI: `--voice_id <id>`.
+Voice settings: thêm `--stability` / `--similarity_boost` / `--style` nếu user yêu cầu tweak.
 
-Sau khi xong, check duration:
+**Nhánh B — MiniMax:**
+
+```bash
+uv run .claude/skills/mkt-video-script-to-mp3/scripts/text_to_mp3.py \
+  --file workspace/content/YYYY-MM-DD/<slug>/script.txt \
+  -o workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
+```
+
+Voice ID: tự động đọc `MINIMAX_VOICE_ID` từ `.env` (fallback default `moss_audio_…`). Override CLI: `--voice_id <id>`.
+Voice settings: `--speed` (default `1.08`), `--vol`, `--pitch`, `--language_boost Vietnamese`.
+
+**Output filename inviolable** ở cả 2 nhánh: `voiceover.mp3` để Phase 2 (HeyGen) tìm đúng path.
+
+Sau khi xong, check duration (chung cho cả 2 provider):
 
 ```bash
 uv run .claude/skills/heygen-mp3-to-mp4/scripts/check_duration.py \
@@ -128,7 +152,8 @@ uv run .claude/skills/heygen-mp3-to-mp4/scripts/check_duration.py \
 **File:** `workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3`
 **Duration:** <X.X>s
 **Size:** <Y.Y> MB
-**Voice:** ElevenLabs Brand Voice của Hoàng (`K7ewtjKRNtwwt3lKQ6M0`)
+**Provider:** <`elevenlabs` | `minimax`>
+**Voice:** <`ElevenLabs Brand Voice của Hoàng (K7ewtjKRNtwwt3lKQ6M0)`> hoặc <`MiniMax speech-2.8-hd (moss_audio_…)`> (lấy từ `.env` voice ID nếu user override)
 
 Mở file nghe thử. Reply 1 trong:
 - **`OK`** / **`tiếp`** → mình chạy Phase 2 (HeyGen avatar lip-sync)
@@ -139,8 +164,8 @@ Mở file nghe thử. Reply 1 trong:
 **Stop tool calls.** Đợi user reply rõ ràng.
 
 Khi user OK → Phase 2.
-Khi user `regen` → rerun `text_to_mp3.py` với settings mới, quay lại checkpoint.
-Khi user sửa script → overwrite `script.txt`, rerun Phase 1 từ đầu.
+Khi user `regen` → rerun script TTS của provider hiện tại với settings mới, quay lại checkpoint. Nếu user nói "đổi sang minimax" / "thử eleven" → swap `tts_provider`, rerun Phase 1.
+Khi user sửa script → overwrite `script.txt`, rerun Phase 1 từ đầu (cùng provider).
 
 ### Step 3 — Phase 2: MP3 → HeyGen MP4 (auto)
 
@@ -212,7 +237,7 @@ When the sub-agent returns the Studio URL, format the final report:
 
 **Workspace:** `workspace/content/YYYY-MM-DD/<slug>/`
 
-**Phase 1 (ElevenLabs):** voiceover.mp3 — <D1>s, <S1>MB
+**Phase 1 (`<elevenlabs|minimax>`):** voiceover.mp3 — <D1>s, <S1>MB (voice ID `<id>`)
 **Phase 2 (HeyGen):** source.mp4 — avatar `<avatar_id>`, <D2>s, <S2>MB
 **Phase 3 (HyperFrames):** <N> scenes (<list variants>), <K> caption groups, 6 SFX
 
@@ -231,7 +256,7 @@ Mở browser scrub timeline. Nói **`render`** khi OK → mình chạy `npx hype
 
 3. **HeyGen MCP only** — không bao giờ curl `https://api.heygen.com/...`. Hard constraint của `heygen-mp3-to-mp4`.
 
-4. **Voice ID lock** — ElevenLabs default `K7ewtjKRNtwwt3lKQ6M0` (Hoàng's brand voice). Override qua `--voice_id` nhưng pipeline báo rõ pick nào.
+4. **Voice ID lưu ở `.env`, không hard-code trong skill.** ElevenLabs đọc `ELEVENLABS_VOICE_ID` (fallback `K7ewtjKRNtwwt3lKQ6M0`). MiniMax đọc `MINIMAX_VOICE_ID` (fallback `moss_audio_…`). Override per-call qua `--voice_id`. Pipeline báo rõ provider + voice ID đã chọn ở Step 0 và checkpoint #1.
 
 5. **Script length hard cap 5000 ký tự** — fail fast ở Step 0.1.
 
@@ -246,7 +271,8 @@ Mở browser scrub timeline. Nói **`render`** khi OK → mình chạy `npx hype
 | Symptom | Hành động |
 |---|---|
 | Script > 5000 ký tự | Stop, yêu cầu user split semantic |
-| ElevenLabs API fail | Báo error, suggest check `ELEVENLABS_API_KEY` trong `.env` |
+| ElevenLabs API fail | Báo error, suggest check `ELEVENLABS_API_KEY` trong `.env` (optional `ELEVENLABS_VOICE_ID`). Hoặc swap sang `tts_provider=minimax` rerun Phase 1 |
+| MiniMax API fail | Báo error, suggest check `MINIMAX_API_KEY` trong `.env` (optional `MINIMAX_VOICE_ID`). Hoặc swap sang `tts_provider=elevenlabs` rerun Phase 1 |
 | MP3 > 300s sau Phase 1 | Stop pipeline, suggest `heygen-short-video` (chunking) |
 | HeyGen MCP not connected | Stop, báo `claude mcp list` để verify |
 | HeyGen render failed | Show error, gợi ý check credits qua `mcp__heygen__get_current_user` |
@@ -288,7 +314,8 @@ Total wall-clock: ~4–6 phút (vs 5–8 phút ở pipeline serial cũ).
 
 ## References
 
-- **Sub-skill `mkt-elevenlabs-tts-to-mp3`** — `.claude/skills/mkt-elevenlabs-tts-to-mp3/SKILL.md`
+- **Sub-skill `mkt-elevenlabs-tts-to-mp3`** (TTS provider A — default) — `.claude/skills/mkt-elevenlabs-tts-to-mp3/SKILL.md`
+- **Sub-skill `mkt-video-script-to-mp3`** (TTS provider B — MiniMax) — `.claude/skills/mkt-video-script-to-mp3/SKILL.md`
 - **Sub-skill `heygen-mp3-to-mp4`** — `.claude/skills/heygen-mp3-to-mp4/SKILL.md`
 - **Sub-skill `mkt-hyperframe-talking-head-video`** — `.claude/skills/mkt-hyperframe-talking-head-video/SKILL.md` (loaded by Phase 3 sub-agent)
 - **Sub-agent `mkt-full-video-phase3-packager`** — `.claude/agents/mkt-full-video-phase3-packager.md`

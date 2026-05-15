@@ -19,17 +19,20 @@ Không tự inflate score để justify quyết định đã định sẵn. Hone
 
 **Cách lấy data:** Google Keyword Planner (free Google Ads account), region VN, language Vi+En. Cộng dồn volume cả 2 ngôn ngữ.
 
-| Score | Threshold | Evidence yêu cầu |
+| Score | Threshold (VN-calibrated, Vi+En cộng dồn) | Evidence yêu cầu |
 |---|---|---|
-| 20 | Primary keyword ≥5K/tháng + portfolio total ≥20K | Screenshot Keyword Planner với volume number |
-| 15 | Primary 2K-5K/tháng + portfolio 10K-20K | Same |
-| 10 | Primary 500-2K + portfolio 3K-10K | Same |
-| 5 | Primary 100-500 + portfolio 1K-3K | Same |
-| 0 | Primary <100 hoặc không data | "Insufficient data" + verify với Google Trends |
+| 20 | Primary keyword ≥2K/tháng + portfolio total ≥10K | Screenshot Keyword Planner với volume number |
+| 15 | Primary 800-2K/tháng + portfolio 4K-10K | Same |
+| 10 | Primary 300-800 + portfolio 1.5K-4K | Same |
+| 5 | Primary 80-300 + portfolio 400-1.5K | Same |
+| 0 | Primary <80 AND tổng portfolio <400 | "Insufficient data" + verify với Google Trends + TikTok hashtag |
+
+**Note VN calibration:** Threshold trên thấp hơn US-mindset (~60%) vì VN keyword volume thường = 15-30% US cho cùng concept. Đừng dùng threshold US (5K/20K) — sẽ false-negative niche VN tốt.
 
 **Edge case:**
 - Volume thấp nhưng B2B / high-ticket → check CPC; CPC >50K VND có thể bù volume
-- VN audience search bilingual — cộng dồn Vi + En của cùng concept
+- VN audience search bilingual — cộng dồn Vi + En của cùng concept (audience tech-savvy như dev/designer có thể chiếm 50-70% portfolio từ En)
+- Niche TikTok-native (Gen Z, beauty, AI tool consumer) — search volume Google thấp nhưng TikTok hashtag >1M views = vẫn 15-20 pts. Bù bằng TikTok signal, document rõ "discovery shift to TikTok".
 
 ---
 
@@ -60,15 +63,26 @@ Không tự inflate score để justify quyết định đã định sẵn. Hone
 - Đếm distinct advertiser trên FB Ads Library VN
 - Đọc top 5 competitor → score quality (professional vs amateur)
 
-| Score | Landscape | Verdict |
+| Score | Landscape (đếm **active competitor** — update ≤12 tháng) | Verdict |
 |---|---|---|
-| 20 | 3-10 competitor mid-quality, có clear gap để differentiate (under-served sub-segment) | Sweet spot |
-| 15 | 10-20 competitor, một số top-tier nhưng vẫn có angle | OK với strong positioning |
-| 10 | 20-50 competitor, nhiều quality cao, gap hẹp | Cần moat (network/expertise/community) |
-| 5 | 50+ saturated HOẶC <3 (chưa có ai validate) | Hard entry |
-| 0 | Dominated bởi 1-2 brand lớn không có entry HOẶC zero competitor (no market) | Pass |
+| 20 | 3-10 active competitor mid-quality + clear gap để differentiate (under-served sub-segment) | Sweet spot |
+| 18 | 50+ tổng nhưng **top course stale >18 tháng**, instructor không update, review tụt — de facto opportunity | Saturation flip — vào với fresh angle |
+| 15 | 10-20 active competitor, một số top-tier nhưng vẫn có angle | OK với strong positioning |
+| 10 | 20-50 active competitor, nhiều quality cao, gap hẹp | Cần moat (network/expertise/community) |
+| 5 | 50+ saturated VÀ top course vẫn fresh (<12 tháng, review đều) HOẶC <3 active (chưa có ai validate) | Hard entry |
+| 0 | Dominated bởi 1-2 brand lớn cố thủ không có entry HOẶC zero competitor toàn cảnh (no market) | Pass |
 
-**Quan trọng:** Zero competitor KHÔNG phải opportunity — thường là "no demand". Trừ khi bạn có proprietary insight tại sao chưa ai làm.
+**Quan trọng — Saturation flip nuance (VN-specific):**
+
+Thị trường VN có rate "stale incumbent" rất cao. Unica/Edumall/Gitiho thường show 50-100+ course cho 1 keyword nhưng:
+- Top course đã 18-24 tháng tuổi
+- Instructor stop update (course AI 2023 nhưng dạy ChatGPT 3.5)
+- Review mới <3/tháng
+- Curriculum không đụng tới Claude / Cursor / Agent / MCP
+
+Trường hợp này = **de facto sweet spot**, không phải saturated. Filter "active" = course update <12 tháng + last review <6 tháng. Đếm xong active mới apply rubric.
+
+**Quan trọng — Zero ≠ opportunity:** Zero competitor KHÔNG phải opportunity, thường là "no demand". Trừ khi bạn có proprietary insight (insider data, regulatory change vừa mở, tech vừa khả thi 6 tháng qua) — và phải document rõ insight đó trong report.
 
 ---
 

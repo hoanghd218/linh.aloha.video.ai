@@ -1,0 +1,476 @@
+{
+  "$schema": "overlays-v1",
+  "aesthetic": "broker_creator",
+  "slug": "lumiere-hanoi-seasons-garden",
+  "video_duration": 87.04,
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "assets": {
+    "source_video": "source.mp4",
+    "voiceover": "voiceover.mp3",
+    "captions": "caption-groups.json"
+  },
+  "overlays": [
+    {
+      "id": "o01",
+      "variant": "punch-2line",
+      "t_start": 3.46,
+      "duration": 2.5,
+      "text": "The Bloom\nCHÍNH SÁCH BẤT NGỜ",
+      "color": "#2bb24c",
+      "subtitle_color": "#ffffff",
+      "headline_font": "script"
+    },
+    {
+      "id": "br-01",
+      "variant": "broll-image",
+      "t_start": 3.8,
+      "duration": 3.5,
+      "image_path": "broll/pc-overview.jpg",
+      "caption": "THE BLOOM · LUMIÈRE"
+    },
+    {
+      "id": "o02",
+      "variant": "price-red-3d",
+      "t_start": 6.66,
+      "duration": 2.5,
+      "text": "90%"
+    },
+    {
+      "id": "o03",
+      "variant": "callout-stack",
+      "t_start": 10.42,
+      "duration": 2.5,
+      "setup_text": "Đặt bút tính ra",
+      "emphasis_text": "RẤT TO ĐẤY",
+      "setup_color": "#1f7ae0",
+      "emphasis_color": "#e63946"
+    },
+    {
+      "id": "o04",
+      "variant": "comment-bubble",
+      "t_start": 13.26,
+      "duration": 2.2,
+      "username": "@linhaloha",
+      "comment_text": "Aloha anh chị, em Linh đây!"
+    },
+    {
+      "id": "o05",
+      "variant": "punch-2line",
+      "t_start": 16.74,
+      "duration": 2.8,
+      "text": "MIỄN PHÍ\nQUẢN LÝ",
+      "color": "#2bb24c",
+      "subtitle_color": "#ffffff"
+    },
+    {
+      "id": "br-02",
+      "variant": "broll-image",
+      "t_start": 16.9,
+      "duration": 3.5,
+      "image_path": "broll/pc-dome-amenity.jpg",
+      "caption": "TIỆN ÍCH ĐẲNG CẤP"
+    },
+    {
+      "id": "o06",
+      "variant": "punch-2line",
+      "t_start": 22.02,
+      "duration": 3.0,
+      "text": "Cao Xà Lá\nMASTERISE HOMES",
+      "color": "#f4b324",
+      "subtitle_color": "#f4b324",
+      "headline_font": "script"
+    },
+    {
+      "id": "br-03",
+      "variant": "broll-image",
+      "t_start": 22.5,
+      "duration": 3.5,
+      "image_path": "broll/pc-facade.jpg",
+      "caption": "MASTERISE CAO XÀ LÁ"
+    },
+    {
+      "id": "o07",
+      "variant": "callout-stack",
+      "t_start": 25.68,
+      "duration": 2.8,
+      "setup_text": "Khách hàng mới",
+      "emphasis_text": "MIỄN 24 THÁNG",
+      "setup_color": "#1f7ae0",
+      "emphasis_color": "#2bb24c"
+    },
+    {
+      "id": "o08",
+      "variant": "price-red-3d",
+      "t_start": 29.34,
+      "duration": 2.5,
+      "text": "24 THÁNG"
+    },
+    {
+      "id": "o09",
+      "variant": "callout-stack",
+      "t_start": 33.44,
+      "duration": 2.8,
+      "setup_text": "Cư dân Masterise",
+      "emphasis_text": "ĐƯỢC 48 THÁNG",
+      "setup_color": "#1f7ae0",
+      "emphasis_color": "#e63946"
+    },
+    {
+      "id": "o10",
+      "variant": "price-red-3d",
+      "t_start": 37.24,
+      "duration": 1.5,
+      "text": "48 THÁNG"
+    },
+    {
+      "id": "o11",
+      "variant": "punch-2line",
+      "t_start": 38.82,
+      "duration": 2.8,
+      "text": "4 NĂM\nMIỄN PHÍ",
+      "color": "#e63946",
+      "subtitle_color": "#2bb24c"
+    },
+    {
+      "id": "br-04",
+      "variant": "broll-image",
+      "t_start": 39.5,
+      "duration": 3.5,
+      "image_path": "broll/pc-main-gate.jpg",
+      "caption": "HANOI SEASONS GARDEN"
+    },
+    {
+      "id": "o12",
+      "variant": "icon-stack",
+      "t_start": 43.44,
+      "duration": 2.5,
+      "line1": "PHÍ QUẢN LÝ",
+      "line2": "KHU ĐÔ THỊ",
+      "color": "#1f7ae0"
+    },
+    {
+      "id": "o13",
+      "variant": "icon-stack",
+      "t_start": 47.24,
+      "duration": 2.5,
+      "line1": "PHÍ TIỆN ÍCH",
+      "line2": "CLUBHOUSE",
+      "color": "#2bb24c"
+    },
+    {
+      "id": "br-05",
+      "variant": "broll-image",
+      "t_start": 47.5,
+      "duration": 3.5,
+      "image_path": "broll/pc-stream-feature.jpg",
+      "caption": "TIỆN ÍCH CLUBHOUSE"
+    },
+    {
+      "id": "o14",
+      "variant": "callout-stack",
+      "t_start": 51.36,
+      "duration": 2.8,
+      "setup_text": "Chủ đầu tư chưa",
+      "emphasis_text": "CÔNG BỐ CHÍNH THỨC",
+      "setup_color": "#1f7ae0",
+      "emphasis_color": "#ffd60a"
+    },
+    {
+      "id": "o15",
+      "variant": "callout-stack",
+      "t_start": 55.62,
+      "duration": 2.5,
+      "setup_text": "Công thức tính",
+      "emphasis_text": "PHÍ × DIỆN TÍCH × THÁNG",
+      "setup_color": "#1f7ae0",
+      "emphasis_color": "#ffffff"
+    },
+    {
+      "id": "o16",
+      "variant": "punch-2line",
+      "t_start": 60.54,
+      "duration": 2.8,
+      "text": "2BR · 3BR\nTIẾT KIỆM HƠN",
+      "color": "#ffffff",
+      "subtitle_color": "#2bb24c"
+    },
+    {
+      "id": "br-06",
+      "variant": "broll-image",
+      "t_start": 60.9,
+      "duration": 3.5,
+      "image_path": "broll/masterplan-subdivision.jpg",
+      "caption": "THE BLOOM TÒA L1 & L2"
+    },
+    {
+      "id": "o17",
+      "variant": "punch",
+      "t_start": 64.22,
+      "duration": 2.5,
+      "text": "ĐÁNG KỂ",
+      "color": "#2bb24c"
+    },
+    {
+      "id": "o18",
+      "variant": "callout-stack",
+      "t_start": 66.9,
+      "duration": 2.8,
+      "setup_text": "So sánh dự án?",
+      "emphasis_text": "ĐỪNG CHỈ NHÌN GIÁ CĂN",
+      "setup_color": "#1f7ae0",
+      "emphasis_color": "#e63946"
+    },
+    {
+      "id": "o19",
+      "variant": "punch-2line",
+      "t_start": 71.88,
+      "duration": 2.8,
+      "text": "GIẢM CHI PHÍ THỰC\nKHÔNG PHẢI KHUYẾN MÃI",
+      "color": "#2bb24c",
+      "subtitle_color": "#ffffff"
+    },
+    {
+      "id": "br-07",
+      "variant": "broll-image",
+      "t_start": 72.3,
+      "duration": 3.0,
+      "image_path": "broll/handover-01.jpg",
+      "caption": "BÀN GIAO CHUẨN CAO CẤP"
+    },
+    {
+      "id": "o20",
+      "variant": "punch",
+      "t_start": 75.26,
+      "duration": 1.0,
+      "text": "KHÔNG PHẢI HÌNH THỨC",
+      "color": "#e63946"
+    },
+    {
+      "id": "o21",
+      "variant": "comment-bubble",
+      "t_start": 76.36,
+      "duration": 3.9,
+      "username": "@linhaloha",
+      "comment_text": "Inbox / gọi em Linh Aloha để nhận bảng giá + chính sách The Bloom"
+    },
+    {
+      "id": "contact-end",
+      "variant": "contact-card",
+      "t_start": 81.04,
+      "duration": 6.0,
+      "avatar_path": "logos/avatar.jpg",
+      "qr_path": "logos/qr-contact.jpg",
+      "name": "EM LINH ALOHA",
+      "hotline": "0977.856.086",
+      "cta_text": "QUÉT MÃ LIÊN HỆ"
+    }
+  ],
+  "zoom_hooks": [
+    {
+      "t": 3.46,
+      "type": "soft2step",
+      "peak": 1.09
+    },
+    {
+      "t": 5.5,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 6.66,
+      "type": "doublepop",
+      "peak": 1.07
+    },
+    {
+      "t": 9.0,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 10.42,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 13.26,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 16.74,
+      "type": "soft2step",
+      "peak": 1.08
+    },
+    {
+      "t": 19.5,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 22.02,
+      "type": "zoomout",
+      "low": 0.95,
+      "duration": 0.7
+    },
+    {
+      "t": 22.8,
+      "type": "soft2step",
+      "peak": 1.1
+    },
+    {
+      "t": 25.68,
+      "type": "quickpop",
+      "peak": 1.06
+    },
+    {
+      "t": 29.34,
+      "type": "quickpop",
+      "peak": 1.06
+    },
+    {
+      "t": 31.5,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 33.44,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 37.24,
+      "type": "doublepop",
+      "peak": 1.07
+    },
+    {
+      "t": 38.82,
+      "type": "soft2step",
+      "peak": 1.09
+    },
+    {
+      "t": 41.2,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 43.44,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 45.5,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 47.24,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 49.3,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 51.36,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 53.5,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 55.62,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 58.0,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 60.54,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 64.22,
+      "type": "quickpop",
+      "peak": 1.06
+    },
+    {
+      "t": 66.9,
+      "type": "zoomout",
+      "low": 0.96,
+      "duration": 0.6
+    },
+    {
+      "t": 67.6,
+      "type": "quickpop",
+      "peak": 1.06
+    },
+    {
+      "t": 69.8,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 71.88,
+      "type": "quickpop",
+      "peak": 1.05
+    },
+    {
+      "t": 75.26,
+      "type": "quickpop",
+      "peak": 1.06
+    },
+    {
+      "t": 76.36,
+      "type": "quickpop",
+      "peak": 1.04
+    },
+    {
+      "t": 80.36,
+      "type": "quickpop",
+      "peak": 1.05
+    }
+  ],
+  "sfx_cues": [
+    {
+      "t": 3.46,
+      "file": "camera-shutter.wav",
+      "volume": 0.35
+    },
+    {
+      "t": 6.66,
+      "file": "pop.wav",
+      "volume": 0.35
+    },
+    {
+      "t": 22.02,
+      "file": "giant-foot.m4a",
+      "volume": 0.3
+    },
+    {
+      "t": 38.82,
+      "file": "build-up.wav",
+      "volume": 0.3
+    },
+    {
+      "t": 66.9,
+      "file": "collapse.wav",
+      "volume": 0.25
+    },
+    {
+      "t": 76.36,
+      "file": "digital-device.wav",
+      "volume": 0.3
+    }
+  ]
+}

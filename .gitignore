@@ -42,3 +42,8 @@ Thumbs.db
 
 # Claude Code agent worktrees (transient)
 .claude/worktrees/
+
+# Heavy video workspace — keep out of git (too large for GitHub 100MB limit)
+/workspace/content/
+/workspace/remotion-project/renders/
+*.mp4

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIZ.MKT.OS — CRM + Content Manager (Mockup • FB + YouTube)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+  .nav-item.active{background:#4f46e5;color:#fff}
+  .nav-item.active svg{color:#fff}
+  ::-webkit-scrollbar{height:8px;width:8px}
+  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+  .fb{color:#1877F2} .yt{color:#FF0000}
+  .badge-fb{background:#e7f0fe;color:#1877F2} .badge-yt{background:#ffeaea;color:#FF0000}
+  .mermaid{background:#fff;border-radius:14px;padding:18px;border:1px solid #e2e8f0}
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+<div class="flex min-h-screen">
+  <!-- SIDEBAR -->
+  <aside class="w-60 shrink-0 bg-slate-900 text-slate-300 flex flex-col fixed h-full">
+    <div class="px-5 py-5 border-b border-slate-700/60">
+      <div class="text-white font-bold text-lg tracking-tight">BIZ.MKT<span class="text-indigo-400">.OS</span></div>
+      <div class="text-xs text-slate-400 mt-0.5">CRM + Content Manager</div>
+    </div>
+    <nav class="flex-1 p-3 space-y-1 text-sm">
+      <a onclick="show('overview',this)" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-800">📊 Tổng quan</a>
+      <a onclick="show('content',this)" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-800">🎬 Content Pipeline</a>
+      <a onclick="show('crm',this)" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-800">👥 CRM Leads</a>
+      <a onclick="show('inbox',this)" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-800">💬 Inbox <span class="ml-auto bg-red-500 text-white text-[10px] px-1.5 rounded-full">7</span></a>
+      <a onclick="show('lines',this)" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-800">🧭 Tuyến content</a>
+      <a onclick="show('flow',this)" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-slate-800">🔀 Sơ đồ thuật toán</a>
+    </nav>
+    <div class="p-3 border-t border-slate-700/60 text-xs text-slate-400">
+      <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> MCP biz-mkt-os · online</div>
+      <div class="mt-1">Realtime · Supabase</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 ml-60">
+    <!-- TOPBAR -->
+    <header class="bg-white border-b border-slate-200 px-7 py-3 flex items-center gap-4 sticky top-0 z-20">
+      <h1 id="pageTitle" class="text-lg font-semibold">Tổng quan</h1>
+      <div class="ml-auto flex items-center gap-3 text-sm">
+        <select class="border border-slate-300 rounded-lg px-3 py-1.5 bg-white">
+          <option>Brand: Tony Hoàng — Learn AI Automation</option>
+          <option>Brand: Windy City Media</option>
+        </select>
+        <select class="border border-slate-300 rounded-lg px-3 py-1.5 bg-white">
+          <option>30 ngày qua</option><option>7 ngày qua</option><option>Quý này</option>
+        </select>
+        <div class="flex items-center gap-1 text-xs">
+          <span class="px-2 py-1 rounded-md badge-fb font-semibold">f Facebook</span>
+          <span class="px-2 py-1 rounded-md badge-yt font-semibold">▶ YouTube</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-7">
+
+    <!-- ============ TỔNG QUAN ============ -->
+    <section id="overview">
+      <div class="grid grid-cols-4 gap-4 mb-5">
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">Lượt xem (FB+YT)</div>
+          <div class="text-2xl font-bold mt-1">412.8K</div>
+          <div class="text-xs text-emerald-600 mt-1">▲ 23% so kỳ trước</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">Leads mới</div>
+          <div class="text-2xl font-bold mt-1">186</div>
+          <div class="text-xs text-emerald-600 mt-1">▲ 12% · CR 0.045%</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">Đơn đã thanh toán</div>
+          <div class="text-2xl font-bold mt-1">41</div>
+          <div class="text-xs text-emerald-600 mt-1">▲ 8 đơn · tỷ lệ chốt 22%</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">Doanh thu</div>
+          <div class="text-2xl font-bold mt-1">58.4 <span class="text-base font-medium text-slate-400">triệu₫</span></div>
+          <div class="text-xs text-emerald-600 mt-1">▲ 31% MoM</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 mb-5">
+        <div class="col-span-2 bg-white rounded-xl p-5 border border-slate-200">
+          <div class="font-semibold mb-3 text-sm">Lượt xem theo ngày — FB vs YouTube</div>
+          <canvas id="viewsChart" height="110"></canvas>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200">
+          <div class="font-semibold mb-3 text-sm">Tỷ trọng kênh</div>
+          <canvas id="channelChart" height="180"></canvas>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div class="col-span-2 bg-white rounded-xl p-5 border border-slate-200">
+          <div class="font-semibold mb-3 text-sm">Top content theo hiệu quả (attribution → doanh thu)</div>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-slate-500 border-b border-slate-200">
+              <tr class="text-left"><th class="py-2">Content</th><th>Kênh</th><th class="text-right">Views</th><th class="text-right">Leads</th><th class="text-right">Đơn</th><th class="text-right">Doanh thu</th></tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr><td class="py-2.5 font-medium">OpenClaw — Intro AI tự động</td><td><span class="badge-yt px-1.5 py-0.5 rounded text-xs">YT</span></td><td class="text-right">86.2K</td><td class="text-right">52</td><td class="text-right">14</td><td class="text-right font-semibold">19.8tr</td></tr>
+              <tr><td class="py-2.5 font-medium">Cao Xà Lá — The Bloom review</td><td><span class="badge-fb px-1.5 py-0.5 rounded text-xs">FB</span></td><td class="text-right">71.4K</td><td class="text-right">38</td><td class="text-right">9</td><td class="text-right font-semibold">13.2tr</td></tr>
+              <tr><td class="py-2.5 font-medium">5 lỗi automation người mới hay mắc</td><td><span class="badge-yt px-1.5 py-0.5 rounded text-xs">YT</span></td><td class="text-right">54.0K</td><td class="text-right">31</td><td class="text-right">7</td><td class="text-right font-semibold">9.1tr</td></tr>
+              <tr><td class="py-2.5 font-medium">Hyperframes 60s — hook tâm lý</td><td><span class="badge-fb px-1.5 py-0.5 rounded text-xs">FB</span></td><td class="text-right">42.6K</td><td class="text-right">28</td><td class="text-right">6</td><td class="text-right font-semibold">8.4tr</td></tr>
+              <tr><td class="py-2.5 font-medium">Claude vs n8n — so kè</td><td><span class="badge-yt px-1.5 py-0.5 rounded text-xs">YT</span></td><td class="text-right">38.1K</td><td class="text-right">19</td><td class="text-right">3</td><td class="text-right font-semibold">4.5tr</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="bg-white rounded-xl p-5 border border-slate-200">
+          <div class="font-semibold mb-3 text-sm">Phễu hiệu quả</div>
+          <div class="space-y-2">
+            <div class="bg-indigo-600 text-white rounded-lg px-3 py-2.5 text-sm flex justify-between"><span>Lượt xem</span><b>412.8K</b></div>
+            <div class="bg-indigo-500 text-white rounded-lg px-3 py-2.5 text-sm flex justify-between mx-3"><span>Tương tác</span><b>18.4K</b></div>
+            <div class="bg-indigo-400 text-white rounded-lg px-3 py-2.5 text-sm flex justify-between mx-6"><span>Leads</span><b>186</b></div>
+            <div class="bg-emerald-500 text-white rounded-lg px-3 py-2.5 text-sm flex justify-between mx-10"><span>Đơn paid</span><b>41</b></div>
+          </div>
+          <div class="text-xs text-slate-400 mt-3">Nguồn: leads.source_content_id → product → orders</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTENT PIPELINE ============ -->
+    <section id="content" class="hidden">
+      <div class="flex items-center gap-3 mb-4">
+        <button class="bg-indigo-600 text-white text-sm px-3 py-2 rounded-lg">+ Content mới</button>
+        <span class="text-xs text-slate-500">Realtime · agent <b>video-editor</b> vừa cập nhật 2 thẻ</span>
+      </div>
+      <div class="flex gap-3 overflow-x-auto pb-4" id="pipeline"></div>
+    </section>
+
+    <!-- ============ CRM ============ -->
+    <section id="crm" class="hidden">
+      <div class="grid grid-cols-4 gap-4 mb-5">
+        <div class="bg-white rounded-xl p-4 border border-slate-200"><div class="text-xs text-slate-500">Tổng leads</div><div class="text-2xl font-bold mt-1">1.284</div></div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200"><div class="text-xs text-slate-500">Đang nuôi (nurturing)</div><div class="text-2xl font-bold mt-1">312</div></div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200"><div class="text-xs text-slate-500">Khách đã mua</div><div class="text-2xl font-bold mt-1">198</div></div>
+        <div class="bg-white rounded-xl p-4 border border-slate-200"><div class="text-xs text-slate-500">LTV trung bình</div><div class="text-2xl font-bold mt-1">1.42tr</div></div>
+      </div>
+      <div class="grid grid-cols-5 gap-3" id="crmBoard"></div>
+    </section>
+
+    <!-- ============ INBOX ============ -->
+    <section id="inbox" class="hidden">
+      <div class="text-sm text-slate-500 mb-4">Comment cần trả lời (FB + YouTube) — agent <b>community-manager</b> soạn nháp, anh duyệt rồi đăng.</div>
+      <div class="space-y-3 max-w-3xl" id="inboxList"></div>
+    </section>
+
+    <!-- ============ TUYẾN CONTENT ============ -->
+    <section id="lines" class="hidden">
+      <div class="grid grid-cols-3 gap-4" id="linesGrid"></div>
+    </section>
+
+    <!-- ============ SƠ ĐỒ ============ -->
+    <section id="flow" class="hidden space-y-7">
+      <div>
+        <h2 class="font-semibold mb-2">1 · Luồng dữ liệu end-to-end (agents → MCP → Supabase → App)</h2>
+        <div class="mermaid">
+flowchart LR
+  subgraph AG[Hermes Agents]
+    R[content_researcher]
+    V[video-editor]
+    C[community-manager]
+  end
+  R -->|content_line.create / content.create_item idea| M
+  V -->|content.attach_asset final_mp4 / update_status ready| M
+  C -->|publication.mark_published<br/>engagement.upsert_metrics<br/>comment.ingest / set_reply| M
+  M[(MCP biz-mkt-os<br/>validate + audit)]
+  M --> DB[(Supabase Postgres)]
+  M --> EV[(agent_events log)]
+  DB -->|Realtime| APP[Web App<br/>CRM · Content · Inbox · Analytics]
+  C -.->|Blotato publish| FB[f Facebook]
+  C -.->|Blotato publish| YT[YouTube]
+  FB -.->|poll comment + insights| C
+  YT -.->|poll comment + insights| C
+        </div>
+      </div>
+
+      <div>
+        <h2 class="font-semibold mb-2">2 · Vòng đời content (state machine)</h2>
+        <div class="mermaid">
+stateDiagram-v2
+  [*] --> idea: content_researcher
+  idea --> scripted: viết script
+  scripted --> voiced: TTS ElevenLabs/MiniMax
+  voiced --> rendered: HeyGen + HyperFrames
+  rendered --> ready: attach final_mp4 (video-editor)
+  ready --> published: đăng FB/YT (community-manager)
+  published --> archived
+  published --> published: cập nhật metrics (cron)
+        </div>
+      </div>
+
+      <div>
+        <h2 class="font-semibold mb-2">3 · Thuật toán auto-reply comment (FB + YouTube, poll-based)</h2>
+        <div class="mermaid">
+flowchart TD
+  CR{{cron mỗi 10 phút}} --> P[Poll comment mới<br/>FB Graph + YouTube Data API]
+  P --> NEW{Comment chưa xử lý?}
+  NEW -->|không| END([dừng])
+  NEW -->|có| ING[comment.ingest<br/>lưu external_id]
+  ING --> S[Phân loại sentiment]
+  S --> SPAM{Spam / toxic / nhạy cảm?}
+  SPAM -->|có| SKIP[reply_status = skipped<br/>log lại]
+  SPAM -->|không| GEN[Sinh reply theo SOUL.md<br/>brand voice anh/chị]
+  GEN --> AUTO{Chế độ full-auto?}
+  AUTO -->|chưa| DRAFT[reply_status = draft<br/>→ Inbox chờ duyệt]
+  AUTO -->|rồi| POST[Đăng reply qua API]
+  POST --> DONE[comment.set_reply replied]
+  DRAFT --> HUMAN[Người duyệt trong App] --> POST
+        </div>
+      </div>
+
+      <div>
+        <h2 class="font-semibold mb-2">4 · Attribution lead → doanh thu (CRM)</h2>
+        <div class="mermaid">
+flowchart LR
+  SRC[Comment / DM / Web form] --> UP[lead.upsert<br/>dedup phone+email<br/>source_content_id]
+  UP --> ST1[stage: new]
+  ST1 --> ST2[contacted]
+  ST2 --> ST3[nurturing]
+  ST3 --> ORD[order.create pending]
+  ORD --> PAY{Sepay webhook paid?}
+  PAY -->|có| PAID[order.mark_paid<br/>lead.stage = paid]
+  PAY -->|không| ST3
+  PAID --> ATTR[Analytics: content nào → đơn nào]
+        </div>
+      </div>
+    </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ---------- NAV ----------
+const titles={overview:'Tổng quan',content:'Content Pipeline',crm:'CRM Leads',inbox:'Inbox — Comment FB + YouTube',lines:'Tuyến content',flow:'Sơ đồ thuật toán'};
+function show(id,el){
+  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent=titles[id];
+}
+
+// ---------- CONTENT PIPELINE ----------
+const cols=[
+  {k:'idea',t:'💡 Idea',c:'bg-slate-200'},
+  {k:'scripted',t:'📝 Scripted',c:'bg-amber-200'},
+  {k:'voiced',t:'🎙️ Voiced',c:'bg-orange-200'},
+  {k:'rendered',t:'🎞️ Rendered',c:'bg-sky-200'},
+  {k:'ready',t:'✅ Ready',c:'bg-emerald-200'},
+  {k:'published',t:'🚀 Published',c:'bg-indigo-200'},
+];
+const items={
+  idea:[{t:'AI agent đặt lịch tự động',f:'9:16',by:'content_researcher'},{t:'Top 3 tool no-code 2026',f:'16:9',by:'content_researcher'}],
+  scripted:[{t:'Claude Skills là gì',f:'9:16',by:'content_researcher'}],
+  voiced:[{t:'5 lỗi automation',f:'9:16',by:'video-editor'}],
+  rendered:[{t:'Hyperframes hook tâm lý',f:'9:16',by:'video-editor'}],
+  ready:[{t:'OpenClaw — Intro',f:'16:9',by:'video-editor',ch:'YT'},{t:'Cao Xà Lá — The Bloom',f:'9:16',by:'video-editor',ch:'FB'}],
+  published:[{t:'Claude vs n8n so kè',f:'16:9',by:'community-manager',ch:'YT'},{t:'Tự động hoá Zalo',f:'9:16',by:'community-manager',ch:'FB'}],
+};
+document.getElementById('pipeline').innerHTML=cols.map(c=>`
+  <div class="w-64 shrink-0">
+    <div class="flex items-center justify-between mb-2 px-1">
+      <span class="text-sm font-semibold flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${c.c}"></span>${c.t}</span>
+      <span class="text-xs text-slate-400">${(items[c.k]||[]).length}</span>
+    </div>
+    <div class="space-y-2">
+      ${(items[c.k]||[]).map(i=>`
+        <div class="bg-white rounded-lg border border-slate-200 p-3 shadow-sm">
+          <div class="h-20 rounded-md bg-gradient-to-br from-slate-100 to-slate-200 mb-2 flex items-center justify-center text-slate-400 text-xs">▶ ${i.f}</div>
+          <div class="text-sm font-medium leading-snug">${i.t}</div>
+          <div class="flex items-center gap-1 mt-2 text-[11px]">
+            <span class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">${i.by}</span>
+            ${i.ch?`<span class="${i.ch==='YT'?'badge-yt':'badge-fb'} px-1.5 py-0.5 rounded">${i.ch}</span>`:''}
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`).join('');
+
+// ---------- CRM BOARD ----------
+const stages=[['new','Mới','bg-slate-100'],['contacted','Đã liên hệ','bg-amber-50'],['nurturing','Đang nuôi','bg-sky-50'],['paid','Đã mua','bg-emerald-50'],['lost','Thất bại','bg-rose-50']];
+const leads={
+  new:[['Nguyễn Văn A','0901234567','OpenClaw · YT'],['Trần Thị B','0912345678','Cao Xà Lá · FB']],
+  contacted:[['Lê Văn C','0987654321','5 lỗi · YT']],
+  nurturing:[['Phạm D','0978112233','Hyperframes · FB'],['Hoàng E','0966554433','OpenClaw · YT']],
+  paid:[['Vũ Thị F','0955667788','Premium · 2.9tr'],['Đỗ G','0944332211','Cơ bản · 990K']],
+  lost:[['Bùi H','0933221100','—']],
+};
+document.getElementById('crmBoard').innerHTML=stages.map(([k,t,c])=>`
+  <div class="rounded-xl ${c} border border-slate-200 p-2.5">
+    <div class="text-sm font-semibold mb-2 px-1 flex justify-between">${t}<span class="text-slate-400">${(leads[k]||[]).length}</span></div>
+    <div class="space-y-2">
+      ${(leads[k]||[]).map(l=>`<div class="bg-white rounded-lg border border-slate-200 p-2.5 text-sm">
+        <div class="font-medium">${l[0]}</div>
+        <div class="text-xs text-slate-400">${l[1]}</div>
+        <div class="text-[11px] mt-1 text-indigo-500">${l[2]}</div></div>`).join('')}
+    </div>
+  </div>`).join('');
+
+// ---------- INBOX ----------
+const cmts=[
+  {ch:'YT',a:'@minhduc_dev',t:'Anh ơi OpenClaw có bản free không ạ?',r:'Dạ có bản dùng thử anh nhé, anh inbox bên mình để được hướng dẫn cài đặt ạ 🙌',s:'question'},
+  {ch:'FB',a:'Hương Lê',t:'Video hay quá, cảm ơn Tony!',r:'Cảm ơn chị đã ủng hộ ạ, chúc chị áp dụng hiệu quả nha 😊',s:'praise'},
+  {ch:'YT',a:'@trader_vn',t:'Cái này so với n8n thì sao?',r:'Dạ mỗi tool mạnh một mảng anh ạ — bên mình có video so sánh chi tiết, anh xem thử nha.',s:'question'},
+  {ch:'FB',a:'Quốc Anh',t:'Giá bao nhiêu vậy shop?',r:'Dạ anh inbox giúp em để em gửi bảng giá chi tiết theo nhu cầu ạ 🙏',s:'price'},
+];
+document.getElementById('inboxList').innerHTML=cmts.map((c,i)=>`
+  <div class="bg-white rounded-xl border border-slate-200 p-4">
+    <div class="flex items-center gap-2 text-sm mb-2">
+      <span class="${c.ch==='YT'?'badge-yt':'badge-fb'} px-1.5 py-0.5 rounded text-xs font-semibold">${c.ch}</span>
+      <b>${c.a}</b><span class="text-xs text-slate-400 ml-auto">cần trả lời</span>
+    </div>
+    <div class="text-sm text-slate-700 mb-3">${c.t}</div>
+    <div class="bg-indigo-50 rounded-lg p-3 text-sm border border-indigo-100">
+      <div class="text-[11px] text-indigo-400 mb-1">Nháp của community-manager (draft)</div>
+      ${c.r}
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg">Duyệt &amp; đăng</button>
+      <button class="bg-slate-100 text-slate-600 text-xs px-3 py-1.5 rounded-lg">Sửa</button>
+      <button class="text-slate-400 text-xs px-3 py-1.5 rounded-lg">Bỏ qua</button>
+    </div>
+  </div>`).join('');
+
+// ---------- LINES ----------
+const lines=[
+  {n:'AI Automation cho người mới',p:'Giáo dục · phễu top',prod:'OpenClaw Pro',ca:'3 video/tuần',ct:24,col:'indigo'},
+  {n:'BĐS Cao Xà Lá — The Bloom',p:'Review dự án',prod:'Lead môi giới',ca:'2 video/tuần',ct:11,col:'emerald'},
+  {n:'So sánh tool / anti-pattern',p:'Trung gian phễu',prod:'OpenClaw Pro',ca:'1 video/tuần',ct:8,col:'amber'},
+];
+document.getElementById('linesGrid').innerHTML=lines.map(l=>`
+  <div class="bg-white rounded-xl border border-slate-200 p-5">
+    <div class="w-10 h-10 rounded-lg bg-${l.col}-100 text-${l.col}-600 flex items-center justify-center mb-3">🧭</div>
+    <div class="font-semibold">${l.n}</div>
+    <div class="text-xs text-slate-500 mt-1">${l.p}</div>
+    <div class="mt-3 text-sm space-y-1">
+      <div class="flex justify-between"><span class="text-slate-400">Bán offer</span><b>${l.prod}</b></div>
+      <div class="flex justify-between"><span class="text-slate-400">Tần suất</span><b>${l.ca}</b></div>
+      <div class="flex justify-between"><span class="text-slate-400">Content</span><b>${l.ct} bài</b></div>
+    </div>
+  </div>`).join('');
+
+// ---------- CHARTS ----------
+new Chart(document.getElementById('viewsChart'),{type:'line',data:{
+  labels:['1','5','10','15','20','25','30'],
+  datasets:[
+    {label:'YouTube',data:[8,12,9,18,22,19,26],borderColor:'#FF0000',backgroundColor:'rgba(255,0,0,.08)',fill:true,tension:.4},
+    {label:'Facebook',data:[6,9,11,8,14,17,15],borderColor:'#1877F2',backgroundColor:'rgba(24,119,242,.08)',fill:true,tension:.4}
+  ]},options:{plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>v+'K'}}}}});
+new Chart(document.getElementById('channelChart'),{type:'doughnut',data:{
+  labels:['YouTube','Facebook'],datasets:[{data:[58,42],backgroundColor:['#FF0000','#1877F2']}]},
+  options:{plugins:{legend:{position:'bottom'}},cutout:'62%'}});
+
+mermaid.initialize({startOnLoad:true,theme:'neutral'});
+</script>
+</body>
+</html>

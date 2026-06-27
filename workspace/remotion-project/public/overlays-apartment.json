@@ -1,0 +1,235 @@
+{
+  "$schema": "overlays-v1",
+  "aesthetic": "broker_creator",
+  "slug": "the-bloom-6-loai-can-ho",
+  "video_duration": 108,
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "assets": {
+    "source_video": "source.mp4",
+    "voiceover": "voiceover.mp3",
+    "captions": "caption-groups.json"
+  },
+  "overlays": [
+    {
+      "id": "hook-punch",
+      "variant": "punch",
+      "t_start": 0.8,
+      "duration": 4.6,
+      "text": "CĂN NÀO HỢP ANH CHỊ?",
+      "color": "#ffd60a",
+      "placement": "top",
+      "italic": true
+    },
+    {
+      "id": "sp-overview",
+      "variant": "scene-spec-row",
+      "t_start": 5.94,
+      "duration": 14.36,
+      "title": "THE BLOOM — 6 LOẠI CĂN",
+      "subtitle": "Masterise Cao Xà Lá",
+      "rows": [
+        { "icon": "🏠", "label": "Studio",        "value": "31.9 M² (L1)" },
+        { "icon": "🛏️", "label": "1PN",           "value": "59.8 M²" },
+        { "icon": "🛋️", "label": "1PN + đa năng", "value": "85.7 M²" },
+        { "icon": "👨‍👩‍👧", "label": "2PN",           "value": "95.8 M²" },
+        { "icon": "🪟", "label": "2PN + đa năng", "value": "131 M²" },
+        { "icon": "🏡", "label": "3PN + đa năng", "value": "150 M²" }
+      ]
+    },
+    {
+      "id": "sp-studio",
+      "variant": "scene-apartment-price",
+      "t_start": 20.5,
+      "duration": 14.3,
+      "title": "CĂN STUDIO",
+      "subtitle": "(31.9 M² — chỉ có ở L1)",
+      "icon": "🏠",
+      "images": ["broll/floorplan-studio.jpg"],
+      "image_fit": "contain"
+    },
+    {
+      "id": "studio-benefit",
+      "variant": "punch",
+      "t_start": 30.8,
+      "duration": 3.0,
+      "text": "VỐN ĐẦU TƯ THẤP",
+      "color": "#ffd60a",
+      "placement": "top",
+      "italic": true
+    },
+    {
+      "id": "sp-1pn",
+      "variant": "scene-apartment-price",
+      "t_start": 34.8,
+      "duration": 7.76,
+      "title": "CĂN 1 PHÒNG NGỦ",
+      "subtitle": "(59.8 M²)",
+      "icon": "🛏️",
+      "images": ["broll/floorplan-1pn.jpg"],
+      "image_fit": "contain"
+    },
+    {
+      "id": "1pn-benefit",
+      "variant": "callout-stack",
+      "t_start": 40.9,
+      "duration": 3.2,
+      "setup_text": "Vợ chồng trẻ",
+      "emphasis_text": "DÒNG TIỀN CHO THUÊ TỐT",
+      "emphasis_color": "#ffd60a",
+      "placement": "top"
+    },
+    {
+      "id": "sp-1pn-danang",
+      "variant": "scene-apartment-price",
+      "t_start": 42.56,
+      "duration": 11.4,
+      "title": "1PN + 1 PHÒNG ĐA NĂNG",
+      "subtitle": "(85.7 M²)",
+      "icon": "🛋️",
+      "images": ["broll/floorplan-1pn-da-nang.jpg"],
+      "image_fit": "contain"
+    },
+    {
+      "id": "1pn-dn-benefit",
+      "variant": "punch",
+      "t_start": 48.9,
+      "duration": 3.0,
+      "text": "THÊM PHÒNG LINH HOẠT",
+      "color": "#ffffff",
+      "placement": "top",
+      "italic": true
+    },
+    {
+      "id": "sp-2pn",
+      "variant": "scene-apartment-price",
+      "t_start": 53.96,
+      "duration": 10.8,
+      "title": "CĂN 2 PHÒNG NGỦ",
+      "subtitle": "(95.8 M² — dễ thanh khoản nhất)",
+      "icon": "👨‍👩‍👧",
+      "images": ["broll/floorplan-2pn.jpg"],
+      "image_fit": "contain"
+    },
+    {
+      "id": "2pn-benefit",
+      "variant": "punch",
+      "t_start": 59.6,
+      "duration": 3.4,
+      "text": "DỄ THANH KHOẢN NHẤT",
+      "color": "#e63946",
+      "placement": "top",
+      "italic": true
+    },
+    {
+      "id": "sp-2pn-danang",
+      "variant": "scene-apartment-price",
+      "t_start": 64.76,
+      "duration": 9.14,
+      "title": "2PN + 1 PHÒNG ĐA NĂNG",
+      "subtitle": "(131 M²)",
+      "icon": "🪟",
+      "images": ["broll/floorplan-2pn-da-nang.jpg"],
+      "image_fit": "contain"
+    },
+    {
+      "id": "2pn-dn-benefit",
+      "variant": "callout-stack",
+      "t_start": 70.6,
+      "duration": 3.2,
+      "setup_text": "Phòng giúp việc",
+      "emphasis_text": "LINH HOẠT 3 KHÔNG GIAN",
+      "emphasis_color": "#ffd60a",
+      "placement": "top"
+    },
+    {
+      "id": "sp-3pn-danang",
+      "variant": "scene-apartment-price",
+      "t_start": 73.9,
+      "duration": 10.36,
+      "title": "3PN + 1 PHÒNG ĐA NĂNG",
+      "subtitle": "(150 M² — loại lớn nhất)",
+      "icon": "🏡",
+      "images": ["broll/floorplan-3pn-da-nang.jpg"],
+      "image_fit": "contain"
+    },
+    {
+      "id": "3pn-benefit",
+      "variant": "punch",
+      "t_start": 79.55,
+      "duration": 3.3,
+      "text": "GIA ĐÌNH NHIỀU THẾ HỆ",
+      "color": "#ffffff",
+      "placement": "top",
+      "italic": true
+    },
+    {
+      "id": "recommend-callout",
+      "variant": "callout-stack",
+      "t_start": 89.8,
+      "duration": 3.6,
+      "setup_text": "Em Linh nghiêng về",
+      "emphasis_text": "2PN VIEW NỘI KHU",
+      "emphasis_color": "#ffd60a",
+      "placement": "top"
+    },
+    {
+      "id": "recommend-punch",
+      "variant": "punch",
+      "t_start": 92.7,
+      "duration": 3.0,
+      "text": "VỪA Ở — VỪA THANH KHOẢN",
+      "color": "#e63946",
+      "placement": "top",
+      "italic": true
+    },
+    {
+      "id": "cta-bubble",
+      "variant": "comment-bubble",
+      "t_start": 96.04,
+      "duration": 5.0,
+      "username": "@linhaloha",
+      "comment_text": "Inbox em Linh để nhận bảng giá chi tiết nhé!"
+    },
+    {
+      "id": "contact-card",
+      "variant": "contact-card",
+      "t_start": 102.0,
+      "duration": 6.0,
+      "avatar_path": "logos/avatar.jpg",
+      "qr_path": "logos/qr-contact.jpg",
+      "name": "EM LINH ALOHA",
+      "cta_text": "QUÉT MÃ LIÊN HỆ",
+      "hotline": "0977.856.086"
+    }
+  ],
+  "zoom_hooks": [
+    { "t": 0.8,   "type": "doublepop", "peak": 1.08 },
+    { "t": 5.94,  "type": "soft2step", "peak": 1.08 },
+    { "t": 20.5,  "type": "doublepop", "peak": 1.1 },
+    { "t": 30.8,  "type": "quickpop",  "peak": 1.06 },
+    { "t": 34.8,  "type": "soft2step", "peak": 1.08 },
+    { "t": 42.56, "type": "soft2step", "peak": 1.08 },
+    { "t": 53.96, "type": "doublepop", "peak": 1.1 },
+    { "t": 59.6,  "type": "quickpop",  "peak": 1.08 },
+    { "t": 64.76, "type": "soft2step", "peak": 1.08 },
+    { "t": 73.9,  "type": "doublepop", "peak": 1.1 },
+    { "t": 89.8,  "type": "quickpop",  "peak": 1.06 },
+    { "t": 92.7,  "type": "doublepop", "peak": 1.1 },
+    { "t": 96.04, "type": "zoomout",   "low": 0.94, "duration": 0.7 },
+    { "t": 102.0, "type": "zoomout",   "low": 0.92, "duration": 0.8 }
+  ],
+  "sfx_cues": [
+    { "t": 0.8,   "file": "pop.wav",  "volume": 0.32 },
+    { "t": 5.94,  "file": "ting.mp3", "volume": 0.35 },
+    { "t": 20.5,  "file": "pop.wav",  "volume": 0.32 },
+    { "t": 34.8,  "file": "pop.wav",  "volume": 0.3 },
+    { "t": 42.56, "file": "pop.wav",  "volume": 0.3 },
+    { "t": 53.96, "file": "ting.mp3", "volume": 0.4 },
+    { "t": 64.76, "file": "pop.wav",  "volume": 0.3 },
+    { "t": 73.9,  "file": "pop.wav",  "volume": 0.3 },
+    { "t": 92.7,  "file": "ting.mp3", "volume": 0.4 },
+    { "t": 102.0, "file": "ting.mp3", "volume": 0.4 }
+  ]
+}

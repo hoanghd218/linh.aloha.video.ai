@@ -1,0 +1,23 @@
+{
+  "skill_name": "mkt-linh-aloha-bds-video-script",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Viết kịch bản video về giá Cao Xà Lá vừa công bố sau buổi kick-off",
+      "expected_output": "Kịch bản video 40-90s, chọn Format 1 (Tin sốc Quay xe) hoặc 2 (Món hời hay cái bẫy), giọng Linh Aloha, dùng giá thật từ project data, CTA có tên Linh Aloha. Xuất 2 file: script.txt (lời thoại thuần) + brief.md (format + 3 hook + gợi ý hình ảnh).",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Lam video review cac dong can ho o Cao Xa La, dong nao hop ai",
+      "expected_output": "Kịch bản video 40-90s, chọn Format 9 (Review dòng sản phẩm), điểm qua từng dòng căn (studio/1PN/2PN/2PN+1/3PN) với diện tích + khoảng giá + view, gợi ý dòng đáng tiền, CTA Linh Aloha. 2 file output.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Viết video xử lý lo ngại dự án 13.000 căn quá nhiều",
+      "expected_output": "Kịch bản video 40-90s, chọn Format 4 (Đập tan nỗi lo), cấu trúc thừa nhận → lật ngược → bằng chứng → trấn an, CTA Linh Aloha. 2 file output.",
+      "files": []
+    }
+  ]
+}

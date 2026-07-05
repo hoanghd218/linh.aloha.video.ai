@@ -1,0 +1,16 @@
+{
+  "_comment": "Whole-word case-insensitive substitution applied BEFORE TTS. Two valid use cases: (1) English words in a VN script that the model mispronounces — replace with VN-phonetic spelling (e.g. 'doc' -> 'đóc' so model says /dɒk/). (2) Vietnamese proper nouns written without diacritics in source — replace with proper VN spelling so model reads them correctly (e.g. 'Hanoi' -> 'Hà Nội'). Keep entries that are clearly safe (low collision risk). Never add common English words that could rewrite brand names (don't add 'code' — would clobber 'Claude Code'). Curate by listening.",
+  "doc": "đóc",
+  "chat": "chát",
+  "git": "gít",
+  "Hanoi": "Hà Nội",
+  "Saigon": "Sài Gòn",
+  "Vietnam": "Việt Nam",
+  "Viet Nam": "Việt Nam",
+  "Da Nang": "Đà Nẵng",
+  "Hai Phong": "Hải Phòng",
+  "Phu Quoc": "Phú Quốc",
+  "Ha Long": "Hạ Long",
+  "Can Tho": "Cần Thơ",
+  "Vung Tau": "Vũng Tàu"
+}

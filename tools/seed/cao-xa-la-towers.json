@@ -1,0 +1,60 @@
+[
+  {
+    "code": "L1",
+    "name": "Tòa L1",
+    "aliases": ["L1", "toa L1"],
+    "subdivision": "The Bloom",
+    "shape": "Chữ L (2 cánh) — 1 lõi thang ở khu vực giao 2 cánh",
+    "floorFrom": 5,
+    "floorTo": 46,
+    "unitsPerFloor": 23,
+    "unitCodes": [
+      "CH-01", "CH-02", "CH-03", "CH-04", "CH-05", "CH-06", "CH-07", "CH-08",
+      "CH-09", "CH-10", "CH-11", "CH-12", "CH-13", "CH-14", "CH-15", "CH-16",
+      "CH-17", "CH-18", "CH-19", "CH-20", "CH-21", "CH-22", "CH-23"
+    ],
+    "unitCodesVerified": false,
+    "floorGroups": [
+      { "label": "L5", "spec": "5" },
+      { "label": "L6-7", "spec": "6-7" },
+      { "label": "L8-11", "spec": "8-11" },
+      { "label": "L12-22", "spec": "12-22" },
+      { "label": "L23", "spec": "23", "notes": "Mặt bằng tái cấu trúc — lõi giữa mở rộng, đánh số lại; xuất hiện CH-08A, CH-12A, CH-15A." },
+      { "label": "L24-33", "spec": "24-33", "notes": "Biến thể mã căn: CH-15A, CH-18A, CH-08A thay cho một số mã ở tầng dưới." },
+      { "label": "L34-37", "spec": "34-37" },
+      { "label": "L38-39", "spec": "38-39" },
+      { "label": "L40-46", "spec": "40-46" }
+    ],
+    "notes": "Mặt bằng KHÔNG đồng nhất toàn tòa. Tầng 5–22 đủ bộ CH-01..CH-23. Tầng 23 tái cấu trúc lõi. Tầng 24–46 có biến thể mã căn (A-variant) mà tài liệu gốc ghi bỏ lửng — danh sách mã căn theo từng cụm tầng CHƯA lập được, nên unitCodesVerified=false.",
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md · _kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  },
+  {
+    "code": "L2",
+    "name": "Tòa L2",
+    "aliases": ["L2", "HHB", "Tower HHB", "toa L2"],
+    "subdivision": "The Bloom",
+    "shape": "Thanh ngang + cánh đứng — hành lang trung tâm dài, căn xếp 2 bên",
+    "floorFrom": 4,
+    "floorTo": 43,
+    "unitsPerFloor": 26,
+    "unitCodes": [
+      "CH-01", "CH-02", "CH-03", "CH-04", "CH-05", "CH-06", "CH-07", "CH-08",
+      "CH-09", "CH-10", "CH-11", "CH-12", "CH-13", "CH-14", "CH-15", "CH-16",
+      "CH-17", "CH-18", "CH-19", "CH-20", "CH-21", "CH-22", "CH-23", "CH-24",
+      "CH-25", "CH-26"
+    ],
+    "unitCodesVerified": false,
+    "floorGroups": [
+      { "label": "L4", "spec": "4" },
+      { "label": "L5-6", "spec": "5-6" },
+      { "label": "L7-11", "spec": "7-11" },
+      { "label": "L12-19,21-31,33", "spec": "12-19,21-31,33" },
+      { "label": "L20", "spec": "20", "notes": "Hành lang/lõi giữa mở rộng — số căn ở dải này thay đổi." },
+      { "label": "L32", "spec": "32", "notes": "Hành lang/lõi giữa mở rộng." },
+      { "label": "L34-35", "spec": "34-35" },
+      { "label": "L36-43", "spec": "36-43" }
+    ],
+    "notes": "Tên kỹ thuật trên bản vẽ PDF là 'TOWER HHB'. Tầng 4–19 đủ bộ CH-01..CH-26. Tầng 20 và 32 có lõi mở rộng nên số căn khác. KHÔNG có Studio — loại nhỏ nhất là 1BR ~46 m² thông thủy.",
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md · _kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  }
+]

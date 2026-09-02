@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linh.aloha.local/schemas/ho-so-phong-cach.schema.json",
+  "title": "Hồ sơ phong cách học từ video mẫu",
+  "type": "object",
+  "required": ["version", "source", "observations"],
+  "properties": {
+    "version": {"type": "string"},
+    "source": {
+      "type": "object",
+      "required": ["path", "duration", "fps", "width", "height"],
+      "properties": {
+        "path": {"type": "string"},
+        "duration": {"type": "number", "exclusiveMinimum": 0},
+        "fps": {"type": "number", "exclusiveMinimum": 0},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1}
+      }
+    },
+    "observations": {
+      "type": "object",
+      "properties": {
+        "cut_times": {"type": "array", "items": {"type": "number"}},
+        "cut_interval_median": {"type": ["number", "null"]},
+        "cut_interval_p25": {"type": ["number", "null"]},
+        "cut_interval_p75": {"type": ["number", "null"]},
+        "text_regions": {"type": "array", "items": {"type": "object"}},
+        "text_hierarchy": {"type": "array", "items": {"type": "object"}},
+        "visual_modes": {"type": "array", "items": {"type": "object"}},
+        "zoom_palette": {"type": "array", "items": {"type": "object"}},
+        "transition_palette": {"type": "array", "items": {"type": "object"}},
+        "audio_notes": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "creative_notes": {"type": "array", "items": {"type": "string"}},
+    "do_not_copy": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

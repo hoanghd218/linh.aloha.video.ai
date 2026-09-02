@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "ignoreDirs": ["script bds mau"],
+  "note": "Registry các dự án BĐS. `dir` là tên thư mục con trong workspace/data/. `status`: dang-ban | sap-mo-ban | da-ban-het | tam-dung. Chỉ dự án status=dang-ban mới được resolver chọn mặc định. `assetRoots` map thư mục ảnh → category (ghi đè heuristic mặc định của build_asset_catalog.py).",
+  "categories": [
+    "exterior-hero",
+    "exterior-night",
+    "facade",
+    "aerial-location",
+    "masterplan",
+    "amenity",
+    "interior",
+    "handover-spec",
+    "floorplan",
+    "doc-scan"
+  ],
+  "projects": [
+    {
+      "slug": "cao-xa-la",
+      "name": "LUMIÈRE Hanoi Seasons Garden",
+      "shortName": "Cao Xà Lá",
+      "aliases": [
+        "cao xà lá",
+        "cao xa la",
+        "hanoi seasons garden",
+        "lumiere hanoi seasons garden",
+        "lumière hanoi seasons garden",
+        "the bloom",
+        "vinhomes cao xa la"
+      ],
+      "dir": "Cao xà lá",
+      "developer": "Masterise Homes",
+      "status": "dang-ban",
+      "phase": "The Bloom — Tòa L1 + L2",
+      "location": "233 / 233B / 235 Nguyễn Trãi, Thanh Xuân, Hà Nội",
+      "scale": "82.820 m² · 10 tòa · 35-46 tầng · mật độ 28,8%",
+      "knowledgeDir": "_kien-thuc-du-an",
+      "libraryMd": "_kien-thuc-du-an/12 - Thư viện hình ảnh.md",
+      "assetRoots": {
+        "PHỐI CẢNH/PHỐI CẢNH BÊN NGOÀI": "exterior-hero",
+        "MẶT BẰNG/L1": "floorplan",
+        "MẶT BẰNG/L2": "floorplan",
+        "MẶT BẰNG": "masterplan",
+        "TIÊU CHUẨN BÀN GIAO-20260517T142417Z-3-001/TIÊU CHUẨN BÀN GIAO": "handover-spec"
+      },
+      "illustrativeDisclaimer": "Ảnh minh họa",
+      "hotline": null,
+      "brandAssets": {
+        "avatar": "workspace/assets/brand/linh avatar.jpg",
+        "qr": "workspace/assets/brand/qr code contact.jpg"
+      }
+    }
+  ]
+}

@@ -1,7 +1,0 @@
-0
-npm run build — SUCCESS
-✓ Compiled successfully
-✓ TypeScript passed in 2.1s
-✓ 13/13 static pages generated
-New routes registered: /admin/affiliates, /affiliate, /api/affiliate, /api/affiliate/click, /api/admin/affiliates
-(Verified inline — subagent runs were blocked by sustained API 529 overload)

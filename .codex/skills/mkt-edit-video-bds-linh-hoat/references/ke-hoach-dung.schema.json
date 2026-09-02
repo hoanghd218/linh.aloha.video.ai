@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://linh.aloha.local/schemas/ke-hoach-dung.schema.json",
+  "title": "Kế hoạch dựng video BĐS linh hoạt",
+  "type": "object",
+  "required": ["version", "video", "events"],
+  "properties": {
+    "version": {"type": "string"},
+    "video": {
+      "type": "object",
+      "required": ["duration", "fps", "width", "height"],
+      "properties": {
+        "duration": {"type": "number", "exclusiveMinimum": 0},
+        "fps": {"type": "number", "exclusiveMinimum": 0},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "source": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "style_profile": {"type": ["string", "null"]},
+    "events": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/event"}
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "metadata": {"type": "object"}
+  },
+  "$defs": {
+    "speechAnchor": {
+      "type": "object",
+      "required": ["trigger_text", "speech_start", "speech_end", "confidence"],
+      "properties": {
+        "trigger_text": {"type": "string", "minLength": 1},
+        "matched_text": {"type": "string"},
+        "occurrence": {"type": "integer", "minimum": 1},
+        "word_start_index": {"type": "integer", "minimum": 0},
+        "word_end_index": {"type": "integer", "minimum": 0},
+        "speech_start": {"type": "number", "minimum": 0},
+        "speech_end": {"type": "number", "minimum": 0},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "additionalProperties": true
+    },
+    "event": {
+      "type": "object",
+      "required": ["id", "type", "start", "end", "reason"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {
+          "type": "string",
+          "examples": ["text", "caption", "broll", "image", "pip", "map", "zoom", "transition", "sfx", "music", "ambience"]
+        },
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "minimum": 0},
+        "speech_anchor": {"$ref": "#/$defs/speechAnchor"},
+        "anchor_exception": {
+          "type": "string",
+          "enum": ["transition-between-shots", "ambient-bed", "music-bed", "tail-playout", "none"]
+        },
+        "text": {"type": "string"},
+        "asset": {"type": "string"},
+        "asset_kind": {
+          "type": "string",
+          "examples": ["du-an-thuc-te", "phoi-canh", "masterplan", "stock-minh-hoa", "tai-lieu", "ban-do"]
+        },
+        "minh_hoa": {"type": "boolean"},
+        "disclosure_label": {"type": "string"},
+        "label_persistent": {"type": "boolean"},
+        "claim_kind": {
+          "type": "string",
+          "examples": ["tien-ich-du-kien", "thiet-ke-de-xuat", "tien-do-thuc-te", "hien-trang", "view-thuc-te"]
+        },
+        "animation": {"type": "string"},
+        "intensity": {"type": "string", "enum": ["nhe", "vua", "manh"]},
+        "placement": {
+          "type": "object",
+          "properties": {
+            "x": {"type": "number", "minimum": 0, "maximum": 1},
+            "y": {"type": "number", "minimum": 0, "maximum": 1},
+            "width": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+            "height": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}
+          },
+          "additionalProperties": true
+        },
+        "reason": {"type": "string", "minLength": 1},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "metadata": {"type": "object"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "nguyen_tac": "Chỉ chọn SFX theo speech anchor hoặc chuyển cảnh có chủ đích; không dùng quota cố định.",
+  "nhom": [
+    {
+      "thu_muc": "02_hiệu-ứng-nhấn-mạnh",
+      "goi_y": [
+        "impact-trầm",
+        "hit-mềm",
+        "pop-mạnh"
+      ]
+    },
+    {
+      "thu_muc": "03_hiệu-ứng-chữ-và-giao-diện",
+      "goi_y": [
+        "pop-mềm",
+        "tick",
+        "ui-tap"
+      ]
+    },
+    {
+      "thu_muc": "04_hiệu-ứng-chuyển-cảnh",
+      "goi_y": [
+        "whoosh-ngắn",
+        "whoosh-dài",
+        "quét-ngang",
+        "kéo-sọc-dọc"
+      ]
+    },
+    {
+      "thu_muc": "05_hiệu-ứng-bản-đồ",
+      "goi_y": [
+        "ghim-bản-đồ",
+        "đường-chạy",
+        "radar-nhẹ"
+      ]
+    },
+    {
+      "thu_muc": "06_hiệu-ứng-cao-trào",
+      "goi_y": [
+        "riser-ngắn",
+        "downer",
+        "reveal"
+      ]
+    },
+    {
+      "thu_muc": "07_âm-thanh-không-gian",
+      "goi_y": [
+        "phố",
+        "công-viên",
+        "showroom",
+        "nội-thất"
+      ]
+    },
+    {
+      "thu_muc": "08_hiệu-ứng-kêu-gọi-hành-động",
+      "goi_y": [
+        "cta-pop",
+        "chime-ngắn"
+      ]
+    }
+  ]
+}

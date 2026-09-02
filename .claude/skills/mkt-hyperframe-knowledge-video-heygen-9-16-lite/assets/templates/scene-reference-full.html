@@ -1,0 +1,261 @@
+<!doctype html>
+<!--
+  ============================================================================
+  CANONICAL SCENE REFERENCE — 1080×1920 FULL-CANVAS sub-composition (LITE).
+  In the lite pipeline scenes are FULL-SCREEN (the avatar is NOT on screen
+  during scene beats — only a small static PIP thumbnail the MASTER manages).
+  Key mechanics to copy verbatim (only content/accents/layout change per scene):
+    - Full standalone HTML doc, loaded via data-composition-src (NOT inline <template>).
+    - Root: <div data-composition-id="scene-NN-slug" data-width="1080" data-height="1920">
+    - ALL css scoped under [data-composition-id="scene-NN-slug"]
+    - NO <script src=...gsap...> — relies on the master's global gsap.
+    - mulberry32 PRNG, unique seed 0x5cNN. No Math.random().
+    - gsap.fromTo() entrances, finite repeats, window.__timelines["scene-NN-slug"]=tl (paused).
+    - meta-badge top:92px left:48px (BELOW master brand-mark at top:40).
+    - FORBIDDEN ZONES on the full canvas:
+        * y > ~1600px      → captions live there (bottom 160, track 60)
+        * x > 780 AND y < 320 → master's static PIP circle (top-right)
+    - Hero 84-120px (canvas is TALL — use the vertical room: hero can wrap
+      2-3 lines, stat blocks can stack).
+    - Scenes cover a WHOLE beat (often 12-30s) → build 2-3 content phases
+      (dựng → phát triển → chốt số) so the frame never sits still.
+    - Assigned images (media-manifest.json): absolute path in <img src>, ALWAYS
+      with onerror fallback hiding the img container so the scene never breaks.
+  ============================================================================
+-->
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<title>Scene reference — 1080×1920 full-canvas (lite)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #000; }
+  [data-composition-id="scene-01-problem"] {
+    width: 1080px; height: 1920px;
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse at 30% 14%, rgba(40,60,100,0.40) 0%, transparent 55%),
+      radial-gradient(ellipse at 72% 88%, rgba(217,119,87,0.22) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, #0f1626 0%, #050810 70%, #02040a 100%);
+    color: #faf9f5;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  [data-composition-id="scene-01-problem"] .bokeh { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  [data-composition-id="scene-01-problem"] .bokeh span { position: absolute; display: block; border-radius: 50%; filter: blur(0.4px); opacity: 0; }
+
+  [data-composition-id="scene-01-problem"] .halo {
+    position: absolute; left: 50%; top: 42%;
+    width: 860px; height: 860px; transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217,119,87,0.26) 0%, rgba(217,119,87,0.10) 32%, transparent 66%);
+    filter: blur(6px); z-index: 2; opacity: 0;
+  }
+
+  [data-composition-id="scene-01-problem"] .meta-badge {
+    position: absolute; top: 92px; left: 48px; z-index: 10;
+    padding: 10px 15px;
+    font: 500 13px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.18em; text-transform: uppercase; color: #b9c4d4;
+    background: rgba(15,22,38,0.62); border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 8px; backdrop-filter: blur(8px); opacity: 0;
+  }
+  [data-composition-id="scene-01-problem"] .meta-badge .dot { color: #d97757; margin-right: 8px; }
+  [data-composition-id="scene-01-problem"] .meta-badge .accent { color: #4fc3f7; }
+
+  /* Stage: generous top padding (clear of brand-mark + PIP zone), bottom
+     padding 340px keeps everything above the caption zone (y≈1600). */
+  [data-composition-id="scene-01-problem"] .stage {
+    position: absolute; inset: 0; z-index: 5;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 340px 70px 360px; box-sizing: border-box; text-align: center;
+  }
+
+  [data-composition-id="scene-01-problem"] .eyebrow {
+    font: 500 21px/1 'JetBrains Mono', monospace;
+    letter-spacing: 0.30em; text-transform: uppercase; color: #7cc4f0;
+    margin-bottom: 34px; opacity: 0;
+  }
+  [data-composition-id="scene-01-problem"] .eyebrow .divider { color: rgba(124,196,240,0.45); margin: 0 12px; }
+  [data-composition-id="scene-01-problem"] .eyebrow .coral { color: #d97757; }
+
+  [data-composition-id="scene-01-problem"] .hero {
+    font: 900 100px/0.96 'Inter', sans-serif;
+    letter-spacing: -0.035em; text-transform: uppercase;
+    margin: 0; display: flex; flex-wrap: wrap; align-items: baseline;
+    justify-content: center; gap: 0 22px;
+    text-shadow: 0 4px 70px rgba(255,255,255,0.05);
+  }
+  [data-composition-id="scene-01-problem"] .hero .word {
+    display: inline-block; opacity: 0; transform: translateY(52px);
+    will-change: transform, opacity; color: #faf9f5;
+  }
+  [data-composition-id="scene-01-problem"] .hero .accent { color: #d97757; }
+
+  [data-composition-id="scene-01-problem"] .underline {
+    width: 0; height: 6px;
+    background: linear-gradient(90deg, #4fc3f7 0%, #d97757 50%, #ffcb6b 100%);
+    border-radius: 3px; margin: 32px auto 40px;
+    box-shadow: 0 0 24px rgba(217,119,87,0.45);
+  }
+
+  /* Stat cards phase 2 — the tall canvas fits a stacked column of 2-3 cards */
+  [data-composition-id="scene-01-problem"] .cards { display: flex; flex-direction: column; gap: 22px; width: 100%; max-width: 760px; }
+  [data-composition-id="scene-01-problem"] .card {
+    display: flex; align-items: center; gap: 24px;
+    padding: 26px 32px; border-radius: 18px;
+    background: rgba(15,22,38,0.66); border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(8px); opacity: 0; transform: translateY(28px);
+  }
+  [data-composition-id="scene-01-problem"] .card .num {
+    font: 800 44px/1 'Inter', sans-serif; font-variant-numeric: tabular-nums;
+    color: #ffcb6b; min-width: 170px; text-align: right;
+  }
+  [data-composition-id="scene-01-problem"] .card .txt {
+    font: 500 24px/1.35 'JetBrains Mono', monospace; letter-spacing: 0.02em;
+    color: rgba(250,249,245,0.82); text-align: left;
+  }
+  [data-composition-id="scene-01-problem"] .card .txt .strong { color: #faf9f5; font-weight: 700; }
+
+  /* Assigned image slot (evidence screenshot pattern) — ALWAYS onerror-guarded */
+  [data-composition-id="scene-01-problem"] .shot {
+    margin-top: 40px; max-width: 720px; border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+    transform: rotate(-1.6deg) translateY(30px); opacity: 0;
+  }
+  [data-composition-id="scene-01-problem"] .shot img { display: block; width: 100%; }
+
+  [data-composition-id="scene-01-problem"] .corner-marks { position: absolute; inset: 36px; z-index: 6; pointer-events: none; }
+  [data-composition-id="scene-01-problem"] .corner-marks .m { position: absolute; width: 28px; height: 28px; border: 1px solid rgba(217,119,87,0.55); opacity: 0; }
+  [data-composition-id="scene-01-problem"] .corner-marks .tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+  [data-composition-id="scene-01-problem"] .corner-marks .bl { bottom: 300px; left: 0; border-right: none; border-top: none; }
+</style>
+</head>
+<body>
+
+<div id="scene-01-root" data-composition-id="scene-01-problem" data-width="1080" data-height="1920">
+
+  <div class="bokeh" aria-hidden="true"></div>
+  <div class="halo"></div>
+
+  <div class="corner-marks">
+    <div class="m tl"></div>
+    <div class="m bl"></div>
+  </div>
+
+  <div class="meta-badge">
+    <span class="dot">●</span> 01 / 05 <span class="accent">·</span> TOPIC LABEL
+  </div>
+
+  <div class="stage">
+    <div class="eyebrow">EYEBROW LINE <span class="divider">·</span> <span class="coral">ACCENT PART</span></div>
+
+    <h1 class="hero">
+      <span class="word">HERO</span>
+      <span class="word accent">TITLE</span>
+      <span class="word">HERE</span>
+    </h1>
+
+    <div class="underline"></div>
+
+    <div class="cards">
+      <div class="card"><div class="num" data-count="128">0</div><div class="txt">supporting line với <span class="strong">điểm nhấn</span></div></div>
+      <div class="card"><div class="num" data-count="42">0</div><div class="txt">dòng thứ hai <span class="strong">chốt số</span></div></div>
+    </div>
+
+    <!-- assigned image slot (delete if this beat has no image) -->
+    <div class="shot">
+      <img src="REPLACE-ABS-PATH-OR-DELETE.png" alt=""
+           onerror="this.closest('.shot').style.display='none'" />
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  function mulberry32(seed) {
+    return function () {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  const root = document.querySelector('[data-composition-id="scene-01-problem"]');
+  const DURATION = 17.550; // = mount data-duration (the whole beat in lite)
+
+  (function seedBokeh() {
+    const rnd = mulberry32(0x5c01);
+    const layer = root.querySelector('.bokeh');
+    const colors = ['#4fc3f7', '#d97757', '#ffcb6b', '#80cbc4', '#7cc4f0'];
+    const N = 60;
+    for (let i = 0; i < N; i++) {
+      const d = document.createElement('span');
+      const size = 3 + rnd() * 9;
+      d.style.width = d.style.height = size + 'px';
+      d.style.background = colors[Math.floor(rnd() * colors.length)];
+      d.style.left = (rnd() * 100).toFixed(2) + '%';
+      d.style.top = (rnd() * 100).toFixed(2) + '%';
+      d.style.boxShadow = '0 0 ' + (size * 2.5).toFixed(1) + 'px ' + d.style.background;
+      layer.appendChild(d);
+    }
+  })();
+
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+
+  // ---- Phase 1: dựng (0 → ~3.5s) ----
+  tl.fromTo(root.querySelectorAll('.corner-marks .m'),
+    { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'expo.out', stagger: 0.1 }, 0);
+  tl.fromTo(root.querySelector('.meta-badge'),
+    { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.2);
+
+  const bokehSpans = root.querySelectorAll('.bokeh span');
+  tl.to(bokehSpans, { opacity: 0.6, duration: 1.0, ease: 'sine.out', stagger: { each: 0.006, from: 'random' } }, 0.3);
+  const driftCycles = Math.max(0, Math.ceil(DURATION / 6) - 1);
+  bokehSpans.forEach((s, i) => {
+    const off = (((i * 37) % 70) - 35);
+    tl.to(s, { x: off, y: -off * 0.7, duration: 6, ease: 'sine.inOut', repeat: driftCycles, yoyo: true }, 0.8);
+  });
+
+  tl.fromTo(root.querySelector('.halo'),
+    { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 1.1, ease: 'expo.out' }, 0.5);
+  tl.fromTo(root.querySelector('.eyebrow'),
+    { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' }, 0.7);
+  tl.fromTo(root.querySelectorAll('.hero .word'),
+    { opacity: 0, y: 52 }, { opacity: 1, y: 0, duration: 0.75, ease: 'expo.out', stagger: 0.13 }, 1.1);
+  tl.fromTo(root.querySelector('.underline'),
+    { width: 0 }, { width: 480, duration: 0.85, ease: 'expo.out' }, 2.3);
+
+  // ---- Phase 2: phát triển (~3.5s →) — cards stagger + count-up ----
+  root.querySelectorAll('.card').forEach((card, i) => {
+    const at = 3.4 + i * 0.9;
+    tl.to(card, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, at);
+    const num = card.querySelector('.num');
+    const target = parseFloat(num.dataset.count);
+    const counter = { v: 0 };
+    tl.to(counter, {
+      v: target, duration: 1.1, ease: 'power2.out',
+      onUpdate: () => { num.textContent = Math.round(counter.v); },
+    }, at + 0.15);
+  });
+
+  // ---- Phase 3: chốt (image slam, ~6.5s →) ----
+  tl.to(root.querySelector('.shot'),
+    { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 6.5);
+
+  // Ambient halo pulse for the remainder (finite repeats from DURATION)
+  const pulseCycles = Math.max(0, Math.ceil((DURATION - 8.0) / 3) - 1);
+  tl.to(root.querySelector('.halo'),
+    { opacity: 1.0, scale: 1.05, duration: 3, ease: 'sine.inOut', repeat: pulseCycles, yoyo: true }, 8.0);
+
+  window.__timelines["scene-01-problem"] = tl;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+[
+  {
+    "_note": "KHUNG beats-spec.json cho video review dự án BĐS. Copy sang $OUT/beats-spec.json, XOÁ beat không dùng, thay mọi `anchor` bằng 2-4 từ đầu thật sự của đoạn đó trong script (chữ thường, giữ dấu, phải khớp alignment). 60s ≈ hook + 3-4 scene + 1 rehook + CTA; 90s ≈ hook + 5-6 scene + 2 rehook + CTA. mediaPolicy: allow = được chèn ảnh dự án; none = giá/chính sách/CTA/trừu tượng, KHÔNG chèn ảnh. Beat avatar=true không nhận media. map_beats.py bỏ qua mọi field _note.",
+    "id": "scene-01-hook",
+    "slug": "hook",
+    "pattern": "avatar",
+    "avatar": true,
+    "role": "hook",
+    "mediaPolicy": "none",
+    "anchor": ["aloha", "anh", "chị"]
+  },
+  {
+    "id": "scene-02-location",
+    "slug": "location",
+    "pattern": "location-metro",
+    "assetCategory": "aerial-location",
+    "mediaPolicy": "allow",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-03-scale",
+    "slug": "scale",
+    "pattern": "masterplan-annotate",
+    "assetCategory": "masterplan",
+    "mediaPolicy": "allow",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-04-rehook",
+    "slug": "rehook",
+    "pattern": "avatar",
+    "avatar": true,
+    "role": "rehook",
+    "mediaPolicy": "none",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-05-amenity",
+    "slug": "amenity",
+    "pattern": "amenity-stack",
+    "assetCategory": "amenity",
+    "mediaPolicy": "allow",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-06-product",
+    "slug": "product",
+    "pattern": "floorplan-zoom",
+    "assetCategory": "floorplan",
+    "mediaPolicy": "allow",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-07-handover",
+    "slug": "handover",
+    "pattern": "handover-strip",
+    "assetCategory": "handover-spec",
+    "mediaPolicy": "allow",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-08-price",
+    "slug": "price",
+    "pattern": "price-tier",
+    "assetCategory": null,
+    "mediaPolicy": "none",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-09-policy",
+    "slug": "policy",
+    "pattern": "payment-timeline",
+    "assetCategory": null,
+    "mediaPolicy": "none",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  },
+  {
+    "id": "scene-10-cta",
+    "slug": "cta",
+    "pattern": "avatar",
+    "avatar": true,
+    "role": "cta",
+    "mediaPolicy": "none",
+    "anchor": ["<2-4", "từ", "mở", "đoạn>"]
+  }
+]

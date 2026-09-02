@@ -1,0 +1,34 @@
+{
+  "cues": [
+    {
+      "id": "gia-10-ty",
+      "type": "text",
+      "trigger_text": "10 tỷ",
+      "text": "TÀI CHÍNH 10 TỶ",
+      "animation": "nhan-nhanh",
+      "intensity": "manh",
+      "lead_ms": 70,
+      "tail_ms": 650,
+      "reason": "Nhấn ngân sách quyết định ngay khi người dẫn nói con số."
+    },
+    {
+      "id": "mat-tien",
+      "type": "zoom",
+      "trigger_text": "mặt tiền to",
+      "animation": "cat-nhay-phong-gan",
+      "intensity": "vua",
+      "lead_ms": 80,
+      "tail_ms": 300,
+      "reason": "Đổi crop đúng lúc bắt đầu lợi ích đầu tiên."
+    },
+    {
+      "id": "cong-vien",
+      "type": "broll",
+      "trigger_text": "công viên 7,5 hecta",
+      "asset_query": ["công viên", "7,5 hecta", "dự án thật", "drone"],
+      "pre_roll_ms": 180,
+      "post_roll_ms": 900,
+      "reason": "Cho bằng chứng hình ảnh xuất hiện ngay trước khi nghe tên tiện ích."
+    }
+  ]
+}

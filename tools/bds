@@ -1,0 +1,367 @@
+#!/usr/bin/env python3
+"""bds — API dữ liệu BĐS (dự án + căn hộ) cho pipeline video.
+
+Gọi từ Claude Code / Codex qua Bash. Luôn in JSON ra stdout; lỗi in JSON
+ra stderr kèm exit code có nghĩa (2 not_found · 3 ambiguous · 4 invalid ·
+5 conflict). Mọi lệnh ghi đều nhận `--dry-run`.
+
+Bắt đầu từ đâu
+--------------
+  tools/bds project list
+  tools/bds schema unit-type              # học contract, khỏi đoán field
+  tools/bds project show --project "cao xà lá"
+  tools/bds unit-type list --project cao-xa-la --tower L1 --group 2br+1mr
+  tools/bds validate --project cao-xa-la
+
+Ghi dữ liệu (JSON qua stdin)
+----------------------------
+  echo '[{"code":"L1","floorFrom":5,"floorTo":46,"unitsPerFloor":23}]' \\
+    | tools/bds tower upsert --project cao-xa-la --json - --dry-run
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from bdscore import (  # noqa: E402
+    assets as assets_mod,
+    projects as projects_mod,
+    registry,
+    schema as schema_mod,
+    towers as towers_mod,
+    unit_types as ut_mod,
+    units as units_mod,
+    validate as validate_mod,
+)
+from bdscore.errors import BdsError, Invalid, NotFound  # noqa: E402
+from bdscore.paths import find_data_root  # noqa: E402
+
+
+# ── helper ─────────────────────────────────────────────────────────────
+
+def emit(payload, compact: bool = False) -> None:
+    json.dump(payload, sys.stdout, ensure_ascii=False,
+              indent=None if compact else 2, separators=(",", ":") if compact else None)
+    print()
+
+
+def read_payload(args) -> list | dict:
+    """Đọc JSON từ --json (chuỗi hoặc '-' = stdin) hoặc --file."""
+    raw = None
+    if getattr(args, "file", None):
+        raw = Path(args.file).expanduser().read_text(encoding="utf-8")
+    elif getattr(args, "json", None):
+        raw = sys.stdin.read() if args.json == "-" else args.json
+    if raw is None:
+        raise Invalid("Thiếu dữ liệu vào — dùng `--json -` (stdin), `--json '<inline>'` hoặc `--file <path>`")
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise Invalid(f"Payload không phải JSON hợp lệ: {e}") from e
+
+
+def ctx(args):
+    """(data_root, project_entry) — resolve dự án một lần cho mọi lệnh."""
+    data_root = find_data_root(getattr(args, "data_root", None))
+    entry = registry.resolve(data_root, args.project) if getattr(args, "project", None) else None
+    return data_root, entry
+
+
+def tower_codes(data_root, entry) -> list[str]:
+    return [t["code"] for t in towers_mod.list_towers(data_root, entry)]
+
+
+# ── project ────────────────────────────────────────────────────────────
+
+def cmd_project_list(args):
+    data_root = find_data_root(args.data_root)
+    rows = [registry.hydrate(e, data_root) for e in registry.discover(data_root, registry.load(data_root))]
+    if not args.all_status:
+        rows = [r for r in rows if r.get("status") in ("dang-ban", "unknown")]
+    return rows
+
+
+def cmd_project_resolve(args):
+    data_root = find_data_root(args.data_root)
+    return registry.hydrate(registry.resolve(data_root, args.project), data_root)
+
+
+def cmd_project_show(args):
+    data_root, entry = ctx(args)
+    return projects_mod.show(data_root, entry)
+
+
+def cmd_project_paths(args):
+    data_root, entry = ctx(args)
+    return projects_mod.data_paths(data_root, entry)
+
+
+def cmd_project_create(args):
+    data_root = find_data_root(args.data_root)
+    spec = read_payload(args)
+    if isinstance(spec, list):
+        raise Invalid("project create nhận 1 object, không phải array")
+    for key, val in (("slug", args.slug), ("name", args.name), ("dir", args.dir)):
+        if val:
+            spec[key] = val
+    return projects_mod.create(data_root, spec, dry_run=args.dry_run)
+
+
+def cmd_project_update(args):
+    data_root, entry = ctx(args)
+    patch = read_payload(args)
+    info = registry.update(data_root, entry["slug"], patch, dry_run=args.dry_run)
+    return {"slug": entry["slug"], "patched": sorted(patch), "dryRun": args.dry_run, "file": info}
+
+
+def cmd_project_ingest(args):
+    data_root, entry = ctx(args)
+    return projects_mod.ingest(data_root, entry, src=args.src, dry_run=args.dry_run,
+                               rebuild_catalog=not args.no_catalog,
+                               force_catalog=args.force_catalog)
+
+
+# ── tower ──────────────────────────────────────────────────────────────
+
+def cmd_tower_list(args):
+    data_root, entry = ctx(args)
+    rows = towers_mod.list_towers(data_root, entry)
+    return [{**t, "floors": towers_mod.floors_of(t)} for t in rows] if args.with_floors else rows
+
+
+def cmd_tower_show(args):
+    data_root, entry = ctx(args)
+    t = towers_mod.get(data_root, entry, args.tower)
+    return {**t, "floors": towers_mod.floors_of(t),
+            "unitTypeCount": len(ut_mod.list_types(data_root, entry, tower=t["code"]))}
+
+
+def cmd_tower_upsert(args):
+    data_root, entry = ctx(args)
+    return towers_mod.upsert(data_root, entry, read_payload(args), dry_run=args.dry_run)
+
+
+# ── unit-type ──────────────────────────────────────────────────────────
+
+def cmd_ut_list(args):
+    data_root, entry = ctx(args)
+    return ut_mod.list_types(data_root, entry, tower=args.tower, group=args.group)
+
+
+def cmd_ut_show(args):
+    data_root, entry = ctx(args)
+    row = ut_mod.get(data_root, entry, args.code)
+    out = {"unitType": row}
+    if row.get("floorplanAsset"):
+        try:
+            out["floorplan"] = assets_mod.find(data_root, entry, row["floorplanAsset"])
+        except NotFound as e:
+            out["floorplan"] = e.payload()
+    return out
+
+
+def cmd_ut_upsert(args):
+    data_root, entry = ctx(args)
+    return ut_mod.upsert(data_root, entry, read_payload(args), dry_run=args.dry_run,
+                         known_towers=tower_codes(data_root, entry))
+
+
+# ── unit ───────────────────────────────────────────────────────────────
+
+def cmd_unit_list(args):
+    data_root, entry = ctx(args)
+    rows = units_mod.list_units(data_root, entry, tower=args.tower, floors=args.floors,
+                                type_code=args.type, status=args.status, code=args.code,
+                                limit=args.limit)
+    return {"count": len(rows), "units": rows}
+
+
+def cmd_unit_show(args):
+    data_root, entry = ctx(args)
+    return units_mod.show(data_root, entry, args.tower, args.code, floor=args.floor)
+
+
+def cmd_unit_generate(args):
+    data_root, entry = ctx(args)
+    return units_mod.generate(data_root, entry, args.tower, floors=args.floors,
+                              dry_run=args.dry_run, overwrite=args.overwrite)
+
+
+def cmd_unit_upsert(args):
+    data_root, entry = ctx(args)
+    return units_mod.upsert(data_root, entry, read_payload(args), dry_run=args.dry_run)
+
+
+# ── asset / validate / schema ──────────────────────────────────────────
+
+def cmd_asset_list(args):
+    data_root, entry = ctx(args)
+    rows = assets_mod.list_assets(data_root, entry, category=args.category, starred=args.starred,
+                                  needs_description=args.needs_description, limit=args.limit)
+    return {"count": len(rows), "counts": assets_mod.counts(data_root, entry), "assets": rows}
+
+
+def cmd_validate(args):
+    data_root, entry = ctx(args)
+    result = validate_mod.run(data_root, entry, full=args.full)
+    if not result["ok"]:
+        raise Invalid(f"{result['errorCount']} lỗi ở dự án {entry['slug']}",
+                      issues=result["errors"], warnings=result["warnings"], stats=result["stats"])
+    return result
+
+
+def cmd_schema(args):
+    if args.resource in (None, "list"):
+        return {"resources": sorted(schema_mod.RESOURCES),
+                "hint": "bds schema unit-type"}
+    return schema_mod.describe(args.resource)
+
+
+# ── parser ─────────────────────────────────────────────────────────────
+
+def build_parser() -> argparse.ArgumentParser:
+    ap = argparse.ArgumentParser(prog="bds", description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--data-root", help="Mặc định: tự dò workspace/data/ từ cwd (hoặc $BDS_DATA_ROOT)")
+    ap.add_argument("--compact", action="store_true", help="JSON 1 dòng (đỡ tốn token)")
+
+    # Cùng 2 cờ đó nhưng gắn vào từng lệnh con, để `bds project list --compact`
+    # chạy được y như `bds --compact project list`. SUPPRESS để khi không
+    # truyền ở lệnh con thì giá trị ở cấp trên không bị ghi đè bằng default.
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--data-root", default=argparse.SUPPRESS, help=argparse.SUPPRESS)
+    common.add_argument("--compact", action="store_true", default=argparse.SUPPRESS,
+                        help="JSON 1 dòng (đỡ tốn token)")
+
+    nouns = ap.add_subparsers(dest="noun", required=True)
+
+    class _Group:
+        """Bọc _SubParsersAction để mọi lệnh lá tự thừa hưởng `common`."""
+
+        def __init__(self, action):
+            self._action = action
+
+        def add_parser(self, name, **kw):
+            kw.setdefault("parents", [common])
+            return self._action.add_parser(name, **kw)
+
+    def group(name, help_text):
+        p = nouns.add_parser(name, help=help_text)
+        return _Group(p.add_subparsers(dest="verb", required=True))
+
+    def leaf(name, help_text):
+        return nouns.add_parser(name, help=help_text, parents=[common])
+
+    def with_project(p, required=True):
+        p.add_argument("--project", required=required, help="slug / tên / alias dự án")
+        return p
+
+    def with_write(p):
+        p.add_argument("--json", help="JSON payload, '-' để đọc stdin")
+        p.add_argument("--file", help="Đọc JSON payload từ file")
+        p.add_argument("--dry-run", action="store_true", help="Chỉ báo sẽ ghi gì, không ghi thật")
+        return p
+
+    # project
+    pr = group("project", "dự án")
+    p = pr.add_parser("list", help="liệt kê dự án")
+    p.add_argument("--all-status", action="store_true", help="kể cả dự án không đang bán")
+    p.set_defaults(fn=cmd_project_list)
+    p = with_project(pr.add_parser("resolve", help="tên tự do → dự án"))
+    p.set_defaults(fn=cmd_project_resolve)
+    p = with_project(pr.add_parser("show", help="tổng quan dự án + tòa + typology + căn + ảnh"))
+    p.set_defaults(fn=cmd_project_show)
+    p = with_project(pr.add_parser("paths", help="đường dẫn các file dữ liệu"))
+    p.set_defaults(fn=cmd_project_paths)
+    p = with_write(pr.add_parser("create", help="tạo dự án mới + dựng khung thư mục"))
+    p.add_argument("--slug"), p.add_argument("--name"), p.add_argument("--dir")
+    p.set_defaults(fn=cmd_project_create)
+    p = with_write(with_project(pr.add_parser("update", help="patch entry trong registry")))
+    p.set_defaults(fn=cmd_project_update)
+    p = with_project(pr.add_parser("ingest", help="nạp tài liệu thô + build asset-catalog"))
+    p.add_argument("--src", help="Thư mục tài liệu nguồn (bỏ qua nếu chỉ muốn build lại catalog)")
+    p.add_argument("--no-catalog", action="store_true", help="Không build lại asset-catalog")
+    p.add_argument("--force-catalog", action="store_true",
+                   help="Build lại catalog từ đầu — XOÁ mô tả ảnh đã patch tay")
+    p.add_argument("--dry-run", action="store_true")
+    p.set_defaults(fn=cmd_project_ingest)
+
+    # tower
+    tw = group("tower", "tòa / phân khu")
+    p = with_project(tw.add_parser("list"))
+    p.add_argument("--with-floors", action="store_true", help="kèm danh sách tầng đã giải mã")
+    p.set_defaults(fn=cmd_tower_list)
+    p = with_project(tw.add_parser("show"))
+    p.add_argument("--tower", required=True)
+    p.set_defaults(fn=cmd_tower_show)
+    p = with_write(with_project(tw.add_parser("upsert", help="thêm/sửa tòa (array hoặc object)")))
+    p.set_defaults(fn=cmd_tower_upsert)
+
+    # unit-type
+    ut = group("unit-type", "typology căn hộ")
+    p = with_project(ut.add_parser("list"))
+    p.add_argument("--tower"), p.add_argument("--group", help=f"một trong {schema_mod.UNIT_GROUPS}")
+    p.set_defaults(fn=cmd_ut_list)
+    p = with_project(ut.add_parser("show"))
+    p.add_argument("--code", required=True)
+    p.set_defaults(fn=cmd_ut_show)
+    p = with_write(with_project(ut.add_parser("upsert")))
+    p.set_defaults(fn=cmd_ut_upsert)
+
+    # unit
+    un = group("unit", "căn hộ cụ thể")
+    p = with_project(un.add_parser("list"))
+    p.add_argument("--tower"), p.add_argument("--floors", help='vd "12-22" hoặc "5,10,15"')
+    p.add_argument("--type"), p.add_argument("--code")
+    p.add_argument("--status", help=f"một trong {schema_mod.UNIT_STATUSES}")
+    p.add_argument("--limit", type=int, default=200)
+    p.set_defaults(fn=cmd_unit_list)
+    p = with_project(un.add_parser("show", help="1 căn + typology + ảnh mặt bằng"))
+    p.add_argument("--tower", required=True), p.add_argument("--code", required=True)
+    p.add_argument("--floor", type=int)
+    p.set_defaults(fn=cmd_unit_show)
+    p = with_project(un.add_parser("generate", help="sinh căn từ towers × unit-types"))
+    p.add_argument("--tower", required=True), p.add_argument("--floors")
+    p.add_argument("--overwrite", action="store_true", help="ghi đè cả field người đã nhập")
+    p.add_argument("--dry-run", action="store_true")
+    p.set_defaults(fn=cmd_unit_generate)
+    p = with_write(with_project(un.add_parser("upsert")))
+    p.set_defaults(fn=cmd_unit_upsert)
+
+    # asset
+    asx = group("asset", "ảnh dự án (đọc asset-catalog.json)")
+    p = with_project(asx.add_parser("list"))
+    p.add_argument("--category"), p.add_argument("--limit", type=int)
+    p.add_argument("--starred", action="store_true")
+    p.add_argument("--needs-description", action="store_true")
+    p.set_defaults(fn=cmd_asset_list)
+
+    # validate / schema
+    p = with_project(leaf("validate", "lint toàn bộ dữ liệu dự án"))
+    p.add_argument("--full", action="store_true", help="Không gộp lỗi/warning trùng lặp")
+    p.set_defaults(fn=cmd_validate)
+    p = leaf("schema", "in JSON Schema của 1 resource")
+    p.add_argument("resource", nargs="?", help=f"một trong {sorted(schema_mod.RESOURCES)}")
+    p.set_defaults(fn=cmd_schema)
+
+    return ap
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    try:
+        emit(args.fn(args), compact=args.compact)
+    except BdsError as e:
+        json.dump(e.payload(), sys.stderr, ensure_ascii=False, indent=2)
+        print(file=sys.stderr)
+        sys.exit(e.exit_code)
+    except BrokenPipeError:
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

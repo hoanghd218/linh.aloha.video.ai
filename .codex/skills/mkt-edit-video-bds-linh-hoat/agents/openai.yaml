@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dựng video BĐS linh hoạt"
+  short_description: "Dựng TikTok BĐS từ footage hoặc phối cảnh"
+  default_prompt: "Dùng $mkt-edit-video-bds-linh-hoat để phân tích lời thoại, thu thập tư liệu và lập kế hoạch dựng video BĐS 9:16; nếu dự án đang xây chỉ có phối cảnh, hãy tạo B-roll ảnh động có nhãn minh họa liên tục."

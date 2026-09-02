@@ -1,0 +1,113 @@
+{
+  "format": "proof-first-9-16",
+  "duration_s": 60,
+  "project": "Dự án mẫu",
+  "segments": [
+    {
+      "id": "hook",
+      "start_s": 0,
+      "end_s": 4,
+      "role": "hook",
+      "spoken_text": "Điểm đáng xem nhất của căn này không nằm ở diện tích.",
+      "claim_scope": "none",
+      "primary_visual": {"source_kind": "heygen"}
+    },
+    {
+      "id": "proof-reveal",
+      "start_s": 4,
+      "end_s": 16,
+      "role": "proof",
+      "spoken_text": "Đây là không gian sinh hoạt thực tế của căn.",
+      "claim_scope": "project-specific",
+      "claim_source": "Biên bản media nội bộ 2026-08-18",
+      "primary_visual": {
+        "source_kind": "project-video",
+        "asset_id": "project-living-room",
+        "source_url": "https://example.com/project-living-room.mp4",
+        "illustrative": false
+      }
+    },
+    {
+      "id": "generic-layout",
+      "start_s": 16,
+      "end_s": 24,
+      "role": "proof",
+      "spoken_text": "Cách tổ chức không gian phù hợp gia đình trẻ.",
+      "claim_scope": "generic",
+      "primary_visual": {
+        "source_kind": "library-video",
+        "asset_id": "library-family-layout",
+        "source_url": "https://example.com/library-family-layout.mp4",
+        "illustrative": true,
+        "could_be_misread_as_project": true,
+        "disclosure_label": "TƯ LIỆU MINH HỌA"
+      }
+    },
+    {
+      "id": "bridge",
+      "start_s": 24,
+      "end_s": 27,
+      "role": "bridge",
+      "spoken_text": "Nhưng vị trí mới là phần cần kiểm tra kỹ.",
+      "claim_scope": "none",
+      "primary_visual": {"source_kind": "heygen"}
+    },
+    {
+      "id": "location-proof",
+      "start_s": 27,
+      "end_s": 40,
+      "role": "proof",
+      "spoken_text": "Lối vào và kết nối thực tế được thể hiện tại đây.",
+      "claim_scope": "project-specific",
+      "claim_source": "Video khảo sát vị trí 2026-08-18",
+      "primary_visual": {
+        "source_kind": "project-image",
+        "asset_id": "project-entrance",
+        "source_url": "https://example.com/project-entrance.jpg",
+        "illustrative": false,
+        "motion": "slow push-in"
+      }
+    },
+    {
+      "id": "lifestyle",
+      "start_s": 40,
+      "end_s": 46,
+      "role": "proof",
+      "spoken_text": "Nhịp sống phù hợp người thường xuyên di chuyển.",
+      "claim_scope": "generic",
+      "primary_visual": {
+        "source_kind": "pexels-video",
+        "asset_id": "pexels-commuter",
+        "source_url": "https://www.pexels.com/video/example",
+        "illustrative": true,
+        "could_be_misread_as_project": false
+      }
+    },
+    {
+      "id": "objection",
+      "start_s": 46,
+      "end_s": 53,
+      "role": "objection",
+      "spoken_text": "Đổi lại, phong cách này không dành cho người cần nhiều phòng kín.",
+      "claim_scope": "generic",
+      "primary_visual": {
+        "source_kind": "library-image",
+        "asset_id": "library-open-layout",
+        "source_url": "https://example.com/library-open-layout.jpg",
+        "illustrative": true,
+        "could_be_misread_as_project": true,
+        "disclosure_label": "TƯ LIỆU MINH HỌA",
+        "motion": "left-to-right pan"
+      }
+    },
+    {
+      "id": "cta",
+      "start_s": 53,
+      "end_s": 60,
+      "role": "cta",
+      "spoken_text": "Nhắn Linh để nhận video walkthrough và lịch xem căn.",
+      "claim_scope": "none",
+      "primary_visual": {"source_kind": "heygen"}
+    }
+  ]
+}

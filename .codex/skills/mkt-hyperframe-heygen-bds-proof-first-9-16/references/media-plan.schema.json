@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.codex/skills/mkt-hyperframe-heygen-bds-proof-first-9-16/media-plan.schema.json",
+  "title": "Proof-First BDS media plan",
+  "type": "object",
+  "required": ["format", "duration_s", "segments"],
+  "properties": {
+    "format": {"const": "proof-first-9-16"},
+    "duration_s": {"type": "number", "exclusiveMinimum": 0},
+    "project": {"type": "string"},
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "start_s", "end_s", "role", "spoken_text", "claim_scope", "primary_visual"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "start_s": {"type": "number", "minimum": 0},
+          "end_s": {"type": "number", "exclusiveMinimum": 0},
+          "role": {"enum": ["hook", "proof", "bridge", "objection", "cta"]},
+          "spoken_text": {"type": "string"},
+          "claim_scope": {"enum": ["project-specific", "location-specific", "generic", "none"]},
+          "claim_source": {"type": "string"},
+          "primary_visual": {
+            "type": "object",
+            "required": ["source_kind"],
+            "properties": {
+              "source_kind": {
+                "enum": ["heygen", "project-video", "project-image", "location-video", "library-video", "library-image", "render-image", "pexels-video", "map", "document", "text"]
+              },
+              "asset_id": {"type": "string"},
+              "asset_path": {"type": "string"},
+              "source_url": {"type": "string"},
+              "illustrative": {"type": "boolean"},
+              "could_be_misread_as_project": {"type": "boolean"},
+              "disclosure_label": {"type": "string"},
+              "crop": {"type": "string"},
+              "motion": {"type": "string"}
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

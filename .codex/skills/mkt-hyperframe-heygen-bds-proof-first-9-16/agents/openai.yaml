@@ -1,0 +1,4 @@
+interface:
+  display_name: "HeyGen BĐS Proof-First 9:16"
+  short_description: "HeyGen dẫn chuyện, media BĐS thật làm bằng chứng"
+  default_prompt: "Dùng $mkt-hyperframe-heygen-bds-proof-first-9-16 để tạo video BĐS 9:16 từ brief, kho video thật, kho ảnh thật và Pexels B-roll."

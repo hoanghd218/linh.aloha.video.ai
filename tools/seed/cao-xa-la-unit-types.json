@@ -1,0 +1,332 @@
+[
+  {
+    "code": "L1-STUDIO-1", "tower": "L1", "label": "Studio – Loại 1", "group": "studio",
+    "bedrooms": 0, "mrRooms": 0,
+    "dtTim": 31.9, "dtTtMin": 27.2, "dtTtMax": 27.9,
+    "unitCodes": ["CH-11", "CH-12"],
+    "features": ["1 không gian liền (giường + bếp + WC)", "1 logia"],
+    "corner": false, "signature": false,
+    "notes": "Căn nhỏ nhất tòa L1 và cả dự án. Phù hợp đầu tư cho thuê / người độc thân. Tòa L2 không có loại này.",
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+
+  {
+    "code": "L1-1BR-1", "tower": "L1", "label": "1BR – Loại 1", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 61.9, "dtTtMin": 56.0, "dtTtMax": 56.6,
+    "unitCodes": ["CH-16", "CH-18", "CH-19"],
+    "features": ["bố cục vuông vắn", "bếp + khách liền", "1 ngủ + 1 WC"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR-2", "tower": "L1", "label": "1BR – Loại 2", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 62.8, "dtTimMax": 63.6, "dtTtMin": 58.4, "dtTtMax": 59.2,
+    "unitCodes": ["CH-12", "CH-15", "CH-15A"],
+    "features": ["phòng khách rộng", "1 logia"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR-3", "tower": "L1", "label": "1BR – Loại 3", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 51.3, "dtTtMin": 46.4, "dtTtMax": 46.7,
+    "unitCodes": ["CH-11"],
+    "features": ["1BR nhỏ gọn nhất tòa"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR-4", "tower": "L1", "label": "1BR – Loại 4", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 58.6, "dtTtMin": 52.9, "dtTtMax": 53.5,
+    "unitCodes": ["CH-09"],
+    "features": ["bếp tách riêng", "1 ngủ"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR-5", "tower": "L1", "label": "1BR – Loại 5", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 59.8, "dtTtMin": 54.0, "dtTtMax": 54.6,
+    "unitCodes": ["CH-05"],
+    "features": ["phòng khách + bếp mở", "1 logia"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+
+  {
+    "code": "L1-1BR1MR-1", "tower": "L1", "label": "1BR+1MR – Loại 1", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 91.6, "dtTtMin": 82.7, "dtTtMax": 83.5,
+    "unitCodes": ["CH-18", "CH-20", "CH-21"],
+    "features": ["phòng khách lớn", "bếp riêng", "MR làm ngủ 2 / phòng làm việc"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR1MR-2", "tower": "L1", "label": "1BR+1MR – Loại 2", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 83.6, "dtTimMax": 84.5, "dtTtMin": 77.0, "dtTtMax": 77.9,
+    "unitCodes": ["CH-19", "CH-21", "CH-22"],
+    "features": ["bố cục gọn"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR1MR-3", "tower": "L1", "label": "1BR+1MR – Loại 3", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 85.7, "dtTtMin": 78.9, "dtTtMax": 79.2,
+    "unitCodes": ["CH-12", "CH-12A"],
+    "features": ["bếp + khách liền"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR1MR-4", "tower": "L1", "label": "1BR+1MR – Loại 4", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 90.1, "dtTimMax": 91.1, "dtTtMin": 83.7, "dtTtMax": 84.2,
+    "unitCodes": ["CH-08"],
+    "features": ["căn lớn trong nhóm 1BR+1MR"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR1MR-5", "tower": "L1", "label": "1BR+1MR – Loại 5", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 90.1, "dtTtMin": 80.9, "dtTtMax": 81.9,
+    "unitCodes": ["CH-12A", "CH-15A"],
+    "features": ["bố cục chữ L", "nhiều cửa sổ"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR1MR-6", "tower": "L1", "label": "1BR+1MR – Loại 6", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 91.8, "dtTtMin": 84.5, "dtTtMax": 84.9,
+    "unitCodes": ["CH-18A", "CH-19", "CH-20"],
+    "features": ["phòng khách + bếp mở"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-1BR1MR-7", "tower": "L1", "label": "1BR+1MR – Loại 7", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 94.0, "dtTtMin": 84.3, "dtTtMax": 85.5,
+    "unitCodes": ["CH-12A", "CH-15", "CH-16"],
+    "features": ["lớn nhất nhóm 1BR+1MR", "bố cục chữ L"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+
+  {
+    "code": "L1-2BR-1", "tower": "L1", "label": "2BR – Loại 1", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 91.9, "dtTtMin": 84.6, "dtTtMax": 85.1,
+    "unitCodes": ["CH-05A"],
+    "features": ["bố cục chữ L", "phòng khách + bếp liền"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-2BR-2", "tower": "L1", "label": "2BR – Loại 2", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 82.4, "dtTimMax": 83.3, "dtTtMin": 76.2, "dtTtMax": 77.0,
+    "unitCodes": ["CH-02"],
+    "features": ["bếp riêng"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-2BR-3", "tower": "L1", "label": "2BR – Loại 3", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 95.8, "dtTtMin": 86.9, "dtTtMax": 87.9,
+    "unitCodes": ["CH-03"],
+    "features": ["2 ngủ rộng", "bố cục chữ L"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-2BR-4", "tower": "L1", "label": "2BR – Loại 4", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 94.2, "dtTtMin": 85.4, "dtTtMax": 86.2,
+    "unitCodes": ["CH-10"],
+    "features": ["phòng khách lớn"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-2BR-5", "tower": "L1", "label": "2BR – Loại 5", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 83.2, "dtTtMin": 76.0, "dtTtMax": 76.0,
+    "unitCodes": ["CH-11"],
+    "features": ["bố cục gọn vuông"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+
+  {
+    "code": "L1-2BR1MR-1", "tower": "L1", "label": "2BR+1MR – Loại 1", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 110.7, "dtTtMin": 99.8, "dtTtMax": 101.1,
+    "unitCodes": ["CH-01"],
+    "features": ["căn góc", "ban công bo tròn ở mũi tòa", "view 2–3 hướng"],
+    "corner": true, "signature": true,
+    "notes": "Căn signature của tòa L1 — điểm nhấn kiến trúc, dùng làm hook mở đầu video.",
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-2BR1MR-2", "tower": "L1", "label": "2BR+1MR – Loại 2", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 125.4, "dtTtMin": 113.3, "dtTtMax": 115.4,
+    "unitCodes": ["CH-08A"],
+    "features": ["căn lớn", "bố cục rộng rãi"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-2BR1MR-3", "tower": "L1", "label": "2BR+1MR – Loại 3", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 131.3, "dtTtMin": 119.5, "dtTtMax": 120.5,
+    "unitCodes": ["CH-16", "CH-18A"],
+    "features": ["lớn nhất nhóm 2BR+1MR", "phòng khách + bếp liền thông"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+
+  {
+    "code": "L1-3BR1MR-1", "tower": "L1", "label": "3BR+1MR – Loại 1", "group": "3br+1mr",
+    "bedrooms": 3, "mrRooms": 1, "dtTim": 152.3, "dtTimMax": 152.7, "dtTtMin": 141.7, "dtTtMax": 142.4,
+    "unitCodes": ["CH-20", "CH-22", "CH-23"],
+    "features": ["căn góc bo cong đặc biệt", "ban công cong panorama", "view rộng nhất tòa"],
+    "corner": true, "signature": true,
+    "notes": "Căn lớn nhất và đắt giá nhất tòa L1 — dòng sản phẩm premium.",
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-3BR1MR-2", "tower": "L1", "label": "3BR+1MR – Loại 2", "group": "3br+1mr",
+    "bedrooms": 3, "mrRooms": 1, "dtTim": 143.1, "dtTtMin": 130.6, "dtTtMax": 132.7,
+    "unitCodes": ["CH-06"],
+    "features": ["phòng khách lớn", "nằm cuối cánh nhà → ít căn liền kề, riêng tư"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+  {
+    "code": "L1-3BR1MR-3", "tower": "L1", "label": "3BR+1MR – Loại 3", "group": "3br+1mr",
+    "bedrooms": 3, "mrRooms": 1, "dtTim": 150.2, "dtTtMin": 136.8, "dtTtMax": 138.3,
+    "unitCodes": ["CH-15", "CH-18", "CH-18A"],
+    "features": ["bố cục chữ nhật dài", "nhiều mặt thoáng"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l1"
+  },
+
+  {
+    "code": "L2-1BR-1", "tower": "L2", "label": "1BR – Loại 1", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 56.2, "dtTimMax": 57.0, "dtTtMin": 51.2, "dtTtMax": 52.0,
+    "unitCodes": ["CH-12"],
+    "features": ["bếp riêng", "phòng khách vuông"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-1BR-2", "tower": "L2", "label": "1BR – Loại 2", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 53.1, "dtTimMax": 53.2, "dtTtMin": 48.4, "dtTtMax": 48.5,
+    "unitCodes": ["CH-18A", "CH-21", "CH-25"],
+    "features": ["1 ngủ gọn"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-1BR-3", "tower": "L2", "label": "1BR – Loại 3", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 52.9, "dtTtMin": 47.6, "dtTtMax": 48.2,
+    "unitCodes": ["CH-18", "CH-19", "CH-22", "CH-23"],
+    "features": ["bố cục mở bếp – khách"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-1BR-4", "tower": "L2", "label": "1BR – Loại 4", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 50.8, "dtTimMax": 51.7, "dtTtMin": 46.0, "dtTtMax": 47.0,
+    "unitCodes": ["CH-24"],
+    "features": ["căn nhỏ nhất tòa L2"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-1BR-5", "tower": "L2", "label": "1BR – Loại 5", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 52.1, "dtTimMax": 53.0, "dtTtMin": 47.6, "dtTtMax": 48.0,
+    "unitCodes": ["CH-05", "CH-06", "CH-08A"],
+    "features": ["bếp + khách liền"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-1BR-6", "tower": "L2", "label": "1BR – Loại 6", "group": "1br",
+    "bedrooms": 1, "mrRooms": 0, "dtTim": 54.4, "dtTtMin": 49.2, "dtTtMax": 49.6,
+    "unitCodes": ["CH-02"],
+    "features": ["phòng khách rộng hơn các 1BR khác"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+
+  {
+    "code": "L2-1BR1MR-1", "tower": "L2", "label": "1BR+1MR – Loại 1", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 73.5, "dtTtMin": 66.8, "dtTtMax": 67.4,
+    "unitCodes": ["CH-20"],
+    "features": ["bếp + khách mở"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-1BR1MR-2", "tower": "L2", "label": "1BR+1MR – Loại 2", "group": "1br+1mr",
+    "bedrooms": 1, "mrRooms": 1, "dtTim": 81.9, "dtTimMax": 82.8, "dtTtMin": 75.4, "dtTtMax": 76.3,
+    "unitCodes": ["CH-11"],
+    "features": ["MR rộng", "nhiều mặt thoáng"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+
+  {
+    "code": "L2-2BR-1", "tower": "L2", "label": "2BR – Loại 1", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 85.8, "dtTimMax": 86.5, "dtTtMin": 78.6, "dtTtMax": 79.6,
+    "unitCodes": ["CH-18", "CH-18A", "CH-19"],
+    "features": ["phòng khách + bếp liền"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-2BR-2", "tower": "L2", "label": "2BR – Loại 2", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 85.7, "dtTtMin": 78.5, "dtTtMax": 79.3,
+    "unitCodes": ["CH-03"],
+    "features": ["bố cục chữ L"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-2BR-3", "tower": "L2", "label": "2BR – Loại 3", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 81.7, "dtTtMin": 74.7, "dtTtMax": 75.3,
+    "unitCodes": ["CH-16"],
+    "features": ["2 ngủ gọn"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-2BR-4", "tower": "L2", "label": "2BR – Loại 4", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 81.1, "dtTtMin": 74.4, "dtTtMax": 75.1,
+    "unitCodes": ["CH-05A"],
+    "features": ["bố cục chữ L"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-2BR-5", "tower": "L2", "label": "2BR – Loại 5", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 84.5, "dtTtMin": 76.2, "dtTtMax": 77.6,
+    "unitCodes": ["CH-12A"],
+    "features": ["bếp riêng"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-2BR-6", "tower": "L2", "label": "2BR – Loại 6", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 82.6, "dtTtMin": 75.5, "dtTtMax": 75.9,
+    "unitCodes": ["CH-10"],
+    "features": ["phòng khách lớn"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+  {
+    "code": "L2-2BR-7", "tower": "L2", "label": "2BR – Loại 7", "group": "2br",
+    "bedrooms": 2, "mrRooms": 0, "dtTim": 90.1, "dtTimMax": 91.0, "dtTtMin": 82.9, "dtTtMax": 83.8,
+    "unitCodes": ["CH-09"],
+    "features": ["lớn nhất nhóm 2BR thường"],
+    "sourceRef": "_phan-tich/mat-bang-can-ho.md#toa-l2"
+  },
+
+  {
+    "code": "L2-2BR1MR-1", "tower": "L2", "label": "2BR+1MR – Loại 1", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 111.7, "dtTtMin": 101.2, "dtTtMax": 102.3,
+    "unitCodes": ["CH-15"],
+    "features": ["phòng khách + bếp liền lớn", "nằm cuối thanh ngang → ít chung vách"],
+    "sourceRef": "_kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  },
+  {
+    "code": "L2-2BR1MR-2", "tower": "L2", "label": "2BR+1MR – Loại 2", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 116.9, "dtTtMin": 105.1, "dtTtMax": 107.2,
+    "unitCodes": ["CH-18", "CH-22", "CH-26"],
+    "features": ["rộng", "nhiều mặt thoáng", "CH-26 nằm đầu cánh đứng"],
+    "notes": "Nguồn _phan-tich/mat-bang-can-ho.md liệt kê dòng này 2 lần (một ở 2BR+1MR, một ở 3BR+1MR) và tự ghi chú 'xác nhận lại theo HĐMB'. Theo note kiến thức 08 (đã verify từng trang PDF 2026-05-21) thì đây là 2BR+1MR. Cần đối chiếu HĐMB trước khi lên số trong video.",
+    "sourceRef": "_kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  },
+  {
+    "code": "L2-2BR1MR-3", "tower": "L2", "label": "2BR+1MR – Loại 3", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 105.1, "dtTtMin": 96.5, "dtTtMax": 97.8,
+    "unitCodes": ["CH-08"],
+    "features": ["bố cục vuông", "phòng khách + bếp liền"],
+    "sourceRef": "_kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  },
+  {
+    "code": "L2-2BR1MR-4", "tower": "L2", "label": "2BR+1MR – Loại 4", "group": "2br+1mr",
+    "bedrooms": 2, "mrRooms": 1, "dtTim": 105.4, "dtTimMax": 106.4, "dtTtMin": 96.5, "dtTtMax": 97.8,
+    "unitCodes": ["CH-01"],
+    "features": ["căn góc đầu hành lang", "view 2 hướng", "ít chung vách → riêng tư"],
+    "corner": true, "signature": true,
+    "notes": "Căn góc signature của tòa L2.",
+    "sourceRef": "_kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  },
+
+  {
+    "code": "L2-3BR1MR-1", "tower": "L2", "label": "3BR+1MR – Loại 1", "group": "3br+1mr",
+    "bedrooms": 3, "mrRooms": 1, "dtTim": 137.0, "dtTtMin": 125.9, "dtTtMax": 127.5,
+    "unitCodes": ["CH-15A"],
+    "features": ["căn lớn nhất tòa L2", "bố cục rộng rãi", "bếp riêng"],
+    "signature": true,
+    "notes": "Typology 3BR+1MR DUY NHẤT của tòa L2 theo note kiến thức 08.",
+    "sourceRef": "_kien-thuc-du-an/08 - Sản phẩm căn hộ và Mặt bằng L1 L2.md"
+  }
+]

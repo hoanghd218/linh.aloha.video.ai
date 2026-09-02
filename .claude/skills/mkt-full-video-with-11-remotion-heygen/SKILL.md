@@ -223,7 +223,7 @@ prompt: |
 1. **2 checkpoints, 1 orchestrator gate** — Orchestrator stop ở MP3. Outline checkpoint do Phase 3 quản. Render gate ở Studio.
 2. **Path conventions inviolable** — `voiceover.mp3`, `source.mp4`, `overlays.json`, `caption-groups.json`. Template fetches by exact name via `staticFile()`.
 3. **Files at root of `public/`** — NOT in `public/assets/`. Root.tsx fetches `overlays-general.json` (BdsGeneralReview composition) or `overlays-apartment.json` (BdsApartmentDetail). `init_project.sh` is template-aware — writes the workspace's `overlays.json` to BOTH `public/overlays.json` and the matched template name. See [lessons-learned.md § 6](references/lessons-learned.md).
-4. **HeyGen MCP only** — không curl `api.heygen.com`.
+4. **HeyGen: MCP cho create/poll, REST v3 cho upload** — `mcp__heygen__create_video_from_avatar` + `mcp__heygen__get_video`; upload MP3 qua `scripts/upload_asset.py` (`POST /v3/assets`). KHÔNG gọi endpoint v1/v2 (`/v2/video/generate`, `upload.heygen.com/v1/asset`) — sunset 2026-10-31.
 5. **Voice ID trong `.env`** — override per-call qua `--voice_id`.
 6. **Script length hard cap 5000** — fail fast Step 0.
 7. **MP3 duration ≤ 300s** — HeyGen cap.

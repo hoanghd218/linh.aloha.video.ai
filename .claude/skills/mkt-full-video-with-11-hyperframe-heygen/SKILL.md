@@ -154,8 +154,10 @@ prompt: |
   - mp3: workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
   - output: workspace/content/YYYY-MM-DD/<slug>/source.mp4
 
-  Theo skill: pick avatar từ HEYGEN_AVATAR_LOOKS, upload MP3 via HeyGen MCP,
-  generate lip-sync 9:16 720×1280, poll ≤ 10 min, download to source.mp4.
+  Theo skill: pick avatar từ HEYGEN_AVATAR_LOOKS, upload MP3 qua REST helper
+  `scripts/upload_asset.py` (POST /v3/assets — MCP không còn upload tool), tạo lip-sync
+  qua `mcp__heygen__create_video_from_avatar` 9:16 720p, poll `mcp__heygen__get_video`
+  ≤ 10 min, download to source.mp4.
   Filename `source.mp4` inviolable. Return khi file tồn tại trên disk.
 ```
 
@@ -205,7 +207,7 @@ Mở browser scrub timeline. Nói `render` khi OK → MP4 1080×1920 30fps.
 
 1. **2 checkpoints, 1 orchestrator gate** — Orchestrator stop ở MP3 only. Overlays-outline checkpoint do Phase 3 quản. Render gate ở Studio do user.
 2. **Path conventions inviolable** — `voiceover.mp3`, `source.mp4`. HF expect đúng tên.
-3. **HeyGen MCP only** — không curl `https://api.heygen.com/`.
+3. **HeyGen: MCP cho create/poll, REST v3 cho upload** — `mcp__heygen__create_video_from_avatar` + `mcp__heygen__get_video`; upload MP3 qua `scripts/upload_asset.py` (`POST /v3/assets`). KHÔNG gọi endpoint v1/v2 (`/v2/video/generate`, `upload.heygen.com/v1/asset`) — sunset 2026-10-31.
 4. **Voice ID trong `.env`, không hard-code.** Override per-call qua `--voice_id`.
 5. **Script length hard cap 5000** — fail fast Step 0.
 6. **MP3 duration ≤ 300s** — HeyGen single-video cap.

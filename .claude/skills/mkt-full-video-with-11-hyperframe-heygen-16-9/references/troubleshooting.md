@@ -59,7 +59,7 @@ Nếu `infographic_mode=now`, image gen phải chạy TRƯỚC `lint_and_preview
 
 KHÔNG bao giờ render landscape. Layout 16:9 này ép avatar frame portrait-ish (540×880 SPLIT, 320×420 PIP), cả 2 đều closer to portrait. Render 1280×720 landscape → avatar có 2 dải đen 2 bên ráp vào landscape, hoặc face quá nhỏ trong frame.
 
-→ Phase 2 MCP call PHẢI là `dimension: { width: 720, height: 1280 }`.
+→ Phase 2 MCP call PHẢI là `aspectRatio: "9:16"` + `resolution: "720p"` (→ 720×1280). Schema `dimension: {width, height}` là bản MCP cũ, đã bỏ.
 
 ### Avatar `object-position` sai
 

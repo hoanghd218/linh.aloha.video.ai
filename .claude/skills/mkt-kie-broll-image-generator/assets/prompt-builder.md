@@ -18,25 +18,25 @@ avoid: text overlays, watermarks, AI artifacts, distorted hands, oversaturated c
 
 ## Provider-specific notes
 
-- **Nano Banana 2** — strong for photorealistic warm editorial, fine with multilingual prompts. Default for Thu / GEIN. Output format = `png`.
-- **GPT Image 2** — better when prompt explicitly needs text rendered into the image (typography overlays, signage, book covers with title). Smaller aspect-ratio enum set.
+- **Nano Banana 2** — strong for photorealistic warm editorial, fine with multilingual prompts. Default for Linh Aloha BĐS. Output format = `png`.
+- **GPT Image 2** — better when prompt explicitly needs text rendered into the image (typography overlays, signage, brochures with title). Smaller aspect-ratio enum set.
 
 ## Examples
 
-### Example 1 — Thu / GEIN family scene
+### Example 1 — Căn hộ cao cấp phòng khách & ban công
 ```
-SCENE: Người mẹ Việt Nam khoảng 50 tuổi, cong lưng nhặt rau bên bếp gas, ánh nắng chiều xuyên qua cửa sổ chiếu lên vai. Close-up từ phía sau, lấy nét vào bàn tay mẹ.
+SCENE: Phòng khách căn hộ hạng sang với cửa kính kịch trần nhìn ra công viên cây xanh và hồ nước nội khu, ánh sáng ban ngày tự nhiên tràn ngập, sofa bọc vải nỉ cao cấp màu kem, bàn trà mặt đá marble. Wide angle, kiến trúc hiện đại tinh tế.
 
-STYLE: <appended from profiles/thu-gein/style.md>
+STYLE: <appended from profiles/linh-aloha/style.md>
 
 avoid: text overlays, watermarks, AI artifacts, distorted hands, oversaturated colors.
 ```
 
-### Example 2 — Brand book callout
+### Example 2 — Bàn giao nội thất & chi tiết kiến trúc
 ```
-SCENE: Quyển sách bìa cứng tựa "Hành trình khắc tên mình lên đá" đặt trên bàn gỗ, cạnh tách trà ấm, ánh nắng nghiêng. Bố cục tĩnh vật.
+SCENE: Cận cảnh góc bếp sang trọng với đảo bếp mặt đá tự nhiên cao cấp, vòi rửa đồng màu champagne gold, tủ rượu vang âm tường ánh đèn ấm, phong cách tối giản thanh lịch. Bố cục tĩnh vật kiến trúc.
 
-STYLE: <appended from profile>
+STYLE: <appended from profiles/linh-aloha/style.md>
 
 avoid: text overlays, watermarks, AI artifacts.
 ```

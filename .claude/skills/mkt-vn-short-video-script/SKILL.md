@@ -1,6 +1,6 @@
 ---
 name: mkt-vn-short-video-script
-description: Sinh kịch bản video ngắn tiếng Việt (60–120s, TikTok/Reels/YouTube Shorts/Facebook Reels) theo BRAND VOICE riêng của từng profile. Skill brand-agnostic — voice + công thức kịch bản + chủ đề + brief template nằm trong `profiles/<name>/` (KHÔNG hard-code trong SKILL.md). Available profiles hiện có **`thu-gein`** (Thu — Chuyên gia Lifecoach GEIN Academy, tác giả "Hành trình khắc tên mình lên đá", giọng từ tâm tự xưng "Thu" ngôi thứ ba, 7 công thức kịch bản gia đình/nuôi dạy con/báo hiếu/inner child) — thêm profile mới bằng cách tạo `profiles/<name>/` với 4 file (`brand-voice.md` + `script-formulas.md` + `topic-pool.md` + `brief-template.md`) theo cấu trúc thu-gein. Param: `--profile <name>` (mặc định hỏi user nếu có nhiều profile, chọn duy nhất nếu chỉ có 1) + `--tts <elevenlabs|minimax>` (lưu vào metadata footer của `brief.md` để pipeline downstream biết gọi TTS skill nào không cần hỏi lại). Output 2 file: `script.txt` thuần TTS-clean + `brief.md` có 3 hook thay thế + beats + chữ on-screen + b-roll + checklist + YAML metadata footer. USE WHEN user nói 'viết kịch bản video ngắn', 'viết script video', 'tạo kịch bản TikTok', 'kịch bản Reels', 'tạo script Shorts', 'viết video Facebook Reels', 'viết kịch bản 60s', 'viết kịch bản 90s', 'tạo script 1 phút', 'viết kịch bản cho Thu', 'script Thu', 'script Thu GEIN', 'video lifecoach Thu', 'kịch bản dạy con Thu', 'viết video gia đình GEIN Academy', 'video báo hiếu Thu', 'kịch bản chữa lành Thu', 'content Thu GEIN', 'viết video cha mẹ con cái' — hoặc bất cứ khi nào user nhắc tên 1 profile có trong `profiles/`.
+description: Sinh kịch bản video ngắn tiếng Việt (60–120s, TikTok/Reels/YouTube Shorts/Facebook Reels) theo BRAND VOICE riêng của từng profile. Skill brand-agnostic — voice + công thức kịch bản + chủ đề + brief template nằm trong `profiles/<name>/` (KHÔNG hard-code trong SKILL.md). Available profiles hiện có **`linh-aloha`** (Linh Aloha — Chuyên gia BĐS Hàng Hiệu, ấm áp, thẳng thắn, xưng em gọi anh chị, 10 format kịch bản BĐS/phân tích dự án/tài chính/mặt bằng/so sánh thị trường) — thêm profile mới bằng cách tạo `profiles/<name>/` với 4 file (`brand-voice.md` + `script-formulas.md` + `topic-pool.md` + `brief-template.md`). Param: `--profile <name>` (mặc định hỏi user nếu có nhiều profile, chọn duy nhất nếu chỉ có 1) + `--tts <elevenlabs|minimax>` (lưu vào metadata footer của `brief.md` để pipeline downstream biết gọi TTS skill nào không cần hỏi lại). Output 2 file: `script.txt` thuần TTS-clean + `brief.md` có 3 hook thay thế + beats + chữ on-screen + b-roll + checklist + YAML metadata footer. USE WHEN user nói 'viết kịch bản video ngắn', 'viết script video', 'tạo kịch bản TikTok', 'kịch bản Reels', 'tạo script Shorts', 'viết video Facebook Reels', 'viết kịch bản 60s', 'viết kịch bản 90s', 'tạo script 1 phút', 'viết kịch bản cho Linh Aloha', 'script Linh Aloha', 'kịch bản BĐS Linh Aloha', 'video bất động sản' — hoặc bất cứ khi nào user nhắc tên 1 profile có trong `profiles/`.
 ---
 
 # Kịch bản video ngắn Việt Nam — brand-agnostic, profile-driven
@@ -15,7 +15,7 @@ Hiện tại có:
 
 | Profile | Brand voice | Phù hợp chủ đề |
 |---|---|---|
-| `thu-gein` | Thu — Chuyên gia Lifecoach GEIN Academy, tác giả "Hành trình khắc tên mình lên đá". Giọng từ tâm + ấm áp + không phán xét, tự xưng "Thu" ngôi thứ ba, gọi "cha mẹ / bậc phụ huynh / chúng ta / bạn", 7 công thức kịch bản chắt lọc từ 3 video gốc | Gia đình / nuôi dạy con / báo hiếu / chữa lành đứa trẻ bên trong / tâm lý phụ nữ / mối quan hệ vợ chồng |
+| `linh-aloha` | Linh Aloha — Chuyên gia BĐS Hàng Hiệu ("Sang trong sản phẩm — Ấm trong giọng nói"). Ấm áp, thẳng thắn, sắc bén về con số, xưng "em" gọi "anh chị", 10 format kịch bản BĐS chuẩn chỉnh | Bất động sản / Review dự án / Phân tích tài chính & dòng tiền / So sánh thị trường / Phân tích mặt bằng / Kinh nghiệm mua nhà |
 
 Để xem profile có sẵn ở thời điểm chạy:
 
@@ -37,12 +37,12 @@ Ghi 2 file vào `output/<profile>/scripts/<topic-slug>/`:
 Trước khi viết, hỏi user 2 thông tin:
 
 1. **Profile** (`--profile <name>`):
-   - Nếu user đã nói tên profile trong câu yêu cầu (vd "viết script Thu" → `thu-gein`) → dùng luôn, không hỏi lại.
+   - Nếu user đã nói tên profile trong câu yêu cầu (vd "viết script Linh Aloha" → `linh-aloha`) → dùng luôn, không hỏi lại.
    - Nếu user không nói VÀ chỉ có 1 profile trong `profiles/` → dùng profile đó, báo lại 1 dòng "Đang dùng profile `<name>`".
    - Nếu user không nói VÀ có nhiều profile → hỏi 1 câu liệt kê các profile có sẵn (đọc từ `ls profiles/`), ngắn gọn, không dồn.
 
 2. **TTS provider** (`--tts <elevenlabs|minimax>`):
-   - Default suggest theo profile (xem `profiles/<name>/brand-voice.md` — nhiều profile có note "voice mặc định: minimax/elevenlabs"). VD: `thu-gein` mặc định `minimax` (Thu dùng giọng MiniMax `moss_audio_*` của riêng Thu); profile khác có thể mặc định `elevenlabs`.
+   - Default suggest theo profile (xem `profiles/<name>/brand-voice.md` — nhiều profile có note "voice mặc định: minimax/elevenlabs"). VD: `linh-aloha` mặc định `elevenlabs`; profile khác có thể mặc định `minimax`.
    - Nếu user không nói + profile không có note → hỏi user "Phase TTS sau dùng ElevenLabs hay MiniMax?" (1 câu, default value rõ ràng).
    - Hợp lệ: `elevenlabs` hoặc `minimax`. Khác → reject.
 
@@ -76,7 +76,7 @@ Bám **đúng chuỗi beat** của công thức đã chọn trong `profiles/<cho
 Quy tắc chung (chi tiết hơn nằm trong `brand-voice.md` của từng profile — đây là tầng giao thoa):
 
 - **Hook chạm trong 3s đầu.** Vào thẳng nỗi đau / câu hỏi / khẳng định. KHÔNG mở "Xin chào", KHÔNG tự giới thiệu danh xưng (cài vào beat 2-3 sau khi đã hook xong).
-- **Tự xưng theo profile.** `brand-voice.md` của mỗi profile khai báo cách tự xưng (vd `thu-gein` → "Thu" ngôi thứ ba; profile broker BĐS → "em" + tên). KHÔNG đổi xưng hô tự ý.
+- **Tự xưng theo profile.** `brand-voice.md` của mỗi profile khai báo cách tự xưng (vd `linh-aloha` → luôn có "em", "em Linh", "em Linh Aloha", gọi "anh chị"). KHÔNG đổi xưng hô tự ý.
 - **Gọi khán giả theo profile.** Tương tự — `brand-voice.md` định nghĩa rõ.
 - **Vũ khí ngôn ngữ đặc trưng** (anaphora / câu kép đối lập / imagery cụ thể / forward consequence / brand maxim / action count): theo định nghĩa trong `brand-voice.md` + `script-formulas.md` của profile. Mỗi profile có bộ vũ khí riêng — đừng port pattern của profile này sang profile khác.
 - **CTA theo profile.** Mỗi profile có pattern CTA riêng (mềm / cứng / có hotline / không hotline). Bám đúng pattern khai báo trong `brand-voice.md`.
@@ -107,7 +107,7 @@ Thư mục output: `output/<profile>/scripts/<topic-slug>/`
 
 ### Bước 5 — Tự kiểm trước khi giao
 
-Đối chiếu checklist trong `brief-template.md` của profile (mỗi profile có checklist riêng — ví dụ `thu-gein` check "tự xưng Thu", "có brand maxim trước CTA", "không từ phán xét"). Đọc to `script.txt` 1 lần — nghe có giống đúng người dẫn của profile đang nói không. Sai giọng = viết lại.
+Đối chiếu checklist trong `brief-template.md` của profile (mỗi profile có checklist riêng — ví dụ `linh-aloha` check "tự xưng có chữ em", "tên dự án gắn mỏ neo Masterise Cao Xà Lá", "không nói trống không", "liệt kê đếm 1 là 2 là"). Đọc to `script.txt` 1 lần — nghe có giống đúng người dẫn của profile đang nói không. Sai giọng = viết lại.
 
 Báo lại user: profile + công thức + thời lượng ước tính + đường dẫn 2 file + TTS provider đã ghi trong metadata footer + tên pipeline downstream phù hợp.
 
@@ -117,25 +117,25 @@ Cuối `brief.md` PHẢI có YAML metadata block (template tham chiếu: `assets
 
 ```markdown
 ---
-tts_provider: minimax       # hoặc "elevenlabs"
-profile: thu-gein           # tên profile đã dùng
+tts_provider: elevenlabs       # hoặc "minimax"
+profile: linh-aloha           # tên profile đã dùng
 ---
 ```
 
-Pipeline orchestrator downstream (vd `mkt-full-video-thu-life-coach-9-16`, `mkt-full-video-with-11-hyperframe-heygen`) đọc block này để biết:
+Pipeline orchestrator downstream (vd `mkt-full-video-with-11-remotion-heygen`, `mkt-full-video-with-11-hyperframe-heygen`) đọc block này để biết:
 - Gọi TTS skill nào ở Phase 1 (`mkt-elevenlabs-tts-to-mp3` nếu `elevenlabs`, `mkt-video-script-to-mp3` nếu `minimax`)
-- Brand voice nào để apply aesthetic override ở Phase 3 (vd `thu-gein` → aesthetic `thu_life_coach`; profile khác → aesthetic broker / luxury / etc.)
+- Brand voice nào để apply aesthetic override ở Phase 3 (vd `linh-aloha` → aesthetic broker luxury; profile khác → etc.)
 
 → Sau khi sinh `script.txt` xong, user (hoặc orchestrator) **KHÔNG cần hỏi lại** TTS provider — đọc thẳng từ footer.
 
 ## Adding a new profile
 
-Để thêm 1 brand voice mới (vd `linh-aloha`, `hoang-broker`, `gein-male-coach`):
+Để thêm 1 brand voice mới:
 
 1. Tạo thư mục `profiles/<new-name>/`
-2. Copy cấu trúc 4 file từ `profiles/thu-gein/` làm template:
+2. Copy cấu trúc 4 file từ `profiles/linh-aloha/` làm template:
    ```bash
-   cp -r .claude/skills/mkt-vn-short-video-script/profiles/thu-gein \
+   cp -r .claude/skills/mkt-vn-short-video-script/profiles/linh-aloha \
          .claude/skills/mkt-vn-short-video-script/profiles/<new-name>
    ```
 3. Rewrite 4 file cho brand mới:
@@ -156,8 +156,8 @@ KHÔNG cần sửa SKILL.md mỗi lần thêm profile — skill tự đọc thư
 | User chỉ định profile không tồn tại | STOP. Báo: "Không tìm thấy profile `<name>` trong `profiles/`. Profile có sẵn: <list>." Đề xuất tạo mới theo [Adding a new profile](#adding-a-new-profile) |
 | Profile thiếu 1 trong 4 file bắt buộc | STOP. Báo: "Profile `<name>` thiếu `<file>`. Profile phải có đủ 4 file: brand-voice.md / script-formulas.md / topic-pool.md / brief-template.md." |
 | `--tts` không phải `elevenlabs` hoặc `minimax` | STOP. Báo: "TTS provider không hợp lệ. Chọn `elevenlabs` hoặc `minimax`." |
-| Script user yêu cầu sai brand voice (vd dùng "tôi" trong khi profile thu-gein bắt "Thu") | Cảnh báo + đề xuất sửa — nhưng vẫn xuất, ghi note trong `brief.md` "Cảnh báo brand voice: ..." |
-| Chủ đề user đưa không phù hợp profile (vd chủ đề bán BĐS đưa profile thu-gein lifecoach) | Cảnh báo + đề xuất chuyển profile khác hoặc reframe chủ đề. Không tự viết lệch giọng |
+| Script user yêu cầu sai brand voice (vd tự xưng "Linh" thiếu "em" trong khi profile linh-aloha bắt luôn có "em") | Cảnh báo + đề xuất sửa — nhưng vẫn xuất, ghi note trong `brief.md` "Cảnh báo brand voice: ..." |
+| Chủ đề user đưa không phù hợp profile (vd chủ đề tâm lý chữa lành đưa profile linh-aloha BĐS) | Cảnh báo + đề xuất chuyển profile khác hoặc reframe chủ đề. Không tự viết lệch giọng |
 | Script vượt 5000 ký tự (TTS cap) | Đề xuất user split semantic thành 2-3 segment, mỗi cái 1 script.txt riêng |
 | `output/<profile>/scripts/<slug>/` đã tồn tại | Hỏi user: overwrite hay tạo slug mới với suffix `-v2` |
 | Số tiếng chênh > 20% so với thời lượng mục tiêu | Tự cắt/giãn rồi báo user "Đã chỉnh từ X → Y tiếng để khớp Z giây" |
@@ -168,8 +168,7 @@ Sau khi có `script.txt` + `brief.md`, pipeline downstream đọc YAML footer đ
 
 | Profile | Pipeline 9:16 phù hợp | Pipeline 16:9 phù hợp |
 |---|---|---|
-| `thu-gein` | `/mkt-full-video-thu-life-coach-9-16` (đọc footer `tts_provider=minimax` → MiniMax TTS, aesthetic `thu_life_coach`) | — chưa có |
-| (profile khác) | `/mkt-full-video-with-11-hyperframe-heygen` hoặc `/mkt-full-video-with-11-remotion-heygen` (đọc footer TTS provider) | `/mkt-full-video-with-11-hyperframe-heygen-16-9` |
+| `linh-aloha` | `/mkt-full-video-with-11-remotion-heygen` hoặc `/mkt-full-video-with-11-hyperframe-heygen` | `/mkt-full-video-with-11-hyperframe-heygen-16-9` |
 
 Orchestrator pipeline KHÔNG hỏi lại TTS provider — đọc thẳng từ `tts_provider:` trong footer.
 
@@ -178,4 +177,4 @@ Orchestrator pipeline KHÔNG hỏi lại TTS provider — đọc thẳng từ `t
 - Skill này **brand-agnostic** — voice + công thức + chủ đề + checklist nằm trong `profiles/<name>/`. SKILL.md chỉ orchestrate flow, KHÔNG hard-code brand-specific rule.
 - Mỗi profile có ràng buộc voice riêng — đọc CẢ 4 file của profile trước khi viết, không viết theo trí nhớ.
 - TTS provider được lưu vào metadata footer của `brief.md` để pipeline downstream tự biết, KHÔNG hỏi lại user.
-- Khi user yêu cầu brand voice mới chưa có profile → đề xuất tạo profile mới theo cấu trúc thu-gein, KHÔNG ép giọng profile cũ.
+- Khi user yêu cầu brand voice mới chưa có profile → đề xuất tạo profile mới theo cấu trúc linh-aloha, KHÔNG ép giọng profile cũ.

@@ -1,458 +1,243 @@
-# BIZ.MKT.OS — Pipeline đóng gói sản phẩm số từ ý tưởng → khách hàng nhận email
+# Linh Aloha Video AI — Pipeline Sản Xuất Video BĐS Hàng Hiệu
 
-> **Một "agent" gồm 7 skill chuyên dụng**, chạy tuần tự để biến **1 ý tưởng sản phẩm** thành **1 sales funnel hoàn chỉnh** đang nhận lead thật: research thị trường → đóng gói offer → nâng cấp copy → build landing page Next.js → deploy live trên Vercel → cài AI chatbot tư vấn 24/7 → wire email auto-responder.
-
-Hệ thống được thiết kế cho **thị trường Việt Nam**: tiếng Việt thuần (xưng anh/chị), giá VND charm pricing, mobile-first traffic, voice Hoàng nếu có video.
+> **Hệ thống AI Agents & Skills chuyên sâu** sản xuất video ngắn (TikTok, Reels, Shorts) và video phân tích chuyên sâu (16:9) dành riêng cho thương hiệu **Linh Aloha** — Chuyên gia Bất Động Sản Hàng Hiệu.
+> Định vị thương hiệu: **"Sang trong sản phẩm — Ấm trong giọng nói"**.
 
 ---
 
 ## Mục lục
 
-- [Triết lý vận hành](#triết-lý-vận-hành)
-- [Sơ đồ pipeline](#sơ-đồ-pipeline)
-- [Naming convention output](#naming-convention-output)
-- [7 bước chi tiết](#7-bước-chi-tiết)
-  - [Bước 1 — Market Research](#bước-1--market-research-marketresearch)
-  - [Bước 2 — Đóng gói Offer](#bước-2--đóng-gói-offer-bizofferalexhormozi)
-  - [Bước 3 — Nâng cấp Copy](#bước-3--nâng-cấp-copy-bizsalespagecopy)
-  - [Bước 4 — Build Landing Page](#bước-4--build-landing-page-uiuxpromax)
-  - [Bước 5 — Cài Chatbot](#bước-5--cài-chatbot-biznextjschatbotopenrouter)
-  - [Bước 6 — Setup Email Auto-Responder](#bước-6--setup-email-auto-responder-bizemailsetup)
-  - [Bước 7 — Deploy Vercel](#bước-7--deploy-vercel-bizdeployvercel)
-- [Checklist Go-Live](#checklist-go-live)
-- [Skills đã bị deprecated](#skills-đã-bị-deprecated)
-- [FAQ vận hành](#faq-vận-hành)
+1. [Tổng quan & Triết lý vận hành](#tổng-quan--triết-lý-vận-hành)
+2. [Sơ đồ Pipeline End-to-End](#sơ-đồ-pipeline-end-to-end)
+3. [Danh mục Skills hiện có](#danh-mục-skills-hiện-có)
+4. [Hướng dẫn sử dụng chi tiết (Step-by-Step)](#hướng-dẫn-sử-dụng-chi-tiết-step-by-step)
+   - [Bước 1: Viết kịch bản chuẩn giọng Linh Aloha](#bước-1-viết-kịch-bản-chuẩn-giọng-linh-aloha)
+   - [Bước 2: Tạo giọng đọc AI (TTS)](#bước-2-tạo-giọng-đọc-ai-tts)
+   - [Bước 3: Tạo Avatar AI Lip-sync & Sinh ảnh B-roll](#bước-3-tạo-avatar-ai-lip-sync--sinh-ảnh-b-roll)
+   - [Bước 4: Dựng video hoàn chỉnh (Remotion / Hyperframe)](#bước-4-dựng-video-hoàn-chỉnh-remotion--hyperframe)
+5. [Cấu trúc thư mục & Kho dữ liệu](#cấu-trúc-thư-mục--kho-dữ-liệu)
+6. [Quy tắc Brand Voice Linh Aloha (Bắt buộc)](#quy-tắc-brand-voice-linh-aloha-bắt-buộc)
 
 ---
 
-## Triết lý vận hành
+## Tổng quan & Triết lý vận hành
 
-1. **Một skill một việc** — mỗi bước là 1 slash command đơn nhiệm, output của bước trước là input của bước sau. Không monolith.
-2. **Artifact-first** — mỗi bước ghi ra file có cấu trúc (`.md` để người đọc, `.json` để pipeline downstream parse). Không có file = bước chưa hoàn thành.
-3. **Checkpoint con người** — sau mỗi bước critical (offer, copy, landing page) **user duyệt trước** rồi mới chạy bước kế. Skill không auto-chain.
-4. **Resume an toàn** — pipeline có thể bắt đầu/dừng/tiếp ở bất kỳ bước nào miễn artifact đầu vào có đủ. Đã có `02-offer.json` → nhảy thẳng vào bước 3.
-5. **Mobile-first VN** — mọi landing page bắt buộc form đăng ký (tên/SĐT/email) + responsive web+tablet+mobile.
+1. **Brand-First (Chất riêng Linh Aloha):** Tự xưng luôn có *"em"* (`em`, `em Linh`, `em Linh Aloha`), gọi khách là *"anh chị"*. Giọng điềm tĩnh, ấm áp, thẳng thắn, đưa số liệu và dẫn chứng thực tế, không dùng chiêu trò hối thúc.
+2. **Một Skill Một Việc (Modular Architecture):** Mỗi bước trong quy trình là một skill độc lập, có input/output rõ ràng bằng file (`script.txt`, `brief.md`, `voiceover.mp3`, `source.mp4`, `manifest.json`).
+3. **Engine dựng video kép:**
+   - **Remotion (React):** Tùy biến đồ họa chuyển động phức tạp, bóc tách mặt bằng, bảng giá, biểu đồ tài chính.
+   - **Hyperframe (HTML/GSAP):** Render siêu tốc, responsive, linh hoạt cho video talking-head và infographic.
+4. **Human-in-the-loop (Kiểm duyệt từng chặng):** Luôn có checkpoint sau bước kịch bản và audio trước khi render video cuối.
 
 ---
 
-## Sơ đồ pipeline
+## Sơ đồ Pipeline End-to-End
 
 ```mermaid
 flowchart TD
-    Start([Ý tưởng sản phẩm]) --> S1
+    Idea([Chủ đề / Dữ liệu dự án<br/>The Bloom Masterise Cao Xà Lá]) --> S1
 
-    S1["🔍 1. /market-research<br/>Niche validation<br/>≥3 source triangulate"]
-    S1 --> A1[("01-niche-research-report.md<br/>Niche Score /100")]
-    A1 -->|"Go ≥ 65"| S2
-    A1 -.->|"No-Go < 50"| Stop([Đổi niche])
+    subgraph Phase1 [1. Kịch bản]
+        S1["✍️ mkt-linh-aloha-bds-video-script<br/>(10 format kịch bản BĐS)"]
+        S1 --> A1["script.txt (thoại thuần)<br/>brief.md (beats + broll gợi ý)"]
+    end
 
-    S2["📦 2. /biz-offer-alex-hormozi<br/>Grand Slam Offer<br/>Value Equation + 3-4 Bonus"]
-    S2 --> A2[("02-offer.md<br/>02-offer.json<br/>02-conversion-copy.md")]
-    A2 --> S3
+    subgraph Phase2 [2. Âm thanh]
+        A1 --> S2A["🎙️ mkt-elevenlabs-tts-to-mp3"]
+        A1 -.-> S2B["🎙️ mkt-video-script-to-mp3 (MiniMax)"]
+        S2A --> A2["voiceover.mp3"]
+        S2B -.-> A2
+    end
 
-    S3["✍️ 3. /biz-sales-page-copy<br/>Polish / Conversion-opt / Sales-letter<br/>+ A/B variants"]
-    S3 --> A3[("04-copy-upgraded.md<br/>04-copy-variants.md<br/>04-copy.json")]
-    A3 --> S4
+    subgraph Phase3 [3. Assets & Visuals]
+        A2 --> S3A["👤 heygen-mp3-to-mp4<br/>(MC ảo Linh Aloha lip-sync)"]
+        A1 --> S3B["🖼️ mkt-kie-broll-image-generator<br/>(B-roll BĐS hạng sang)"]
+        S3A --> A3A["source.mp4 (talking-head)"]
+        S3B --> A3B["broll/*.png (ảnh kiến trúc/nội thất)"]
+    end
 
-    S4["🎨 4. /ui-ux-pro-max<br/>Next.js App Router<br/>style + palette + font pairing"]
-    S4 --> A4[("landing-page/<br/>app/page.tsx<br/>components/LeadForm.tsx")]
-    A4 --> S5 & S6
+    subgraph Phase4 [4. Dựng & Xuất bản]
+        A3A & A3B --> S4A["🎬 Remotion Pipeline<br/>mkt-full-video-with-11-remotion-heygen<br/>(Chi tiết căn hộ / Bảng giá)"]
+        A3A & A3B --> S4B["⚡ Hyperframe Pipeline<br/>mkt-full-video-with-11-hyperframe-heygen<br/>(Talking-head 9:16 / 16:9)"]
+        S4A --> Out["final.mp4 (Full HD/4K)"]
+        S4B --> Out
+    end
 
-    S5["💬 5. /biz-nextjs-chatbot-openrouter<br/>Floating widget góc phải<br/>Gemini 3 Flash / Sonnet 4.6"]
-    S5 --> A5[("components/ChatWidget.tsx<br/>app/api/chat/route.ts")]
+    Out --> Publish([🚀 Sẵn sàng đăng TikTok / Reels / Shorts / YouTube])
 
-    S6["📧 6. /biz-email-setup<br/>Resend 2-stage flow<br/>pre-payment + post-payment webhook"]
-    S6 --> A6[("app/api/lead/route.ts<br/>Email A: warm welcome<br/>Email B: owner alert")]
-
-    A5 & A6 --> Local{{"🧪 Local test<br/>localhost:3000<br/>chatbot + form submit"}}
-    Local --> S7
-
-    S7["🚀 7. /biz-deploy-vercel<br/>vercel --prod<br/>(env vars: OPENROUTER + RESEND)"]
-    S7 --> A7[("Live URL<br/>https://*.vercel.app")]
-
-    A7 --> Live([🎯 Funnel LIVE<br/>đang nhận lead])
-
-    style Start fill:#fef3c7,stroke:#f59e0b
-    style Live fill:#d1fae5,stroke:#10b981
-    style Stop fill:#fee2e2,stroke:#ef4444
-    style S1 fill:#dbeafe
-    style S2 fill:#dbeafe
-    style S3 fill:#dbeafe
-    style S4 fill:#dbeafe
-    style S5 fill:#dbeafe
-    style S6 fill:#dbeafe
-    style S7 fill:#dbeafe
+    style Idea fill:#fef3c7,stroke:#f59e0b
+    style Publish fill:#d1fae5,stroke:#10b981
+    style Phase1 fill:#eff6ff,stroke:#3b82f6
+    style Phase2 fill:#f5f3ff,stroke:#8b5cf6
+    style Phase3 fill:#fff7ed,stroke:#f97316
+    style Phase4 fill:#ecfdf5,stroke:#059669
 ```
 
 ---
 
-## Naming convention output
+## Danh mục Skills hiện có
 
-Mỗi project nằm trong `output/<slug>/` với prefix số thứ tự bước:
+### 1. Nhóm Kịch bản & Nội dung (Scriptwriting)
+| Tên Skill | Đường dẫn | Chức năng chính |
+|---|---|---|
+| **`mkt-linh-aloha-bds-video-script`** | `.claude/skills/mkt-linh-aloha-bds-video-script/` | Kỹ năng chuẩn chuyên sâu cho Linh Aloha: áp dụng 10 format kịch bản BĐS hàng hiệu, hook 3s, signature, CTA, checklist tự kiểm. |
+| **`mkt-vn-short-video-script`** | `.claude/skills/mkt-vn-short-video-script/` | Engine sinh kịch bản video ngắn đa profile (đã tích hợp profile chuẩn `linh-aloha`). |
 
-```
-output/<slug>/
-├── 01-niche-research-report.md      # Bước 1
-├── 02-offer.md                      # Bước 2 (human-readable)
-├── 02-offer.json                    # Bước 2 (machine-readable, downstream input)
-├── 02-conversion-copy.md            # Bước 2 (hero/CTA paste-ready)
-├── 04-copy-upgraded.md              # Bước 3 (copy mới)
-├── 04-copy-variants.md              # Bước 3 (A/B test bank)
-├── 04-copy-changes.md               # Bước 3 (diff Trước/Sau)
-├── 04-copy.json                     # Bước 3 (structured)
-└── landing-page/                    # Bước 4 → 7 (Next.js project)
-    ├── app/page.tsx
-    ├── app/api/chat/route.ts        # Bước 5
-    ├── app/api/lead/route.ts        # Bước 6
-    └── components/
-        ├── LeadForm.tsx             # Bước 4
-        └── ChatWidget.tsx           # Bước 5
-```
+### 2. Nhóm Giọng đọc & Âm thanh (TTS & Audio)
+| Tên Skill | Đường dẫn | Chức năng chính |
+|---|---|---|
+| **`mkt-elevenlabs-tts-to-mp3`** | `.claude/skills/mkt-elevenlabs-tts-to-mp3/` | Chuyển `script.txt` thành audio `voiceover.mp3` qua ElevenLabs API (giọng đọc tự nhiên, ấm áp). |
+| **`mkt-video-script-to-mp3`** | `.claude/skills/mkt-video-script-to-mp3/` | Chuyển kịch bản thành giọng đọc HD qua MiniMax API (`speech-2.8-hd`). |
+| **`mkt-ai-video-extract-srt-segment`** | `.claude/skills/mkt-ai-video-extract-srt-segment/` | Trích xuất timecode và phụ đề SRT chính xác từ audio/video. |
 
-> **Lưu ý**: `03-*` bị bỏ trống cố ý — bước 3 cũ là `biz-sales-page-layout` (wireframe markdown) đã **deprecated 2026-05-14**. Pipeline mới đi thẳng từ `02-offer.json` → `ui-ux-pro-max` → `biz-sales-page-copy` (copy polish dùng prefix `04-*`).
+### 3. Nhóm Hình ảnh & Avatar (Visuals & MC AI)
+| Tên Skill | Đường dẫn | Chức năng chính |
+|---|---|---|
+| **`heygen-mp3-to-mp4`** | `.claude/skills/heygen-mp3-to-mp4/` | Ghép `voiceover.mp3` vào Avatar MC Linh Aloha qua HeyGen API, xuất video talking-head `source.mp4`. |
+| **`mkt-kie-broll-image-generator`** | `.claude/skills/mkt-kie-broll-image-generator/` | Tự động phân tích `brief.md` để sinh ảnh B-roll kiến trúc / không gian sống phong cách BĐS hàng hiệu (`linh-aloha`) qua KIE AI (Nano Banana 2 / GPT Image 2). |
 
----
+### 4. Nhóm Dựng Video Hoàn Chỉnh (Video Orchestrators)
+| Tên Skill | Đường dẫn | Chức năng chính |
+|---|---|---|
+| **`mkt-full-video-with-11-remotion-heygen`** | `.claude/skills/mkt-full-video-with-11-remotion-heygen/` | Pipeline 9:16 Remotion: Tự động chạy TTS → HeyGen → Render composition React Remotion (headline, zoom, SFX BĐS, subtitle). |
+| **`mkt-full-video-with-11-remotion-heygen-apartment-detail`** | `.claude/skills/mkt-full-video-with-11-remotion-heygen-apartment-detail/` | Pipeline Remotion chuyên sâu cho bóc tách chi tiết căn hộ, mặt bằng L1/L2, bảng giá và bài toán tài chính. |
+| **`mkt-full-video-with-11-hyperframe-heygen`** | `.claude/skills/mkt-full-video-with-11-hyperframe-heygen/` | Pipeline dựng video talking-head dọc (9:16) bằng engine Hyperframe (HTML5/CSS/GSAP). |
+| **`mkt-full-video-with-11-hyperframe-heygen-16-9`** | `.claude/skills/mkt-full-video-with-11-hyperframe-heygen-16-9/` | Pipeline dựng video ngang (16:9) chuyên phân tích dự án dài trên YouTube/Facebook. |
+| **`mkt-hyperframe-luxury-realestate-9-16`** | `.claude/skills/mkt-hyperframe-luxury-realestate-9-16/` | Hệ thống thiết kế (Design Tokens) chuẩn BĐS hạng sang: font chữ, bảng màu champagne/gold/kem, hiệu ứng chuyển cảnh. |
+| **`mkt-hyperframe-talking-head-video`** / **`16-9`** | `.claude/skills/mkt-hyperframe-talking-head-video/` | Bộ công cụ cắt cảnh, gắn infographic và sound cues đồng bộ theo giọng nói. |
+| **`mkt-hyperframe-knowledge-video-heygen-9-16-lite`** | `.claude/skills/mkt-hyperframe-knowledge-video-heygen-9-16-lite/` | Dựng nhanh video chia sẻ kiến thức dạng ngắn gọn, tinh gọn. |
+| **`mkt-plan-short-video-edit-16-9`** | `.claude/skills/mkt-plan-short-video-edit-16-9/` | Lập kế hoạch phân cảnh, storyboard cho video 16:9. |
 
-## 7 bước chi tiết
-
-### Bước 1 — Market Research (`/market-research`)
-
-**Mục đích**: Đo cầu thật của niche trước khi đổ effort. Không phải PESTEL, không phải Porter — đo bằng **keyword volume + marketplace sales + community signal + competitor pricing**.
-
-**Khi nào dùng**:
-- "Có nên làm ngách X không?"
-- "Niche này có ai làm chưa?"
-- "Thị trường có đủ lớn để có lời không?"
-
-**Input cần chuẩn bị**:
-- 1 mô tả niche/ý tưởng sản phẩm (1-2 câu)
-- Optional: customer persona sơ bộ
-
-**Cách chạy**:
-```
-/market-research
-
-Niche: Khóa học dạy chủ SME VN cách dùng AI Agent để
-tự động hoá marketing social trong 30 ngày
-Tier giá dự kiến: 3-7M VND
-```
-
-**Output**:
-- `01-niche-research-report.md` — Niche Score /100 + evidence ≥3 source mỗi claim quan trọng
-- Quyết định **Go / Go-with-MVP / No-Go**
-
-**Decision gate**:
-| Score | Hành động |
-|-------|-----------|
-| ≥75 | Strong Go — chạy bước 2 ngay |
-| 65-74 | Solid Go-with-MVP — validate qua landing page trước khi build product |
-| 50-64 | Maybe — cần thêm research hoặc đổi angle |
-| <50 | No-Go — đổi niche |
-
-> **Reference**: 2 case study đã chạy → `memory/project_ai-agent-personal-brand-course.md` (71/100), `memory/project_ai-agent-busy-owner-course.md` (78/100).
+### 5. Nhóm Kỹ năng Mở rộng (Codex BĐS Skills)
+| Tên Skill | Đường dẫn | Chức năng chính |
+|---|---|---|
+| **`mkt-edit-video-bds-linh-hoat`** | `.codex/skills/mkt-edit-video-bds-linh-hoat/` | Kỹ thuật dựng video linh hoạt khi dự án mới chỉ có ảnh phối cảnh 3D (chưa có video thực tế), zoom hiệu ứng TikTok. |
+| **`mkt-hyperframe-heygen-bds-proof-first-9-16`** | `.codex/skills/mkt-hyperframe-heygen-bds-proof-first-9-16/` | Phong cách dựng "Proof-first": đưa số liệu, mặt bằng và văn bản pháp lý lên trước làm bằng chứng thuyết phục. |
+| **`ui-ux-pro-max`** | `.codex/skills/ui-ux-pro-max/` | Kho mẫu thiết kế giao diện, màu sắc và typography. |
 
 ---
 
-### Bước 2 — Đóng gói Offer (`/biz-offer-alex-hormozi`)
+## Hướng dẫn sử dụng chi tiết (Step-by-Step)
 
-**Mục đích**: Biến niche đã validate thành **"grand slam offer"** không thể chối từ — theo Alex Hormozi $100M Offers + Value Proposition Design (Osterwalder).
+### Bước 1: Viết kịch bản chuẩn giọng Linh Aloha
 
-**2 input mode**:
-- **Mode B**: User paste sẵn pains + gains + product → skill đóng gói ngay
-- **Mode C**: User chỉ có sản phẩm → skill phỏng vấn theo VPD để surface pain/gain trước
+Chỉ cần nhập câu lệnh yêu cầu kịch bản kèm chủ đề hoặc format mong muốn:
 
-**Cách chạy**:
-```
-/biz-offer-alex-hormozi
-
-Sản phẩm: Khóa học 30 ngày "AI Marketing Agent cho chủ SME"
-Đọc context từ: output/<slug>/01-niche-research-report.md
-```
-
-**Skill sẽ ra**:
-1. Value Equation scoring (4 lever) → xác định lever yếu nhất
-2. Core Offer (anchor segment + dream outcome + mechanism)
-3. **Bonus stack hybrid** — brainstorm 5-7 bonus candidate có justification value → user pick/chỉnh 3-4 cái
-4. Guarantee (conditional / unconditional / anti-guarantee)
-5. Urgency (deadline / qty / cohort)
-6. Pricing 3-tier decoy structure (VND charm)
-
-**Output**:
-- `02-offer.md` — full markdown report tiếng Việt
-- `02-offer.json` — structured cho downstream (`ui-ux-pro-max` parse được)
-- `02-conversion-copy.md` — headline + subheadline + CTA paste-ready
-
-**Checkpoint user duyệt**: Đọc 3 file, confirm bonus stack + pricing tier trước khi sang bước 3.
-
----
-
-### Bước 3 — Nâng cấp Copy (`/biz-sales-page-copy`)
-
-**Mục đích**: Biến copy thô từ `02-offer.json` thành **copy chốt đơn cao** với 3 intensity level:
-
-| Level | Khi nào dùng | Output |
-|-------|-------------|--------|
-| **1. Polish** | Copy đã ổn, chỉ cần punchy hơn | Light edit + power word |
-| **2. Conversion-optimized** | Cần rewrite + A/B test | Rewrite 5 block critical + variants hero/CTA |
-| **3. Sales-letter** | Ngách cần thuyết phục sâu | Long-form story-driven + P.S. |
-
-**Formula áp dụng tự động**:
-- Pain → **PAR** (Problem-Agitate-Resolve)
-- Solution → **BAB** (Before-After-Bridge)
-- Benefit → **FEP** (Feature-Evidence-Payoff)
-- Final CTA → **PVEN** (Problem-Value-Evidence-Now)
-- Testimonial → **Star-Chain-Hook**
-
-**Cách chạy**:
-```
-/biz-sales-page-copy
-
-Đọc: output/<slug>/02-offer.json + 02-conversion-copy.md
-Intensity: Conversion-optimized
-Focus: hero, pain section, CTA cuối
-```
-
-**Output**:
-- `04-copy-upgraded.md` — copy mới
-- `04-copy-variants.md` — A/B test bank (3 hero + 3 CTA + 3 final-CTA)
-- `04-copy-changes.md` — diff Trước/Sau + lý do
-- `04-copy.json` — structured cho `ui-ux-pro-max`
-
----
-
-### Bước 4 — Build Landing Page (`/ui-ux-pro-max`)
-
-**Mục đích**: Build Next.js App Router landing page **production-ready** từ `02-offer.json` + `04-copy.json`. Không phải Tailwind defaults — phải có design language nhất quán (style + palette + font pairing).
-
-**Skill cung cấp**:
-- 67 styles (glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid…)
-- 96 palettes
-- 57 font pairings
-- 25 chart types
-- 13 stacks (React/Next/Vue/Svelte/SwiftUI/RN/Flutter)
-- shadcn/ui MCP integration
-
-**Hard requirement (per project memory)**:
-- ✅ Form đăng ký với 3 field: **tên / SĐT / email**
-- ✅ Responsive: web + tablet + mobile (mobile-first)
-- ✅ Component `LeadForm.tsx` chuẩn bị sẵn cho bước 7 wire vào Resend API
-
-**Cách chạy**:
-```
-/ui-ux-pro-max
-
-Đọc: output/<slug>/02-offer.json + 04-copy.json
-Style preference: editorial minimalism + claude-orange accent
-Output dir: output/<slug>/landing-page/
-Stack: Next.js 14 App Router + TypeScript + Tailwind + shadcn/ui
-```
-
-**Output**:
-```
-output/<slug>/landing-page/
-├── app/
-│   ├── page.tsx          ← Landing page chính
-│   ├── layout.tsx
-│   └── globals.css
-├── components/
-│   ├── LeadForm.tsx      ← Form tên/SĐT/email (placeholder action)
-│   ├── Hero.tsx
-│   ├── Bonus.tsx
-│   ├── Pricing.tsx
-│   └── FAQ.tsx
-├── tailwind.config.ts
-├── package.json
-└── next.config.js
-```
-
-**Test local trước khi deploy**:
 ```bash
-cd output/<slug>/landing-page
-npm install
-npm run dev
-# mở http://localhost:3000 — kiểm mobile responsive
+# Cách 1: Dùng trực tiếp skill chuyên sâu của Linh Aloha
+/mkt-linh-aloha-bds-video-script
+
+# Cách 2: Dùng qua multi-profile engine
+/mkt-vn-short-video-script --profile linh-aloha
 ```
+
+**Ví dụ câu lệnh:**
+> *"Viết kịch bản video ngắn 60s phân tích căn Studio tại The Bloom Masterise Cao Xà Lá theo format Cờ xanh / Cờ đỏ."*
+
+**Kết quả nhận được tại `output/linh-aloha/scripts/<slug>/`:**
+1. `script.txt`: Lời thoại thuần túy đã được làm sạch, sẵn sàng gửi TTS.
+2. `brief.md`: Kế hoạch chi tiết gồm 3 hook A/B test, nhịp phân cảnh, gợi ý chữ on-screen, gợi ý B-roll và checklist tự kiểm tra.
 
 ---
 
-### Bước 5 — Cài Chatbot (`/biz-nextjs-chatbot-openrouter`)
+### Bước 2: Tạo giọng đọc AI (TTS)
 
-**Mục đích**: Thêm **floating AI chatbot widget góc dưới phải** vào landing page (làm trong **local**, chưa deploy) — trả lời khách hàng 24/7 dùng knowledge base từ offer + FAQ.
+Chuyển đổi kịch bản vừa tạo sang giọng đọc chuẩn:
 
-**Skill tự**:
-1. Detect số project Next.js trong workspace → hỏi user chọn nếu >1
-2. Detect TypeScript/JS, App Router/Pages Router, Tailwind/CSS module
-3. Cài OpenRouter SDK + tạo `app/api/chat/route.ts` streaming endpoint
-4. Tạo `components/ChatWidget.tsx` floating widget responsive (web/tablet/mobile)
-5. Inject knowledge base từ `02-offer.json` + FAQ
-6. Tạo `.env.local` với `OPENROUTER_API_KEY` + hướng dẫn lấy key
-
-**Model mặc định**:
-- `google/gemini-3-flash-preview` (rẻ, nhanh — recommend cho support bot)
-- Hoặc `anthropic/claude-sonnet-4-6` (chất lượng cao hơn — recommend khi cần persuasion)
-
-**Cách chạy**:
-```
-/biz-nextjs-chatbot-openrouter
-
-Project dir: output/<slug>/landing-page
-Knowledge base: 02-offer.json + 02-conversion-copy.md
-Tone: tư vấn tự nhiên, xưng anh/chị, không pushy
-Goal: trả lời FAQ + dẫn user về form đăng ký
-```
-
-**Output**:
-- `app/api/chat/route.ts` — streaming endpoint
-- `components/ChatWidget.tsx` — widget UI
-- `.env.local` updated với `OPENROUTER_API_KEY=`
-
-**Local test**: `npm run dev` → mở `localhost:3000` → click widget góc phải, hỏi 3 câu mẫu trước khi sang bước 6.
-
----
-
-### Bước 6 — Setup Email Auto-Responder (`/biz-email-setup`)
-
-**Mục đích**: Wire form đăng ký (bước 4) lên **Resend API** để tự động gửi email khi có lead mới — vẫn làm trong **local**, deploy 1 lần ở bước 7. **2-stage flow** (per project memory `feedback_email-autoresponder-2-stage-flow.md`):
-
-| Stage | Trigger | Email gửi | Tone |
-|-------|---------|-----------|------|
-| **P3 — Pre-payment** | User submit form (tên/SĐT/email) | **Email A** (slim) — confirm + payment link/booking + reminder; **Email B** (owner alert) | Warm welcome, không overwhelm |
-| **P5 — Post-payment** | Webhook payment success | **Email A** (full) — onboarding + full deliverables + 1 onboarding question | Full deliverables |
-
-**Skill tự**:
-1. Cài Resend SDK + tạo `app/api/lead/route.ts` (App Router) hoặc `pages/api/lead.ts` (Pages Router)
-2. Đọc context từ `02-offer.json` + `04-copy.json` (hoặc đọc trực tiếp `app/page.tsx`)
-3. **Draft 2 email** (A: cho lead, B: alert cho owner) → show preview HTML
-4. **Show draft cho user duyệt** và chỉnh sửa trước khi wire vào code
-5. Wire `LeadForm.tsx` lên endpoint với validation
-6. Hướng dẫn SPF/DKIM domain verification cho deliverability
-
-**Cách chạy**:
-```
-/biz-email-setup
-
-Project dir: output/<slug>/landing-page
-Offer context: 02-offer.json
-Offer type: course (delivery: 30-day cohort + template pack)
-Owner email: hoang.tran@prediction3d.com
-Sender domain: prediction3d.com (cần verify SPF/DKIM)
-```
-
-**Output**:
-- `app/api/lead/route.ts` — endpoint nhận form
-- Email A template (HTML) + Email B template
-- `.env.local` updated: `RESEND_API_KEY=`, `RESEND_FROM=`, `OWNER_EMAIL=`
-- Test instructions: curl mock submit + check inbox
-
-**Local test**:
 ```bash
-cd output/<slug>/landing-page
-npm run dev
-# mở localhost:3000 → submit form → check Email A (lead) + Email B (owner)
+# Dùng ElevenLabs (mặc định cho Linh Aloha)
+/mkt-elevenlabs-tts-to-mp3 --input output/linh-aloha/scripts/<slug>/script.txt
+
+# Hoặc dùng MiniMax HD
+/mkt-video-script-to-mp3 --input output/linh-aloha/scripts/<slug>/script.txt
+```
+
+**Output:** `workspace/<slug>/audio/voiceover.mp3` (khoảng 60–90 giây, nhịp đọc 3.3–3.5 từ/giây).
+
+---
+
+### Bước 3: Tạo Avatar AI Lip-sync & Sinh ảnh B-roll
+
+#### 3.1. Tạo video MC ảo nói khẩu hình:
+```bash
+/heygen-mp3-to-mp4 --audio workspace/<slug>/audio/voiceover.mp3
+```
+**Output:** `workspace/<slug>/video/source.mp4` (MC Linh Aloha nói khớp 100% âm thanh).
+
+#### 3.2. Tự động sinh ảnh B-roll kiến trúc (nếu chưa có sẵn ảnh chụp):
+```bash
+/mkt-kie-broll-image-generator \
+  --brief output/linh-aloha/scripts/<slug>/brief.md \
+  --profile linh-aloha \
+  --output_dir workspace/<slug>/broll/
+```
+**Output:** Thư mục ảnh `workspace/<slug>/broll/` (phòng khách sang trọng, ban công view công viên, bàn giao nội thất...) kèm file `broll-manifest.json`.
+
+---
+
+### Bước 4: Dựng video hoàn chỉnh (Remotion / Hyperframe)
+
+Chọn pipeline phù hợp với định dạng video bạn cần:
+
+#### Lựa chọn A: Video dọc 9:16 bóc tách chi tiết (Remotion)
+Dành cho video phân tích giá, mặt bằng, tiện ích cần đồ họa nét và hiệu ứng âm thanh BĐS:
+```bash
+/mkt-full-video-with-11-remotion-heygen
+# Hoặc chuyên sâu về mặt bằng căn hộ:
+/mkt-full-video-with-11-remotion-heygen-apartment-detail
+```
+
+#### Lựa chọn B: Video Talking-head siêu tốc (Hyperframe)
+```bash
+# Video dọc 9:16
+/mkt-full-video-with-11-hyperframe-heygen
+
+# Video ngang 16:9 (YouTube)
+/mkt-full-video-with-11-hyperframe-heygen-16-9
 ```
 
 ---
 
-### Bước 7 — Deploy Vercel (`/biz-deploy-vercel`)
+## Cấu trúc thư mục & Kho dữ liệu
 
-**Mục đích**: Bước cuối cùng — đưa landing page **đã có chatbot + email wired + tested local** lên live URL production. Deploy 1 phát, không phải re-deploy nhiều lần.
-
-**Skill tự**:
-1. Check Vercel CLI / Vercel MCP đã cài → install nếu chưa
-2. Hướng dẫn `vercel login` (nếu chưa auth)
-3. Detect framework (Next.js / Vite / CRA / static)
-4. Auto-generate `vercel.json` nếu cần
-5. **Push env vars** từ `.env.local` lên Vercel (`OPENROUTER_API_KEY`, `RESEND_API_KEY`, `RESEND_FROM`, `OWNER_EMAIL`)
-6. Chạy `vercel --prod`
-7. Trả về **Live URL + Inspect URL + hướng dẫn custom domain**
-
-**Cách chạy**:
 ```
-/biz-deploy-vercel
-
-Project dir: output/<slug>/landing-page
-Project name: ai-marketing-agent-30-ngay
-Env vars: OPENROUTER_API_KEY, RESEND_API_KEY, RESEND_FROM, OWNER_EMAIL
+linh.aloha.video.ai/
+├── .claude/skills/               # Kho 16 skills chính của dự án
+├── .codex/skills/                # Kho 3 skills bổ trợ chuyên sâu BĐS
+├── workspace/
+│   ├── data/                     # Kho tài liệu gốc dự án BĐS
+│   │   ├── Cao xà lá và di sản.md
+│   │   ├── Tổng quan dự án.md
+│   │   ├── Vị trí và Kết nối.md
+│   │   ├── Tiện ích và Cảnh quan.md
+│   │   ├── Layout và Mặt bằng L1 L2.md
+│   │   ├── Tiêu chuẩn bàn giao.md
+│   │   ├── Bán hàng và Thanh toán.md
+│   │   ├── 13 - Kho slogan và tagline.md
+│   │   ├── _phan-tich/           # Bóc tách chiến lược nội dung & mặt bằng
+│   │   └── script bds mau/       # Các kịch bản BĐS mẫu thực chiến
+│   ├── remotion-project/         # Codebase React Remotion dựng video
+│   │   └── src/overlays/         # Các component đồ họa (Price, Spec, Amenity...)
+│   └── sfx-realestate/           # Thư viện âm thanh hiệu ứng (Whoosh, Ting, Pop...)
+└── output/                       # Thư mục lưu sản phẩm xuất ra
 ```
 
-**Output**:
-- Live URL dạng `https://<project>.vercel.app`
-- Inspect URL để xem build log
-- (Optional) Custom domain setup guide
-
-> ✅ **Vì sao deploy cuối**: Tránh re-deploy 2-3 lần (deploy → cài chatbot → re-deploy → cài email → re-deploy). Local-first → deploy 1 phát sạch sẽ.
-
 ---
 
-## Checklist Go-Live
+## Quy tắc Brand Voice Linh Aloha (Bắt buộc)
 
-Trước khi share landing page cho audience thật, run-through checklist:
+Mỗi kịch bản và video sinh ra phải tuân thủ nghiêm ngặt các nguyên tắc sau:
 
-- [ ] **Niche Score ≥ 65** từ bước 1 (evidence ≥3 source mỗi claim)
-- [ ] `02-offer.json` có đủ anchor + core + bonus (3-4) + guarantee + urgency + pricing 3-tier
-- [ ] Copy đã qua `/biz-sales-page-copy` ít nhất Level 1 (Polish)
-- [ ] Landing page test ở 3 viewport: 375px (mobile), 768px (tablet), 1440px (desktop) — **làm trên `localhost:3000` trước**
-- [ ] Form `LeadForm.tsx` validate: tên ≥ 2 ký tự, SĐT VN regex `^(0|\+84)[0-9]{9}$`, email valid
-- [ ] Chatbot widget local: hiện ở góc phải-dưới, test 3 câu hỏi mẫu trả lời đúng
-- [ ] Submit form local → nhận **Email A** trong inbox (không vào spam) + owner nhận **Email B**
-- [ ] **Sau khi local OK** → deploy bước 7
-- [ ] Live URL Vercel reachable (HTTPS, no 404, no console error)
-- [ ] Env vars trên Vercel có đủ: `OPENROUTER_API_KEY`, `RESEND_API_KEY`, `RESEND_FROM`, `OWNER_EMAIL`
-- [ ] Re-test chatbot + form submit trên live URL (không phải localhost) — confirm production hoạt động
-- [ ] Domain verify SPF + DKIM passed (check qua `dig` hoặc Resend dashboard)
-- [ ] Mobile: chatbot widget không che form CTA, email link mở được trên iOS Mail + Gmail app
-
----
-
-## Skills đã bị deprecated
-
-| Skill | Status | Lý do | Thay thế bằng |
-|-------|--------|-------|---------------|
-| `/biz-sales-page-layout` | ⚠️ DEPRECATED 2026-05-14 | Wireframe markdown trung gian không tạo giá trị — `ui-ux-pro-max` đọc `02-offer.json` ra Next.js production luôn | Đi thẳng `02-offer.json` → `/ui-ux-pro-max` |
-
-> Chỉ dùng `/biz-sales-page-layout` khi user **explicitly** yêu cầu wireframe markdown để review/print/share trước khi build code (rare).
-
----
-
-## FAQ vận hành
-
-**Q: Có thể skip bước nào không?**
-- Skip bước 1 nếu đã có niche validated từ trước (paste sẵn pain/gain vào bước 2).
-- Skip bước 3 nếu copy từ bước 2 đã đủ chất lượng cho MVP — quay lại upgrade sau khi có data conversion.
-- **Không skip bước 4** — landing page là spine cho mọi bước sau.
-- Bước 5 + 6 có thể chạy parallel (chatbot + email là 2 file độc lập), nhưng phải xong cả 2 + test local OK trước khi sang bước 7.
-- **Không skip bước 7** — landing page phải live mới đo được demand thật.
-
-**Q: Resume pipeline ở giữa được không?**
-- Có. Skill nào cũng đọc artifact đầu vào (`02-offer.json`, `04-copy.json`…) từ disk — miễn file tồn tại đúng path là tiếp được. Đã có `02-offer.json` → vào thẳng bước 3.
-
-**Q: Multi-project parallel?**
-- Mỗi project 1 `output/<slug>/` riêng. Có thể chạy 2 niche song song mà không conflict.
-
-**Q: Cần API key gì?**
-- `OPENROUTER_API_KEY` (bước 6) — lấy từ openrouter.ai
-- `RESEND_API_KEY` (bước 7) — lấy từ resend.com
-- Vercel auth (bước 5) — `vercel login` browser-based, không cần key
-
-**Q: Estimated time end-to-end?**
-- Bước 1: 15-30 phút (skill chạy + user đọc report)
-- Bước 2: 20-40 phút (skill phỏng vấn nếu Mode C)
-- Bước 3: 10-20 phút
-- Bước 4: 30-60 phút (build + local test)
-- Bước 5: 15-25 phút (chatbot widget)
-- Bước 6: 20-30 phút (email + user duyệt draft)
-- Bước 7: 5-10 phút (deploy 1 phát cuối)
-- **Total: ~2-4 giờ** cho 1 funnel hoàn chỉnh từ ý tưởng → live nhận lead.
-
----
-
-## Tham chiếu file thực tế (case study)
-
-Project `ai-agent-marketing-busy-owner` đã chạy đầy đủ pipeline — xem `output/ai-agent-marketing-busy-owner/` để tham chiếu structure thật.
-
-- [01-niche-research-report.md](output/ai-agent-marketing-busy-owner/01-niche-research-report.md) — Niche Score 78/100 Solid Go
-- [02-offer.json](output/ai-agent-marketing-busy-owner/02-offer.json) — structured offer cho downstream
-- [02-offer.md](output/ai-agent-marketing-busy-owner/02-offer.md) — human-readable offer report
-- [04-copy-upgraded.md](output/ai-agent-marketing-busy-owner/04-copy-upgraded.md) — copy đã polish
-- [landing-page/](output/ai-agent-marketing-busy-owner/landing-page/) — Next.js project
-- [landing-page/components/LeadForm.tsx](output/ai-agent-marketing-busy-owner/landing-page/components/LeadForm.tsx) — form 3 field tên/SĐT/email
+1. **Quy tắc xưng hô:**
+   - Tự xưng **LUÔN CÓ CHỮ "EM"**: *"em"*, *"em Linh"*, *"em Linh Aloha"*.
+   - ❌ Tuyệt đối không xưng trống: *"Linh đây"*, *"Linh nghĩ"*.
+   - Gọi khách hàng: **"anh chị"** (không dùng "các bác", "quý vị", "bạn").
+2. **Câu Signature mở đầu:**
+   - Lồng vào ngay sau cú đấm của Hook 3 giây đầu: *"Aloha anh chị, em Linh đây!"*
+3. **Mỏ neo dự án:**
+   - Tên dự án *The Bloom* lần đầu nhắc đến phải kèm mỏ neo: *"The Bloom — dự án của Masterise trên khu đất Cao Xà Lá ở Nguyễn Trãi"*.
+4. **Liệt kê rõ ràng:**
+   - Phải đếm số bằng lời: *"Có 3 điều em thích: 1 là... 2 là... 3 là..."*
+5. **Kêu gọi hành động (CTA):**
+   - Mời kết nối ấm áp: *"Anh chị inbox hoặc gọi cho em Linh Aloha theo số hotline trên màn hình, em tư vấn trực tiếp với anh chị nhé."*
+   - ❌ Không dùng câu phòng thủ: *"em tư vấn thật, không hối thúc"*.

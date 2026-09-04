@@ -1,6 +1,6 @@
 ---
 name: mkt-kie-broll-image-generator
-description: Sinh ảnh b-roll qua KIE AI cho pipeline video ngắn (TikTok/Reels/YouTube Shorts) — dual-provider **Nano Banana 2** (`nano-banana-2`, default — ảnh photoreal warm editorial) + **GPT Image 2** (`gpt-image-2-text-to-image`, alternative — render text trong ảnh tốt hơn). Đọc optional `--profile <name>` để apply visual style (hiện có `thu-gein` — cream-paper warm editorial family; thêm style mới qua `profiles/<name>/style.md`). 2 input mode: (A) parse tự động `brief.md` (từ `mkt-vn-short-video-script`) qua `parse_brief_broll.py` để rút b-roll suggestions ra prompt list, HOẶC (B) accept list prompt thủ công user paste. Output ảnh PNG/JPG với filename ASCII vào folder chỉ định + manifest JSON (prompt + filename + provider + taskId) để truy vết. Async task model — `POST /createTask` lấy `taskId` rồi poll `GET /recordInfo` mỗi 5s (max 5 phút) cho tới khi `state=success`, parse `resultJson` JSON string lấy `resultUrls[0]` rồi download. Cần `KIE_API_KEY` trong `.env` root. Compatible với pipeline downstream `mkt-full-video-thu-life-coach-9-16` (Phase 3 có thể invoke optional). USE WHEN user nói "tạo b-roll", "gen ảnh b-roll", "tạo ảnh chèn video", "kie ai image", "nano banana", "gpt image 2", "b-roll cho video", "auto-generate b-roll", hoặc cần ảnh minh hoạ chèn vào talking-head video mà user chưa có asset.
+description: Sinh ảnh b-roll qua KIE AI cho pipeline video ngắn (TikTok/Reels/YouTube Shorts) — dual-provider **Nano Banana 2** (`nano-banana-2`, default — ảnh photoreal warm editorial) + **GPT Image 2** (`gpt-image-2-text-to-image`, alternative — render text trong ảnh tốt hơn). Đọc optional `--profile <name>` để apply visual style (hiện có `linh-aloha` — luxury real estate & high-end architectural lifestyle; thêm style mới qua `profiles/<name>/style.md`). 2 input mode: (A) parse tự động `brief.md` (từ `mkt-vn-short-video-script` hoặc `mkt-linh-aloha-bds-video-script`) qua `parse_brief_broll.py` để rút b-roll suggestions ra prompt list, HOẶC (B) accept list prompt thủ công user paste. Output ảnh PNG/JPG với filename ASCII vào folder chỉ định + manifest JSON (prompt + filename + provider + taskId) để truy vết. Async task model — `POST /createTask` lấy `taskId` rồi poll `GET /recordInfo` mỗi 5s (max 5 phút) cho tới khi `state=success`, parse `resultJson` JSON string lấy `resultUrls[0]` rồi download. Cần `KIE_API_KEY` trong `.env` root. Compatible với các pipeline downstream BĐS. USE WHEN user nói "tạo b-roll", "gen ảnh b-roll", "tạo ảnh chèn video", "kie ai image", "nano banana", "gpt image 2", "b-roll cho video", "auto-generate b-roll", hoặc cần ảnh minh hoạ chèn vào talking-head video mà user chưa có asset.
 ---
 
 # mkt-kie-broll-image-generator
@@ -11,7 +11,7 @@ Bridge từ "script đã viết xong" sang "có asset b-roll thật để chèn 
 
 ## Khi nào dùng
 
-- Pipeline video Thu / GEIN (`/mkt-full-video-thu-life-coach-9-16`) — Phase 3 cần 1-3 ảnh full-screen b-roll mà user chưa quay/chụp được
+- Pipeline video BĐS Linh Aloha (`/mkt-full-video-with-11-remotion-heygen`, `/mkt-full-video-with-11-hyperframe-heygen`) — cần 1-3 ảnh full-screen b-roll phối cảnh hoặc không gian sống cao cấp
 - Bất kỳ pipeline talking-head 9:16 / 16:9 nào cần ảnh metaphor chèn giữa các beat
 - User có brief.md đã viết kèm gợi ý b-roll → auto-extract → batch gen
 - User muốn iterate nhanh nhiều variant cho 1 concept (chạy lại nhiều lần với prompt biến tấu)
@@ -29,7 +29,7 @@ Bridge từ "script đã viết xong" sang "có asset b-roll thật để chèn 
 | `output_dir` | Yes | — | Folder lưu ảnh + manifest (vd: `workspace/<slug>/broll/`) |
 | `brief_path` HOẶC `prompts` | Yes | — | Path tới `brief.md` ĐỂ auto-parse, HOẶC list prompt thủ công (JSON array hoặc 1 prompt / dòng) |
 | `--provider` | No | `nano-banana` | `nano-banana` (default) hoặc `gpt-image` |
-| `--profile` | No | (none) | Apply `profiles/<name>/style.md` làm STYLE suffix. Hiện có `thu-gein` |
+| `--profile` | No | (none) | Apply `profiles/<name>/style.md` làm STYLE suffix. Hiện có `linh-aloha` |
 | `--aspect_ratio` | No | `9:16` | NB enum: `auto, 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9`. GPT enum nhỏ hơn: `auto, 1:1, 9:16, 16:9, 4:3, 3:4` |
 | `--resolution` | No | `1K` | `1K / 2K / 4K`. Lưu ý GPT `1:1` KHÔNG dùng được `4K` |
 | `--output_format` | No | `png` | `png` hoặc `jpg`. CHỈ áp cho Nano Banana — GPT bỏ qua param này |
@@ -37,8 +37,8 @@ Bridge từ "script đã viết xong" sang "có asset b-roll thật để chèn 
 ## Provider routing — chọn provider nào?
 
 **Default = Nano Banana 2** (`nano-banana-2`):
-- Ảnh photoreal warm editorial, soft daylight, intimate family scene
-- Đa số b-roll Thu / GEIN, BĐS, lifestyle → dùng cái này
+- Ảnh photoreal warm editorial, soft daylight, không gian kiến trúc nội thất sang trọng
+- Đa số b-roll BĐS, lifestyle kiến trúc → dùng cái này
 - Hỗ trợ đầy đủ aspect ratio (15 enum) + 3 resolution + chọn PNG/JPG
 
 **Switch sang GPT Image 2** (`gpt-image-2-text-to-image`) khi:
@@ -53,7 +53,7 @@ Skill **phải announce** provider dùng cho mỗi ảnh ở stderr log, vd: `[k
 `profiles/<name>/style.md` là block markdown thuần (không frontmatter, không heading) chứa mô tả palette / lighting / composition / aesthetic. Khi `--profile <name>` set, skill load file và append vào cuối prompt dưới label `STYLE: ...`.
 
 **Profile có sẵn:**
-- `thu-gein` — Cream-paper warm editorial family. Palette warm cream + deep forest + soft gold + terracotta. Subject: gia đình Việt, cha mẹ - con cái, household ritual. Phù hợp pipeline `/mkt-full-video-thu-life-coach-9-16`.
+- `linh-aloha` — Luxury Real Estate & High-end Lifestyle. Palette warm cream + champagne gold + warm walnut wood + floor-to-ceiling glass & lush metropolitan greenery. Phù hợp pipeline video BĐS Linh Aloha.
 
 **Thêm profile mới:**
 ```bash
@@ -85,7 +85,7 @@ Nếu thiếu / vẫn còn placeholder `your_kie_api_key`:
 ```bash
 uv run .claude/skills/mkt-kie-broll-image-generator/scripts/parse_brief_broll.py \
   --brief workspace/<slug>/brief.md \
-  --profile thu-gein \
+  --profile linh-aloha \
   --output_json workspace/<slug>/broll-prompts.json
 ```
 
@@ -119,7 +119,7 @@ uv run .claude/skills/mkt-kie-broll-image-generator/scripts/generate_image.py \
   --aspect_ratio 9:16 \
   --resolution 1K \
   --output_format png \
-  --output workspace/<slug>/broll/broll-01-mom-cooking.png \
+  --output workspace/<slug>/broll/broll-01-living-room.png \
   --poll_interval 5 \
   --poll_timeout 300
 ```
@@ -143,13 +143,13 @@ Sau khi gen xong tất cả ảnh, viết `<output_dir>/broll-manifest.json`:
   "generated_at": "2026-05-27T...",
   "provider": "nano-banana",
   "model": "nano-banana-2",
-  "profile": "thu-gein",
+  "profile": "linh-aloha",
   "aspect_ratio": "9:16",
   "resolution": "1K",
   "items": [
     {
       "idx": 1,
-      "filename": "broll-01-mom-cooking.png",
+      "filename": "broll-01-living-room.png",
       "prompt": "SCENE: ...\n\nSTYLE: ...\n\nAVOID: ...",
       "task_id": "task_xxx",
       "size_bytes": 482301
@@ -159,20 +159,20 @@ Sau khi gen xong tất cả ảnh, viết `<output_dir>/broll-manifest.json`:
 }
 ```
 
-Manifest dùng để re-run, debug, audit. Phase 3 packager (Thu pipeline) đọc manifest để map ảnh vào timeline.
+Manifest dùng để re-run, debug, audit. Phase packager đọc manifest để map ảnh vào timeline.
 
 ### Step 5 — Report user
 
 ```markdown
 ## B-roll generated — KIE AI
 **Folder:** workspace/<slug>/broll/
-**Provider:** nano-banana (`nano-banana-2`) · **Profile:** thu-gein · **Aspect:** 9:16 · **Res:** 1K
+**Provider:** nano-banana (`nano-banana-2`) · **Profile:** linh-aloha · **Aspect:** 9:16 · **Res:** 1K
 **Generated:** N/N (T phút wall-clock)
 **Manifest:** workspace/<slug>/broll/broll-manifest.json
 
 Files:
-- broll-01-mom-cooking.png (482 KB)
-- broll-02-family-dinner.png (510 KB)
+- broll-01-living-room.png (482 KB)
+- broll-02-balcony-view.png (510 KB)
 - ...
 
 Review từng file, nếu cần re-gen 1 ảnh → re-run `generate_image.py` với prompt mới (HOẶC nói "gen lại ảnh N với prompt: ...").
@@ -203,20 +203,18 @@ Review từng file, nếu cần re-gen 1 ảnh → re-run `generate_image.py` v�
 - **Unified poll endpoint** — `GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}` (dùng chung cho cả 2 provider)
 - **KIE dashboard / credits / API keys** — https://kie.ai/dashboard
 
-## Integration — Thu / GEIN pipeline
+## Integration — Linh Aloha Real Estate pipeline
 
-Skill `mkt-full-video-thu-life-coach-9-16` có thể invoke skill này **optional** ở Phase 3 khi:
+Các pipeline video BĐS Linh Aloha (`mkt-full-video-with-11-remotion-heygen`, `mkt-full-video-with-11-hyperframe-heygen`) có thể invoke skill này **optional** khi:
 1. User chưa có file b-roll thật, VÀ
-2. User opt-in (`auto_broll: true` ở input HOẶC reply "gen b-roll" ở checkpoint #2)
+2. User opt-in (`auto_broll: true` ở input HOẶC reply "gen b-roll" ở checkpoint)
 
 Pass tham số:
 - `--brief workspace/<slug>/brief.md` (nếu brief đã sinh từ script skill)
-- `--profile thu-gein`
+- `--profile linh-aloha`
 - `output_dir = workspace/<slug>/broll/`
 
-Phase 3 packager sau đó pick các ảnh đã gen vào timeline làm full-screen takeover scene (ken-burns 1.0→1.04 + warm vignette + cream paper overlay 8%) match aesthetic `thu_life_coach`.
-
-Xem block "Optional: Auto-generate b-roll via KIE AI" trong `/mkt-full-video-thu-life-coach-9-16` Phase 3 section để thấy hook point cụ thể.
+Pipeline packager sau đó pick các ảnh đã gen vào timeline làm scene chuyển tiếp / minh họa không gian sống cho video BĐS.
 
 ## What this skill does NOT do
 

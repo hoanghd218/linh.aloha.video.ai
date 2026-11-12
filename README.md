@@ -103,17 +103,23 @@ flowchart TD
 | **`mkt-full-video-with-11-remotion-heygen-apartment-detail`** | `.claude/skills/mkt-full-video-with-11-remotion-heygen-apartment-detail/` | Pipeline Remotion chuyên sâu cho bóc tách chi tiết căn hộ, mặt bằng L1/L2, bảng giá và bài toán tài chính. |
 | **`mkt-full-video-with-11-hyperframe-heygen`** | `.claude/skills/mkt-full-video-with-11-hyperframe-heygen/` | Pipeline dựng video talking-head dọc (9:16) bằng engine Hyperframe (HTML5/CSS/GSAP). |
 | **`mkt-full-video-with-11-hyperframe-heygen-16-9`** | `.claude/skills/mkt-full-video-with-11-hyperframe-heygen-16-9/` | Pipeline dựng video ngang (16:9) chuyên phân tích dự án dài trên YouTube/Facebook. |
-| **`mkt-hyperframe-luxury-realestate-9-16`** | `.claude/skills/mkt-hyperframe-luxury-realestate-9-16/` | Hệ thống thiết kế (Design Tokens) chuẩn BĐS hạng sang: font chữ, bảng màu champagne/gold/kem, hiệu ứng chuyển cảnh. |
-| **`mkt-hyperframe-talking-head-video`** / **`16-9`** | `.claude/skills/mkt-hyperframe-talking-head-video/` | Bộ công cụ cắt cảnh, gắn infographic và sound cues đồng bộ theo giọng nói. |
+| **`mkt-hyperframe-luxury-realestate-9-16`** | `.claude/skills/mkt-hyperframe-luxury-realestate-9-16/` | Kiểu dựng "Broker-Creator Punchy": avatar full-frame suốt video, chữ punch (trắng viền đen) bật lên đúng nhịp, bảng SFX BĐS. Dùng khi đã có `source.mp4`. |
+| **`mkt-hyperframe-talking-head-video`** | `.claude/skills/mkt-hyperframe-talking-head-video/` | Từ MP4 talking-head quay sẵn → project HyperFrames 9:16 kiểu infographic kính mờ (caption từng từ, SFX, zoom, b-roll). |
+| **`mkt-hyperframe-talking-head-video-16-9`** | `.claude/skills/mkt-hyperframe-talking-head-video-16-9/` | Bản ngang 1920×1080 của skill trên: slide pane bên trái + khung avatar nổi, chuyển SPLIT ↔ PIP. |
 | **`mkt-hyperframe-knowledge-video-heygen-9-16-lite`** | `.claude/skills/mkt-hyperframe-knowledge-video-heygen-9-16-lite/` | Dựng nhanh video chia sẻ kiến thức dạng ngắn gọn, tinh gọn. |
 | **`mkt-plan-short-video-edit-16-9`** | `.claude/skills/mkt-plan-short-video-edit-16-9/` | Lập kế hoạch phân cảnh, storyboard cho video 16:9. |
 
-### 5. Nhóm Kỹ năng Mở rộng (Codex BĐS Skills)
+### 5. Nhóm BĐS chuyên sâu (đã chuyển từ `.codex/` sang `.claude/` ngày 2026-11-11 để Claude Code nạp được; hai skill `mkt-autoedit-video-9-16`, `mkt-map-location-video` thêm cùng ngày)
 | Tên Skill | Đường dẫn | Chức năng chính |
 |---|---|---|
-| **`mkt-edit-video-bds-linh-hoat`** | `.codex/skills/mkt-edit-video-bds-linh-hoat/` | Kỹ thuật dựng video linh hoạt khi dự án mới chỉ có ảnh phối cảnh 3D (chưa có video thực tế), zoom hiệu ứng TikTok. |
-| **`mkt-hyperframe-heygen-bds-proof-first-9-16`** | `.codex/skills/mkt-hyperframe-heygen-bds-proof-first-9-16/` | Phong cách dựng "Proof-first": đưa số liệu, mặt bằng và văn bản pháp lý lên trước làm bằng chứng thuyết phục. |
-| **`ui-ux-pro-max`** | `.codex/skills/ui-ux-pro-max/` | Kho mẫu thiết kế giao diện, màu sắc và typography. |
+| **`mkt-edit-video-bds-linh-hoat`** | `.claude/skills/mkt-edit-video-bds-linh-hoat/` | Lập kế hoạch dựng video BĐS khi dự án mới chỉ có ảnh phối cảnh 3D (chưa có video thực tế), biến ảnh tĩnh thành b-roll động, zoom hiệu ứng TikTok. |
+| **`mkt-hyperframe-heygen-bds-proof-first-9-16`** | `.claude/skills/mkt-hyperframe-heygen-bds-proof-first-9-16/` | Phong cách dựng "Proof-first": HeyGen chỉ dẫn hook / bridge / CTA, còn lại là video + ảnh thật của dự án, số liệu, mặt bằng và pháp lý có nguồn đặt lên trước. |
+| **`mkt-autoedit-video-9-16`** | `.claude/skills/mkt-autoedit-video-9-16/` | Edit **video thô quay sẵn** 9:16 tiếng Việt, chạy trên máy (không tốn credit): Whisper → cắt khoảng lặng → chia cảnh → chị chọn preset A/B/C và hiệu ứng từng cảnh bằng trang HTML có hình → storyboard chốt phương án → dựng HyperFrames → kiểm vùng an toàn → render. Chuyển thể từ gói `AutoEdit.zip` (chưa chạy trọn pipeline trên máy dev; phông không kèm). |
+| **`mkt-map-location-video`** | `.claude/skills/mkt-map-location-video/` | Clip dọc 9:16 giới thiệu **vị trí & kết nối** trên ảnh vệ tinh Esri nghiêng 3D, tuyến đường OSRM, thẻ km/phút, ghi nguồn Esri/OpenStreetMap. Dựng + ghi WebM trong Chrome (tiện ích Claude in Chrome). Cần toạ độ dự án do chị Linh đưa. Chuyển thể từ gói `map-location-video.zip`. |
+
+> `.codex/skills/ui-ux-pro-max/` (kho mẫu giao diện, không phải skill video) vẫn nằm ở `.codex/` — Claude Code không nạp thư mục này.
+
+> **Cho Claude Code:** đọc `CLAUDE.md` (bảng chọn skill + luật chung). Kiểm sức khoẻ skill: `node tools/kiem-skill.mjs --all .claude/skills`.
 
 ---
 
@@ -202,8 +208,12 @@ Dành cho video phân tích giá, mặt bằng, tiện ích cần đồ họa n�
 
 ```
 linh.aloha.video.ai/
-├── .claude/skills/               # Kho 16 skills chính của dự án
-├── .codex/skills/                # Kho 3 skills bổ trợ chuyên sâu BĐS
+├── CLAUDE.md                     # Bảng chọn skill + luật chung cho Claude Code
+├── .claude/skills/               # Kho 20 skills video (mỗi skill: SKILL.md + references/kinh-nghiem.md)
+├── .claude/agents/               # 2 sub-agent (phase3-packager; script-hook-writer chưa có orchestrator gọi)
+├── .claude/settings.json         # Chặn Claude Code đọc .env
+├── .codex/skills/                # ui-ux-pro-max (không phải skill video; Claude Code không nạp)
+├── tools/                        # bds (CLI dữ liệu BĐS) · kiem-skill.mjs (kiểm skill)
 ├── workspace/
 │   ├── data/                     # Kho tài liệu gốc dự án BĐS
 │   │   ├── Cao xà lá và di sản.md

@@ -1,5 +1,7 @@
 # Logo library
 
+> **Ghi chú 2026-11-11:** README này mô tả cơ chế cũ (component `LogoPill` + symlink vào `public/assets/logos/`). Template hiện tại không còn `LogoPill` và `init_project.sh` KHÔNG chép thư mục này. Logo của video lấy từ `<workspace>/logos/` (cần `avatar.jpg` + `qr-contact.jpg` cho contact-card); logo khác dùng qua `icon_path` của `icon-stack`. Thư mục này hiện chưa có tệp logo nào.
+
 Drop SVG (or PNG) logo files into this folder. Filenames must be ASCII (no spaces, no diacritics, lowercase preferred).
 
 The Phase 3 packager references logos by basename in `overlays.json`, e.g.:

@@ -1,172 +1,98 @@
 ---
 name: mkt-elevenlabs-tts-to-mp3
-description: Convert Vietnamese/English script text to MP3 voiceover using ElevenLabs TTS API. Calls POST /v1/text-to-speech/{voice_id}, streams audio bytes, writes MP3 directly. Locked to Hoang's brand voice ID by default. USE WHEN user says 'tạo mp3 elevenlabs', 'elevenlabs tts', 'eleven labs voice', 'text to speech elevenlabs', 'tạo voiceover elevenlabs', 'đọc text bằng elevenlabs', 'tts elevenlabs to mp3', 'eleven labs script to mp3', 'voiceover bằng elevenlabs', 'giọng elevenlabs'.
+description: Chuyển script.txt (tiếng Việt / Anh) thành voiceover.mp3 bằng ElevenLabs TTS API — giọng thương hiệu mặc định từ .env, có bản đồ phát âm tiếng Việt, cảnh báo số đọc sai, trần 5000 ký tự mỗi lần. Đây là TTS MẶC ĐỊNH của pipeline video Linh Aloha (MiniMax chỉ khi user chọn). Dùng khi user nói 'tạo mp3 elevenlabs', 'elevenlabs tts', 'eleven labs voice', 'text to speech elevenlabs', 'tạo voiceover elevenlabs', 'đọc text bằng elevenlabs', 'tts elevenlabs to mp3', 'eleven labs script to mp3', 'voiceover bằng elevenlabs', 'giọng elevenlabs', hoặc chỉ nói 'tạo voiceover', 'script to mp3', 'tạo mp3 từ kịch bản' mà không nêu nhà cung cấp, hoặc khi orchestrator Phase 1 cần voiceover.mp3. Không dùng khi user chọn MiniMax (→ mkt-video-script-to-mp3), viết kịch bản (→ mkt-linh-aloha-bds-video-script), lip-sync (→ heygen-mp3-to-mp4), bóc SRT (→ mkt-ai-video-extract-srt-segment).
+argument-hint: "--file <script.txt> -o <voiceover.mp3> [--model_id eleven_v3] [--voice_id <id>]"
 ---
 
-# ElevenLabs TTS to MP3
+# ElevenLabs TTS → MP3
 
-Convert script text to MP3 voiceover via ElevenLabs Text-to-Speech API.
+Phiên bản: v1.1 — 2026-11-11
 
-## Defaults
+Chuyển script thành MP3 voiceover qua ElevenLabs Text-to-Speech. Giọng mặc định là giọng thương hiệu của Hoàng, đọc từ `.env`.
 
-- **Voice ID**: `K7ewtjKRNtwwt3lKQ6M0` (Hoang's brand voice — locked) — overridable via `ELEVENLABS_VOICE_ID` env or `--voice_id`
-- **Model**: `eleven_v3` (most expressive, supports audio tags like [excited], [whisper], [laugh]; best for storytelling content) — overridable via `--model_id`. Alternatives: `eleven_multilingual_v2` (high quality, slower), `eleven_turbo_v2_5` (fast, slightly flat), `eleven_flash_v2_5` (fastest)
-- **Output format**: `mp3_44100_128` (44.1 kHz / 128 kbps) — overridable via `--output_format`
-- **Voice settings**: `stability=0.5`, `similarity_boost=0.75`, `style=0`, `use_speaker_boost=true` (ElevenLabs defaults)
-- **Pronunciation map**: auto-loaded from `assets/vn-pronunciation-map.json` — disable with `--no-pronounce-map`, or point at a different file with `--pronounce-map path.json`
-- **Char limit**: 5000 per request (ElevenLabs hard limit). Text > 5000 chars → script exits with error and asks user to split manually.
+| Đầu vào | Đầu ra |
+|---|---|
+| `script.txt` (hoặc chuỗi inline), ≤ 5000 ký tự | `voiceover.mp3` — MP3 44.1 kHz / 128 kbps, server trả MP3 nên không cần ffmpeg |
+| `ELEVENLABS_API_KEY` trong `.env` ở gốc repo | stdout: `output_path`, `size_mb`, `char_count`, `voice_id`, `model_id`, `output_format`; stderr: các phép thay phát âm + cảnh báo số |
 
-## Quick Usage
+`K=.claude/skills/mkt-elevenlabs-tts-to-mp3` · `S=workspace/content/YYYY-MM-DD/<slug>` (thư mục video do orchestrator tạo; thử nhanh → `workspace/assets/elevenlabs/<tên>.mp3`)
 
-### From file
-```bash
-uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
-  --file path/to/script.txt \
-  -o workspace/content/YYYY-MM-DD/voiceover.mp3
-```
+## ElevenLabs hay MiniMax?
 
-### From inline text
-```bash
-uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
-  "Xin chào các bạn, hôm nay mình chia sẻ về AI Agent" \
-  -o workspace/assets/elevenlabs/sample.mp3
-```
-
-### Custom voice / model
-```bash
-uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
-  --file script.txt \
-  --voice_id K7ewtjKRNtwwt3lKQ6M0 \
-  --model_id eleven_turbo_v2_5 \
-  -o output.mp3
-```
-
-### Tweak voice expressiveness
-```bash
-uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
-  --file script.txt \
-  --stability 0.4 \
-  --similarity_boost 0.8 \
-  --style 0.2 \
-  -o output.mp3
-```
-
-## Voice settings — when to tweak
-
-| Setting | Range | Effect |
-|---------|-------|--------|
-| `stability` | 0.0–1.0 | Higher = more monotone/predictable; lower = more emotional/variable. **0.5 is the sweet spot** for narration. Drop to 0.3–0.4 for casual hooks; raise to 0.7+ for formal explainers. |
-| `similarity_boost` | 0.0–1.0 | How closely to clone the reference voice. **0.75 default**. Raise toward 0.9 if voice sounds "off" from the original. |
-| `style` | 0.0–1.0 | Style exaggeration. **0 default**. Adds latency when > 0. Useful (0.1–0.3) for expressive content. |
-| `use_speaker_boost` | bool | Sharpens speaker similarity. Keep `true` for brand voice consistency. |
-
-## Pronunciation Map (pre-TTS substitution)
-
-The skill auto-loads a **whole-word case-insensitive substitution map** from `assets/vn-pronunciation-map.json` and applies it before sending text to the API. Two valid use cases:
-
-**Use case 1 — English-word fix.** ElevenLabs multilingual models try to read the *whole* text in the dominant language. In a Vietnamese script, English words like `doc`, `chat`, `git` get pronounced as VN syllables. Map them to VN-phonetic spelling: `"doc" -> "đóc"` makes the model say close to /dɒk/.
-
-**Use case 2 — Vietnamese proper noun with missing diacritics.** Source scripts often type place names without diacritics (`Hanoi`, `Saigon`, `Da Nang`). The TTS reads them flat and wrong. Map them to the proper VN spelling so the model reads them as the correct Vietnamese word: `"Hanoi" -> "Hà Nội"`. Default map ships with the common VN cities (Hà Nội, Sài Gòn, Việt Nam, Đà Nẵng, Hải Phòng, Phú Quốc, Hạ Long, Cần Thơ, Vũng Tàu).
-
-Default mapping:
-```json
-{
-  "doc": "đóc", "chat": "chát", "git": "gít",
-  "Hanoi": "Hà Nội", "Saigon": "Sài Gòn", "Vietnam": "Việt Nam",
-  "Da Nang": "Đà Nẵng", "Hai Phong": "Hải Phòng", "Phu Quoc": "Phú Quốc",
-  "Ha Long": "Hạ Long", "Can Tho": "Cần Thơ", "Vung Tau": "Vũng Tàu"
-}
-```
-
-**How it works**: each key is matched case-insensitively with `\b...\b` boundaries, then replaced. The substitution happens in-memory before the API call — your source script stays clean. Multi-word keys like `"Da Nang"` work because `\b` boundaries surround the whole phrase.
-
-**Curating the dictionary** — listen first, add second:
-- Run the skill on a short test script containing the candidate word
-- If the model already reads it correctly, **don't add it** (overfitting will break things)
-- Watch out for collisions: adding `"code"` would also rewrite the `Code` in `Claude Code` (brand name) → never do that
-- For brand names that need protecting, leave them out entirely
-- For VN place names, only add ones where the unaccented form is unambiguous (skip `Hue` — collides with English "hue")
-
-**Override / disable**:
-```bash
-# Use a custom map for a specific project
-uv run scripts/text_to_mp3.py --file s.txt --pronounce-map workspace/.../map.json -o out.mp3
-
-# Skip the substitution entirely
-uv run scripts/text_to_mp3.py --file s.txt --no-pronounce-map -o out.mp3
-```
-
-The script prints every applied substitution to stderr (e.g. `'doc' -> 'đóc' (4x)`) so you can verify what changed.
-
-## Number formatting (VN narration)
-
-The multilingual TTS mis-reads digit groups that use Vietnamese conventions, because it falls back to English rules (dot = decimal, comma = thousands). Examples:
-
-| Source digits | Misread as | Should say |
+| | **ElevenLabs** (skill này) | **MiniMax** (`mkt-video-script-to-mp3`) |
 |---|---|---|
-| `82.820` | "eighty-two point eight two zero" | "tám mươi hai nghìn tám trăm hai mươi" |
-| `28,8` | "twenty-eight comma eight" | "hai mươi tám phẩy tám" |
-| `4.000` | "four point zero zero zero" | "bốn nghìn" |
+| Vai trò | **Mặc định** của mọi pipeline | Thay thế, chỉ khi user nói rõ "dùng minimax" / `tts_provider: minimax` |
+| Khoá `.env` | `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` | `MINIMAX_API_KEY`, `MINIMAX_VOICE_ID` |
+| Model mặc định (theo script) | `eleven_turbo_v2_5`; `eleven_v3` khi cần audio tag | `speech-2.8-hd` |
+| Giới hạn | 5000 ký tự mỗi lần — script dừng nếu vượt | script không kiểm độ dài |
+| Phát âm / số | bản đồ phát âm + cảnh báo số | không có trong script |
+| Tốc độ | `--speed` 1.0 | `--speed` 1.08 |
+| Ra | MP3 44.1 kHz / 128 kbps | MP3 32 kHz / 128 kbps mono |
 
-**Rule: in VN scripts, spell out multi-digit numbers with separators as Vietnamese words before TTS.** The script does **not** auto-convert (VN number-to-words is non-trivial — proper "lăm" vs "năm", "mốt" vs "một", placement of "nghìn/triệu/tỷ"), but it **warns** to stderr on every run when a thousand-separator dot or comma-decimal is detected:
+User không nói nhà cung cấp → dùng ElevenLabs. Khoá ElevenLabs hết hạn mức hoặc lỗi mà user muốn đổi sang MiniMax → hỏi (a. chuyển MiniMax · b. đợi / đổi gói · c. dừng) rồi mới chạy; trong repo không có số liệu giá để so sánh chi phí hai bên.
 
-```
-Warning: VN TTS may mis-read these digit groups — consider spelling them as VN words in the script:
-  '82.820'  (thousand-separator dot (e.g. 82.820))
-  '28,8'    (comma decimal (e.g. 28,8))
-```
+## Luật — không được phá
 
-When you see the warning, edit the script and re-run. Small standalone digits (`10 tòa`, `25 tiện ích`, `71 phần trăm`, ranges like `70-80`) usually read fine — leave them as digits.
+1. **Cổng duyệt — mỗi lần gọi tốn ký tự của gói ElevenLabs.** Chỉ chạy khi user (hoặc orchestrator đã được user duyệt script) yêu cầu tạo MP3; báo trước số ký tự + voice + model. Không chạy lặp để "thử"; muốn thử giọng hay phát âm → dùng một đoạn ngắn (chuỗi inline).
+2. **Không ghi đè `voiceover.mp3` có sẵn** — script ghi đè không hỏi. Đã có tệp thì hỏi user: a. giữ bản cũ, ra tệp mới `<tên>-v2.mp3` · b. ghi đè · c. dừng.
+3. **Khoá chỉ đọc từ `.env`** (`ELEVENLABS_API_KEY`, tuỳ chọn `ELEVENLABS_VOICE_ID`) — không in giá trị, không chép sang tệp khác, không để khoá trong SKILL.md hay script.
+4. **Tên tệp ra là `voiceover.mp3`** khi đi trong pipeline `mkt-full-video-with-11-*` (các skill sau tìm đúng tên đó).
+5. **Không tự cắt ghép.** Quá 5000 ký tự → script dừng; tách script theo đoạn (ngắt ngữ nghĩa), gọi từng đoạn, ghép bằng ffmpeg. Không tự chia nhỏ trong script vì ngắt giữa chừng làm nhịp đọc nhảy ở chỗ nối.
+6. **Số viết thành chữ trong script** khi có dấu phân cách hoặc thập phân ("82.820", "28,8") — TTS dùng quy ước tiếng Anh nên đọc sai. Script chỉ **cảnh báo**, không tự đổi (đổi số sang chữ tiếng Việt dễ sai "lăm / năm", "mốt / một"). Số nhỏ đứng riêng ("10 tòa", "71 phần trăm", "70-80") thường đọc đúng, để nguyên.
+7. **Audio tag** (`[excited]`, `[whisper]`, `[laugh]`…) chỉ có tác dụng với `eleven_v3` → script có tag phải chạy với `--model_id eleven_v3`.
+8. **Báo thời lượng thật đo bằng máy** (bước 4), không đoán từ số ký tự; chưa nghe bằng tai thì nói rõ "mới đo bằng máy".
 
-## Workflow
+## Quy trình
 
-1. Load `ELEVENLABS_API_KEY` from project `.env`
-2. Read text from `--file` or positional arg, strip whitespace
-3. Apply pronunciation map (unless `--no-pronounce-map`) — whole-word case-insensitive replacement
-4. Validate `len(text) <= 5000`
-5. `POST https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128`
-   - Header: `xi-api-key: <key>`, `Content-Type: application/json`, `Accept: audio/mpeg`
-   - Body:
-     ```json
-     {
-       "text": "...",
-       "model_id": "eleven_v3",
-       "voice_settings": {
-         "stability": 0.5,
-         "similarity_boost": 0.75,
-         "style": 0,
-         "use_speaker_boost": true
-       }
-     }
-     ```
-4. Stream audio bytes directly to output MP3 (no transcoding needed — server returns MP3)
-5. Print `output_path`, `size_mb`, `char_count`, `voice_id`, `model_id`
+1. **Kiểm đầu vào.** `S/script.txt` có tồn tại; đếm ký tự (≤ 5000); soi số có dấu phân cách (luật 6); `S/voiceover.mp3` đã có chưa (luật 2). Xong khi biết số ký tự và không còn tệp nào bị đè ngoài ý muốn.
+2. **Chạy** (`uv` chạy giống nhau trên Windows và macOS):
+   ```bash
+   uv run $K/scripts/text_to_mp3.py --file $S/script.txt -o $S/voiceover.mp3
+   uv run $K/scripts/text_to_mp3.py --file $S/script-tagged.txt -o $S/voiceover.mp3 --model_id eleven_v3   # có audio tag
+   uv run $K/scripts/text_to_mp3.py "Xin chào các bạn" -o workspace/assets/elevenlabs/thu.mp3             # thử nhanh
+   ```
+   Xong khi in `OK` và có `output_path`.
+3. **Đọc stderr:** dòng `Applied pronunciation map` cho biết từ nào đã bị thay; `Warning: VN TTS may mis-read…` nghĩa là còn số cần viết chữ → sửa script, chạy lại (hỏi user vì tốn thêm ký tự).
+4. **Đo thời lượng:** `uv run .claude/skills/heygen-mp3-to-mp4/scripts/check_duration.py $S/voiceover.mp3` → `OK <giây>` (hoặc `ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 $S/voiceover.mp3`). Orchestrator giới hạn 300 giây.
+5. **Báo user:** đường dẫn MP3, thời lượng thật, `char_count`, `voice_id`, `model_id`; mời nghe duyệt (checkpoint #1 của orchestrator) trước khi sang bước lip-sync.
 
-## Output Convention
+## Tham số
 
-- Short/test: `workspace/assets/elevenlabs/<name>.mp3`
-- Video production: `workspace/content/YYYY-MM-DD/video-short/<project>/voiceover.mp3`
+| Cờ | Mặc định | Ghi chú |
+|---|---|---|
+| `--voice_id` | `ELEVENLABS_VOICE_ID` trong `.env`; dự phòng `K7ewtjKRNtwwt3lKQ6M0` (giọng thương hiệu của Hoàng) | đổi giọng cho một lần chạy |
+| `--model_id` | `eleven_turbo_v2_5` | `eleven_v3` (biểu cảm, audio tag), `eleven_multilingual_v2` (chất lượng cao, chậm), `eleven_flash_v2_5` (nhanh nhất) |
+| `--output_format` | `mp3_44100_128` | `mp3_44100_192` (chỉ gói trả phí), `pcm_44100`, `ulaw_8000` |
+| `--stability` · `--similarity_boost` · `--style` | 0.5 · 0.75 · 0 | bảng chỉnh ở [references/kinh-nghiem.md](references/kinh-nghiem.md) |
+| `--no_speaker_boost` | speaker boost bật | thêm cờ này mới tắt; giữ bật để giọng thương hiệu ổn định |
+| `--speed` | 1.0 | 0.7–1.2, theo `--help` của script là hỗ trợ trên `eleven_turbo_v2_5` và `eleven_flash_v2_5` |
+| `--pronounce-map <json>` · `--no-pronounce-map` | `assets/vn-pronunciation-map.json` | thay bản đồ cho một project / tắt hẳn |
 
-## Requirements
+## Bản đồ phát âm
 
-- `ELEVENLABS_API_KEY` in project `.env` (header auth: `xi-api-key`)
-- Optional `ELEVENLABS_VOICE_ID` in `.env` to lock a different default voice
-- Python deps managed via PEP 723 inline metadata (auto-installed by `uv run`): `requests`, `python-dotenv`
-- No `ffmpeg` needed — ElevenLabs returns MP3 directly
+Script tự nạp `assets/vn-pronunciation-map.json` và thay **nguyên từ, không phân biệt hoa thường** trong bộ nhớ trước khi gọi API (script gốc không bị sửa). Hai việc hợp lệ: (1) từ tiếng Anh trong script Việt bị đọc theo âm Việt → ghi âm bồi tiếng Việt ("doc" → "đóc"); (2) địa danh Việt viết không dấu ("Hanoi" → "Hà Nội"). Bản mặc định gồm vài từ kỹ thuật và các thành phố lớn — xem tệp JSON, không chép lại ở đây.
 
-## Why no chunking
+Thêm từ mới: **nghe trước, thêm sau** — chạy thử một đoạn ngắn chứa từ đó; model đã đọc đúng thì đừng thêm (thêm thừa sẽ làm hỏng). Cẩn thận va chạm: thêm "code" sẽ viết lại cả "Code" trong "Claude Code"; tên thương hiệu cần giữ thì không đưa vào; địa danh chỉ thêm khi dạng không dấu không mơ hồ (bỏ qua "Hue" vì trùng từ tiếng Anh).
 
-ElevenLabs limits requests to 5000 characters. The skill **fails fast** above that limit instead of auto-splitting because:
-- A single voiceover should be a coherent chunk — splitting mid-script causes prosody jumps at concat boundaries
-- The user's content (hooks, short scripts, video segments) typically fits well under 5000 chars
-- If the user genuinely needs longer audio, they should split the script semantically (paragraph breaks) and call this skill per chunk, then concat with ffmpeg in their own pipeline
+## Lỗi đã gặp
 
-## API Reference
+| Triệu chứng | Nguyên nhân | Sửa |
+|---|---|---|
+| `ELEVENLABS_API_KEY not found in .env` | thiếu khoá; script đọc `.env` ở **gốc repo** | thêm khoá vào `.env` ở gốc repo (mẫu `.env.example`) |
+| `text is N chars, exceeds … 5000` | script quá dài | tách đoạn theo luật 5 |
+| `ElevenLabs returned 4xx: {…}` | sai voice / model, hết hạn mức, tên model không có ở gói | đọc thông điệp JSON trong lỗi; không đoán |
+| Từ tiếng Anh đọc theo âm Việt | model đọc cả câu theo ngôn ngữ chính | thêm vào bản đồ phát âm sau khi nghe thử |
+| "82.820" đọc như số thập phân | quy ước dấu chấm / phẩy tiếng Anh | viết chữ (luật 6) |
+| `[excited]` không có tác dụng | model không phải `eleven_v3` | thêm `--model_id eleven_v3` |
+| MP3 ra bị ghi đè tệp cũ | script không hỏi | luật 2 — kiểm trước khi chạy |
 
-- Endpoint: `POST https://api.elevenlabs.io/v1/text-to-speech/{voice_id}`
-- Auth: `xi-api-key: <api_key>` header
-- Model catalog: https://elevenlabs.io/docs/models
-- Voice catalog (browse / get voice IDs): https://elevenlabs.io/app/voice-library
-- API docs: https://elevenlabs.io/docs/api-reference/text-to-speech/convert
-- Rate limits: depend on subscription tier — see https://elevenlabs.io/pricing
-- Output formats: `mp3_44100_128` (default), `mp3_44100_192` (higher quality, paid only), `pcm_44100`, `ulaw_8000` (telephony)
+## Cải tiến skill
+
+Gặp lỗi mới → thêm một dòng vào bảng trên và vào `references/kinh-nghiem.md` mục *Nhật ký*; sửa đúng một chỗ (script: `scripts/text_to_mp3.py`; từ điển: `assets/vn-pronunciation-map.json`).
+
+## Liên quan
+
+- Trước: `mkt-linh-aloha-bds-video-script` / `mkt-vn-short-video-script` (ra `script.txt`; footer `tts_provider` ghi nhà cung cấp user đã chọn).
+- Thay thế: `mkt-video-script-to-mp3` (MiniMax).
+- Sau: `heygen-mp3-to-mp4` (avatar lip-sync) và `mkt-ai-video-extract-srt-segment` (SRT + mốc từ).
+- Gọi bởi: `mkt-full-video-with-11-remotion-heygen`, `mkt-full-video-with-11-hyperframe-heygen`, `mkt-full-video-with-11-hyperframe-heygen-16-9`, `mkt-full-video-with-11-remotion-heygen-apartment-detail`.

@@ -1,337 +1,231 @@
 ---
 name: mkt-full-video-with-11-hyperframe-heygen
-description: End-to-end short-video pipeline — script (Việt/Anh) ra MP4 TikTok/Reels 9:16. Orchestrator 3 phase ghép skill có sẵn — (1) TTS via `mkt-elevenlabs-tts-to-mp3` (default, voice Hoàng) hoặc `mkt-video-script-to-mp3` (MiniMax), (2) checkpoint user duyệt MP3, (3) **PARALLEL** — HeyGen lip-sync background agent + Phase 3 packager foreground agent (transcribe voiceover.mp3 + identify emphasis + checkpoint #2 + fan-out N text-overlay writers + scaffold + wait for source.mp4 + preview Studio). Wall-clock ~5 min thay vì ~8 vì transcribe + outline + user review overlap với HeyGen render 3-10 min. Aesthetic là **broker-creator punchy** — avatar full-frame + 12-20 text overlay punch (white/red/yellow stroke đen) + 3-type zoom palette (soft2step/quickpop/doublepop, peaks 1.05-1.10) + b-roll full-screen sparse + 14-file BĐS SFX library. **BĐS mode** — pass `project_folder` để auto-resolve b-roll. USE WHEN user nói "tạo full video từ script", "script to tiktok video", "pipeline full video heygen + hyperframe", "video bđs dự án X", "kịch bản ra video tiktok", "chạy video bất động sản", hoặc có sẵn 1 script + (optional) ảnh b-roll và muốn ra MP4 9:16 đóng gói.
+description: Pipeline trọn gói từ KỊCH BẢN (Việt/Anh, ≤ 5000 ký tự) ra MP4 9:16 TikTok/Reels, avatar HeyGen xuất hiện suốt video — (1) TTS ElevenLabs (mặc định, giọng Hoàng) hoặc MiniMax → voiceover.mp3, (2) Hoàng duyệt MP3, (3) song song HeyGen lip-sync nền + agent mkt-full-video-phase3-packager dựng HyperFrames kiểu Broker-Creator Punchy (chữ punch, zoom, b-roll, SFX BĐS) rồi mở Studio preview, không tự render. Chế độ BĐS khi có project_folder. Dùng khi Hoàng nói "tạo full video từ script", "script to tiktok video", "pipeline full video heygen + hyperframe", "video bđs dự án X", "kịch bản ra video tiktok", "chạy video bất động sản". Không dùng khi đã có MP3 (→ heygen-mp3-to-mp4), đã có MP4 quay sẵn (→ mkt-hyperframe-talking-head-video hoặc mkt-hyperframe-luxury-realestate-9-16), muốn avatar chỉ 30–40% tiết kiệm credit (→ mkt-hyperframe-knowledge-video-heygen-9-16-lite), hay 16:9 / Remotion.
+argument-hint: "[script.txt | inline] [--slug <slug>] [--project_folder <dir>] [--tts_provider elevenlabs|minimax]"
 ---
 
-# mkt-full-video-with-11-hyperframe-heygen
+# mkt-full-video-with-11-hyperframe-heygen — kịch bản → MP4 9:16 trọn gói
 
-End-to-end orchestrator: **script → final TikTok/Reels MP4 9:16**.
+Phiên bản: v1.1 — 2026-11-11
 
-3 phase, 2 user checkpoints:
-1. **MP3 checkpoint** (orchestrator) — user duyệt voiceover sau Phase 1
-2. **Overlays-outline checkpoint** (Phase 3 sub-agent) — user duyệt danh sách text overlay + timestamps trước khi fan-out writers. Skip nếu `auto_overlays=true`.
+Orchestrator 3 phase ghép skill có sẵn: **script → voiceover.mp3 → (duyệt) → source.mp4 HeyGen ∥ dựng HyperFrames → Studio preview**. Có 3 cổng người duyệt: (0) xác nhận trước khi tốn credit TTS, (1) duyệt MP3 trước khi tốn credit HeyGen, (2) duyệt danh sách chữ nhấn (do agent Phase 3 quản; bỏ qua nếu `auto_overlays=true`); render là cổng thứ tư, do Hoàng bấm ở Studio.
 
-## Khi nào dùng
+## Chọn đúng skill (nhóm HyperFrames 9:16)
 
-- Script Việt/Anh ≤ 5000 ký tự muốn ra video TikTok hoàn chỉnh
-- Có sẵn (optional) ảnh b-roll kèm mục đích
-- Muốn đi 1 mạch từ kịch bản tới preview Studio
+| Hoàng có gì / muốn gì | Skill |
+|---|---|
+| Kịch bản, muốn avatar HeyGen suốt video + chữ punch | **skill này** |
+| Kịch bản / chủ đề kiến thức, review dự án, avatar chỉ 30–40% (tiết kiệm credit HeyGen) | `mkt-hyperframe-knowledge-video-heygen-9-16-lite` |
+| `source.mp4` (HeyGen hoặc quay thật), muốn chữ punch trên avatar full-frame | `mkt-hyperframe-luxury-realestate-9-16` |
+| MP4 quay sẵn, muốn infographic kính mờ + chia đôi màn hình | `mkt-hyperframe-talking-head-video` |
+| Đã có MP3, chỉ cần avatar MP4 | `heygen-mp3-to-mp4` |
+| 16:9 · Remotion · chi tiết căn hộ | `mkt-full-video-with-11-hyperframe-heygen-16-9` · `mkt-full-video-with-11-remotion-heygen` · `mkt-full-video-with-11-remotion-heygen-apartment-detail` |
 
-**Không dùng nếu:**
-- Đã có MP3 → dùng thẳng `heygen-mp3-to-mp4`
-- Đã có MP4 talking-head → dùng thẳng `mkt-hyperframe-talking-head-video`
-- HeyGen tự đọc text (không qua TTS provider) → `heygen-script-to-mp4`
-- Script > 5000 ký tự → split semantic rồi gọi từng segment
+Script > 5000 ký tự: tách theo ý rồi chạy từng đoạn. HeyGen tự đọc chữ (không qua TTS): ngoài phạm vi skill này.
 
-## Pipeline overview
+## Đầu vào → Đầu ra
+
+| Tham số | Bắt buộc | Định dạng |
+|---|---|---|
+| Script text | Có | Đường dẫn `.txt` / `.md` hoặc inline, ≤ 5000 ký tự |
+| `slug` | Không | Tự lấy 5 từ đầu của script, chữ thường ASCII nối `-` |
+| `broll_list` | Không | `[{path, purpose}]`, tên tệp ASCII (không dấu tiếng Việt) |
+| `tts_provider` | Không | `elevenlabs` (mặc định) hoặc `minimax` (khi Hoàng nói "dùng minimax") |
+| `voice_id` | Không | `--voice_id <id>`; mặc định từ `.env` (`ELEVENLABS_VOICE_ID`) |
+| `header_label` | Không | Chữ pill trên cùng, vd `"VINHOMES CAO XÀ LÁ"`; không truyền = bỏ pill |
+| `footer_handle` | Không | Chữ brand dưới, vd `"@linh.aloha"`; không truyền = bỏ brand mark |
+| `auto_overlays` | Không | Bỏ cổng duyệt chữ nhấn; mặc định `false` |
+| `project_folder` | Không | **Kích hoạt chế độ BĐS** — thư mục tài sản dự án (vd `workspace/data/cao-xa-la/`) |
+| `brand_palette` | Không | JSON ghi đè màu, vd `{ "accent": "#d97757" }` |
+
+Ra, trong `P=workspace/content/YYYY-MM-DD/<slug>/`:
+
+```
+script.txt · voiceover.mp3 (Phase 1) · source.mp4 (Phase 2) · broll/ (ASCII)
+transcript.json · transcript-cleaned.json · caption-groups.json
+overlays-outline.json · overlays/overlay-NN.json · overlays.json   (Phase 3, trước/sau cổng duyệt)
+compositions/ (overlay-01..N.html · broll-01..M.html · captions.html) · sfx/ · renders/ · index.html
+```
+
+## Luật — không được phá
+
+1. **Cổng duyệt trước khi tốn tiền** — không gọi ElevenLabs / MiniMax khi Hoàng chưa xác nhận (Step 0), không gọi HeyGen khi chưa duyệt MP3 (Step 2), không render khi chưa nghe "render". Hỏi kèm phương án a / b / c. Hoàng đã nói rõ "chạy luôn / không cần hỏi" trong yêu cầu hiện tại thì coi cổng 0 và 1 đã duyệt (vẫn in thông số trước khi gọi).
+2. **Không ghi đè / xoá bản cũ** — `voiceover.mp3` hoặc `source.mp4` đã có thì hỏi: a) dùng lại · b) làm bản mới (đổi tên bản cũ thành `voiceover.prev.mp3` / `source.prev.mp4`, không xoá) · c) dừng.
+3. **Tên tệp cố định `voiceover.mp3`, `source.mp4`** — composition tham chiếu đúng tên này.
+4. **HeyGen chỉ qua skill `heygen-mp3-to-mp4`** (upload + tạo video + poll + tải) — không gọi endpoint HeyGen v1/v2 (đã sunset); script upload thật nằm ở `.claude/skills/heygen-mp3-to-mp4/scripts/upload_asset.py`.
+5. **Khoá API và voice ID chỉ đọc từ `.env`** — không in giá trị, không chép sang tệp khác, không hard-code; ghi đè từng lần bằng `--voice_id`.
+6. **Script ≤ 5000 ký tự, MP3 ≤ 300s** — vượt thì dừng ngay, yêu cầu tách (fail fast ở Step 0, trước khi tốn credit).
+7. **Preview trước, không tự render** — Phase 3 kết thúc ở Studio.
+8. **Phase 2 + Phase 3 chạy song song** sau cổng duyệt MP3: HeyGen nền + agent Phase 3 tiền cảnh trong CÙNG MỘT message; Phase 3 phiên âm `voiceover.mp3` (audio ≡ `source.mp4`, HeyGen chỉ lip-sync) và chờ `source.mp4` trước preview.
+9. **Avatar luôn full-frame** (1080×1920, `object-fit: cover`) — không split-screen, không PIP; chữ punch nằm trên avatar.
+10. **Chế độ BĐS** — có `project_folder` thì b-roll resolve tới thư mục đó, không cho ghi đè trừ khi Hoàng nói rõ.
+11. **Không bịa số / pháp lý BĐS** — giá, diện tích, tiến độ, chính sách chỉ lấy từ script hoặc `_kien-thuc-du-an/` của dự án; thiếu thì ghi "chưa có".
+12. **Brand** (xưng "em", gọi "anh chị", "Aloha anh chị, em Linh đây", CTA) thuộc skill kịch bản `mkt-linh-aloha-bds-video-script` — skill này không viết / sửa kịch bản.
+
+Đường dẫn tương đối từ gốc repo; Windows thay `python3` bằng `python` / `py -3`. Báo xong = đường dẫn tệp + số đo thật (thời lượng `ffprobe`, kích thước, kết quả lint), không nói "xong" khi chưa chạy bước kiểm.
+
+## Pipeline
 
 ```
 Script
-   │
-   ▼
-Phase 1  ── TTS (elevenlabs | minimax) ──► voiceover.mp3
-   │
-   ▼  CHECKPOINT #1 — user duyệt MP3
-   │  OK
-   ▼
-─── Fire 2 agents PARALLEL (1 message) ────────────────────────────────
-   │
-   ├─ Phase 2 (BACKGROUND) ── heygen-mp3-to-mp4 ──► source.mp4 (3-10 min)
-   │
-   └─ Phase 3 (FOREGROUND) ── mkt-full-video-phase3-packager
-              │  audio_source = voiceover.mp3 (audio ≡ source.mp4)
-              │  source_mp4_pending = true
-              │
-              ├─ transcribe voiceover.mp3 + clean + group captions
-              ├─ identify emphasis words (brand, prices, urgency, CTA)
-              ├─ CHECKPOINT #2 — user duyệt overlays outline
-              ├─ FAN-OUT N text-overlay writers parallel (1 per emphasis)
-              ├─ scaffold overlay-*.html + optional broll-*.html + captions
-              ├─ wire root index.html (avatar full-frame + zoom hooks + SFX)
-              ├─ WAIT for source.mp4 (joins HeyGen background)
-              └─ lint + preview Studio
-   │
-   ▼
-User duyệt preview → `render` → final MP4
+  ▼
+Phase 1 ── [Cổng 0: xác nhận] TTS (elevenlabs | minimax) ──► voiceover.mp3
+  ▼  CỔNG 1 — Hoàng duyệt MP3  (OK → tốn credit HeyGen)
+  ├─ Phase 2 (NỀN)      heygen-mp3-to-mp4 ─────────────────► source.mp4 (3-10 phút)
+  └─ Phase 3 (TIỀN CẢNH) mkt-full-video-phase3-packager
+        phiên âm voiceover.mp3 → caption → chọn từ nhấn → CỔNG 2 (duyệt chữ nhấn)
+        → viết N overlay → dựng compositions + SFX + index.html
+        → chờ source.mp4 → lint → Studio preview
+  ▼
+Hoàng duyệt preview → "render" → MP4 1080×1920 30fps
 ```
-Wall-clock savings: HeyGen render (~3-10 min) overlaps với transcribe + outline + user checkpoint review (~1-3 min). Tổng pipeline ~5 min thay vì ~8.
 
-## Inputs
+HeyGen render (3-10 phút) chạy chồng với phiên âm + chọn từ nhấn + thời gian Hoàng duyệt — tác giả skill ghi tổng ~5 phút thay vì ~8 (số ước tính, chưa đo lại).
 
-| Param | Required | Format |
+## Hợp đồng Phase 3 — orchestrator ⇄ agent `mkt-full-video-phase3-packager`
+
+Hai bên dùng CÙNG tên tham số và tên tệp dưới đây (agent có bảng giống hệt; sửa một bên thì sửa cả hai).
+
+| Tham số truyền cho agent | Bắt buộc | Ý nghĩa |
 |---|---|---|
-| Script text | Yes | File path `.txt`/`.md` hoặc inline. ≤ 5000 ký tự |
-| Slug | No | Auto-derive 5 từ đầu script. Lowercase ASCII dash |
-| B-roll list | No | `[{path, purpose}]` (filenames phải ASCII — no dấu Việt!) |
-| `tts_provider` | No | `elevenlabs` (default) hoặc `minimax`. User nói "dùng minimax" → set |
-| `voice_id` override | No | CLI `--voice_id <id>`. Default từ `.env` |
-| `header_label` | No | Pill text trên top, vd `"VINHOMES CAO XÀ LÁ"` |
-| `footer_handle` | No | Brand mark text dưới, vd `"@linh.aloha"` |
-| `auto_overlays` | No | Skip checkpoint #2. Default `false` |
-| `project_folder` | No | **BĐS mode trigger.** Path tới folder asset BĐS |
-| `brand_palette` | No | JSON override `{ "accent": "#d97757", ... }` per brand |
+| `workspace_dir` | Có | `workspace/content/YYYY-MM-DD/<slug>/`; có sẵn `script.txt`, `voiceover.mp3`, `broll/` |
+| `slug` | Có | Slug dự án |
+| `script_text` | Có | Toàn văn lời đọc (bản đã lưu ở `script.txt`) |
+| `broll_list` | Không | `[{path, purpose}]`, đã copy vào `broll/` |
+| `auto_overlays` | Không | `false`; `true` = bỏ cổng duyệt chữ nhấn |
+| `header_label` / `footer_handle` | Không | Chữ pill / brand mark; không truyền = bỏ |
+| `brand_palette` | Không | JSON ghi đè màu, hoặc `null` |
+| `audio_source` | Không | Mặc định `voiceover.mp3` — tệp để phiên âm |
+| `source_mp4_pending` | Không | `true` = HeyGen đang render nền; agent chờ `source.mp4` trước preview |
 
-**BĐS mode** (khi `project_folder` set): b-roll resolve relative tới folder + **SFX library 14 file** (auto-copy từ `workspace/assets/01_Sound Bat dong san/` → `<workspace>/sfx/` với ASCII filename rename). Xem [SFX library — BĐS broker-creator](#sfx-library--bđs-broker-creator-14-file) bên dưới.
+Agent trả về: `workspace_dir` · số overlay · số b-roll · số caption group · số SFX · số zoom hook · URL Studio (thường `http://localhost:3002`). Không render.
 
-## Workspace layout
+Thẩm mỹ, mẫu code, SFX, luật b-roll: nguồn duy nhất là `mkt-hyperframe-luxury-realestate-9-16` (bảng SFX BĐS ở tệp `sfx-bds.md` trong `references/` của skill đó) — skill này không chép lại.
 
-```
-workspace/content/YYYY-MM-DD/<slug>/
-├── script.txt
-├── voiceover.mp3                  # Phase 1
-├── source.mp4                     # Phase 2
-├── broll/                         # ASCII filenames!
-├── transcript-cleaned.json        # Phase 3
-├── caption-groups.json
-├── overlays-outline.json          # pre-checkpoint
-├── overlays/                      # fan-out per-overlay JSON
-├── overlays.json                  # merged
-├── compositions/
-│   ├── overlay-01..N.html         # text overlay punches
-│   ├── broll-01..M.html           # optional full-screen b-roll
-│   └── captions.html
-├── sfx/                           # 14 file ASCII-rename từ assets/01_Sound Bat dong san/
-├── renders/
-└── index.html                     # avatar full-frame + zoom hooks + SFX + N mounts
+## Quy trình
+
+```bash
+P=workspace/content/YYYY-MM-DD/<slug>
 ```
 
-## Workflow
+### Step 0 — Setup + Cổng 0
 
-### Step 0 — Setup
-
-1. Validate `len(script) ≤ 5000`. Vượt → stop, yêu cầu split.
-2. Derive slug (5 từ đầu → lowercase ASCII dash) nếu thiếu.
-3. **BĐS mode detect**: nếu user pass `project_folder` HOẶC nhắc "video bđs", "dự án X", brand name BĐS phổ biến (Vinhomes/Masterise/Sun/Lumière) → b-roll resolve tới `project_folder`. Validate folder + b-roll files tồn tại với ASCII filenames.
-4. **TTS provider**: default `elevenlabs`. Validate api key trong `.env`.
-5. Tạo `workspace/content/YYYY-MM-DD/<slug>/`. Save `script.txt`.
-6. **Fire 2 copy ops song song** (1 message, 2 Bash calls `run_in_background:true`):
-   - Copy b-roll → `broll/` (ASCII rename).
-   - Copy 14-file SFX library → `<workspace>/sfx/` (ASCII rename theo bảng [SFX library](#sfx-library--bđs-broker-creator-14-file)) từ `workspace/assets/01_Sound Bat dong san/`.
-7. Báo user: workspace path, provider, b-roll count, **SFX count + tên file đã rename**.
+1. Đếm ký tự script. > 5000 → dừng, yêu cầu tách (chưa tốn gì).
+2. Slug: 5 từ đầu → chữ thường ASCII nối `-` nếu thiếu.
+3. **Chế độ BĐS:** có `project_folder`, hoặc Hoàng nhắc "video bđs", "dự án X", tên chủ đầu tư phổ biến (Vinhomes / Masterise / Sun / Lumière) → b-roll resolve tới `project_folder`. Kiểm thư mục và b-roll tồn tại, tên ASCII.
+4. **TTS provider:** mặc định `elevenlabs`; chỉ kiểm khoá có trong `.env` (có / không, không in).
+5. Tạo `$P/`, lưu `script.txt`; copy b-roll → `$P/broll/` (đổi tên ASCII). SFX do agent Phase 3 copy (theo `sfx-bds.md`).
+6. **Cổng 0.** Báo Hoàng: workspace, provider + voice, số ký tự, số b-roll → hỏi: a) chạy TTS · b) sửa script / đổi provider · c) dừng. Xong khi Hoàng chọn a (hoặc đã nói "chạy luôn").
 
 ### Step 1 — Phase 1: Script → MP3
 
 ```bash
-# ElevenLabs (default)
-uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
-  --file workspace/content/YYYY-MM-DD/<slug>/script.txt \
-  -o workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
-
-# MiniMax (alternative)
-uv run .claude/skills/mkt-video-script-to-mp3/scripts/text_to_mp3.py \
-  --file <script-path> -o <out.mp3>
+# ElevenLabs (mặc định)
+uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py --file $P/script.txt -o $P/voiceover.mp3
+# MiniMax
+uv run .claude/skills/mkt-video-script-to-mp3/scripts/text_to_mp3.py --file $P/script.txt -o $P/voiceover.mp3
+# Kiểm thời lượng (HeyGen giới hạn 300s)
+uv run .claude/skills/heygen-mp3-to-mp4/scripts/check_duration.py "$P/voiceover.mp3"
 ```
 
-Filename **inviolable**: `voiceover.mp3`. Check duration ≤ 300s (HeyGen cap).
+Xong khi: `voiceover.mp3` tồn tại và `check_duration.py` in `OK <giây>`.
 
-### Step 2 — CHECKPOINT #1: user nghe MP3
+### Step 2 — Cổng 1: Hoàng nghe MP3
 
-Báo user format:
 ```markdown
 ## Voiceover ready
 **File:** workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
 **Duration:** <X>s · **Size:** <Y>MB · **Provider:** <elevenlabs|minimax>
 
-Reply:
-- `OK` / `tiếp` → chạy Phase 2
-- `regen` + lý do → tweak voice settings và regen
-- `sửa script` + nội dung → save script mới rerun Phase 1
+Trả lời:
+- `OK` / `tiếp` → chạy Phase 2 (tốn credit HeyGen theo thời lượng MP3)
+- `regen` + lý do → chỉnh voice settings, tạo lại (hỏi lại cổng 0 nếu đổi provider)
+- `sửa script` + nội dung → lưu script mới, chạy lại Phase 1
+- `dừng` → kết thúc, giữ nguyên tệp
 ```
 
-**Stop. Đợi user.**
+**Dừng. Đợi Hoàng.**
 
-### Step 3 — Phase 2 + Phase 3 PARALLEL (1 message, 2 concurrent agents)
+### Step 3 — Phase 2 + Phase 3 SONG SONG (1 message, 2 agent)
 
-Sau CHECKPOINT #1 OK, fire **2 agents trong 1 message** để overlap HeyGen render (3-10 min) với transcribe + outline + checkpoint #2 (~30-90s + user review time). Tiết kiệm 1-3 min wall-clock vì audio của `source.mp4` ≡ `voiceover.mp3` (HeyGen chỉ lip-sync, không đổi audio) → transcribe có thể chạy trên `voiceover.mp3` ngay, không cần đợi HeyGen.
-
-**Agent A — HeyGen runner (`run_in_background: true`)**
+**Agent A — HeyGen (`run_in_background: true`, `subagent_type: general-purpose`):**
 
 ```
-subagent_type: general-purpose
-run_in_background: true
-prompt: |
-  Invoke skill `heygen-mp3-to-mp4` với:
-  - mp3: workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
-  - output: workspace/content/YYYY-MM-DD/<slug>/source.mp4
-
-  Theo skill: pick avatar từ HEYGEN_AVATAR_LOOKS, upload MP3 qua REST helper
-  `scripts/upload_asset.py` (POST /v3/assets — MCP không còn upload tool), tạo lip-sync
-  qua `mcp__heygen__create_video_from_avatar` 9:16 720p, poll `mcp__heygen__get_video`
-  ≤ 10 min, download to source.mp4.
-  Filename `source.mp4` inviolable. Return khi file tồn tại trên disk.
+Invoke skill `heygen-mp3-to-mp4` với:
+- mp3: workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3
+- output: workspace/content/YYYY-MM-DD/<slug>/source.mp4
+Skill đó lo chọn avatar, upload, tạo video 9:16 720p, poll, tải. Tên `source.mp4` cố định.
+Trả về khi tệp tồn tại trên đĩa.
 ```
 
-**Agent B — Phase 3 packager (foreground)**
+**Agent B — Phase 3 (tiền cảnh, `subagent_type: mkt-full-video-phase3-packager`):**
 
 ```
-subagent_type: mkt-full-video-phase3-packager
-prompt: |
-  Workspace: workspace/content/YYYY-MM-DD/<slug>/
-  Slug: <slug>
-  Script: <full text>
-  B-roll: [{path: "...", purpose: "..."}, ...]
-  auto_overlays: false
-  header_label: "<eg VINHOMES CAO XÀ LÁ>"
-  footer_handle: "<eg @linh.aloha>"
-  brand_palette: null
-  audio_source: voiceover.mp3  # transcribe THIS (HeyGen chưa xong source.mp4)
-  source_mp4_pending: true     # Đợi source.mp4 trước preview ở Step 9
+workspace_dir: workspace/content/YYYY-MM-DD/<slug>/
+slug: <slug>
+script_text: <toàn văn script>
+broll_list: [{path: "...", purpose: "..."}, ...]
+auto_overlays: false
+header_label: "<vd VINHOMES CAO XÀ LÁ>"
+footer_handle: "<vd @linh.aloha>"
+brand_palette: null
+audio_source: voiceover.mp3
+source_mp4_pending: true
 
-  Run Phase 3 packaging per your agent definition. Sub-skill
-  `mkt-hyperframe-luxury-realestate-9-16/SKILL.md` là source of truth cho
-  visual / animation / SFX / overflow guard / gotchas.
-
-  Return Studio URL.
+Chạy Phase 3 theo định nghĩa agent. Skill `mkt-hyperframe-luxury-realestate-9-16` là nguồn
+chuẩn về hình ảnh / animation / SFX / chống tràn chữ. Trả về URL Studio.
 ```
 
-Phase 3 sub-agent: transcribe + outline + checkpoint #2 + fan-out N writers parallel + scaffold concurrent với HeyGen render. Trước `npx hyperframes preview` (Step 9), sub-agent waits `source.mp4` xuất hiện (`until [ -f source.mp4 ]; do sleep 10; done`).
+Orchestrator chỉ chuyển câu trả lời của Hoàng cho agent B (cổng 2). Agent A chạy tự động, báo khi xong. HeyGen lỗi (hết credit / MCP mất kết nối) thì Phase 3 sẽ kẹt ở bước chờ `source.mp4` → xem bảng lỗi.
 
-Orchestrator chỉ relay user replies tới Phase 3 sub-agent (foreground) khi đang active. HeyGen agent chạy autonomous trong background, returns notification khi xong. Nếu HeyGen fail (credit hết / MCP disconnect), Phase 3 sẽ stall ở Step 10 wait — kill HeyGen agent + re-run thủ công.
-
-### Step 4 — Hand off
+### Step 4 — Bàn giao
 
 ```markdown
 ## Pipeline DONE — preview ready
 **Workspace:** workspace/content/YYYY-MM-DD/<slug>/
 **Phase 1 (<provider>):** voiceover.mp3 — <D>s, <S>MB
 **Phase 2 (HeyGen):** source.mp4 — avatar <id>, <D>s, <S>MB
-**Phase 3:** <N> text overlay punches, <M> b-roll inserts, <K> caption groups, <S>/6 SFX cues fired, <Z> zoom hooks
+**Phase 3:** <N> chữ punch, <M> b-roll, <K> caption group, <S> SFX, <Z> zoom hook
 **Studio:** http://localhost:3002
 
-Mở browser scrub timeline. Nói `render` khi OK → MP4 1080×1920 30fps.
+Mở trình duyệt scrub timeline. Nói `render` khi OK → MP4 1080×1920 30fps.
 ```
 
-**Stop.** Không auto-render.
+**Dừng.** Không tự render.
 
-## Critical orchestration rules
+## Lỗi đã gặp / Kiểm
 
-1. **2 checkpoints, 1 orchestrator gate** — Orchestrator stop ở MP3 only. Overlays-outline checkpoint do Phase 3 quản. Render gate ở Studio do user.
-2. **Path conventions inviolable** — `voiceover.mp3`, `source.mp4`. HF expect đúng tên.
-3. **HeyGen: MCP cho create/poll, REST v3 cho upload** — `mcp__heygen__create_video_from_avatar` + `mcp__heygen__get_video`; upload MP3 qua `scripts/upload_asset.py` (`POST /v3/assets`). KHÔNG gọi endpoint v1/v2 (`/v2/video/generate`, `upload.heygen.com/v1/asset`) — sunset 2026-10-31.
-4. **Voice ID trong `.env`, không hard-code.** Override per-call qua `--voice_id`.
-5. **Script length hard cap 5000** — fail fast Step 0.
-6. **MP3 duration ≤ 300s** — HeyGen single-video cap.
-7. **Preview-first** — Phase 3 KHÔNG auto-render. User gate ở Studio.
-8. **Phase 3 isolation** — sub-agent context riêng, parent skill body + references load vào sub-agent.
-8b. **Phase 2 + 3 parallel kickoff** — Sau CHECKPOINT #1, fire HeyGen background agent + Phase 3 foreground agent trong 1 message. Phase 3 transcribe trên `voiceover.mp3` (audio identical to source.mp4) và wait source.mp4 trước preview Step 9.
-9. **BĐS mode** — `project_folder` set → b-roll resolve tới folder. Không cho override trừ khi explicit.
-10. **Avatar full-frame always** — Avatar object-fit:cover, z-index 1, full 1080×1920 canvas. KHÔNG split-screen, KHÔNG PIP. Text overlay punch trên avatar.
-
-## Visual style — broker_creator
-
-| Tiêu chí | Spec |
+| Triệu chứng | Hành động |
 |---|---|
-| Avatar layout | FULL FRAME 1080×1920 (object-fit cover, z-index 1, NO split-screen, NO PIP) |
-| Visual driver | 12-20 text overlay punches |
-| Text style | Be Vietnam Pro 900 + thick black stroke |
-| Color palette | White + Red + Yellow + Black stroke |
-| Animation | back.out(2.0) 0.35s scale-pop |
-| B-roll | Full-screen insert sparse 1-3x |
-| SFX kit | **13 files BĐS** — impact (collapse/giant-foot) + build (build-up/count) + text-pop (pop/ui-tap/camera-shutter) + transition (film-burn/glitch) + tech (cyber-1/cyber-2/digital-device/scifi-monitor) |
-| Zoom palette | 3 types (soft2step/quickpop/doublepop), peaks 1.05-1.10 |
-| Captions | bottom 280 TikTok pill black |
-| Sub-skill | `mkt-hyperframe-luxury-realestate-9-16` |
+| Script > 5000 ký tự | Dừng, yêu cầu tách theo ý |
+| TTS lỗi | Kiểm biến khoá trong `.env` (`ELEVENLABS_API_KEY` / `MINIMAX_API_KEY`), hoặc đổi provider (qua cổng 0 lại) |
+| MP3 > 300s | Dừng, gợi ý tách đoạn |
+| HeyGen MCP chưa kết nối | `claude mcp list`; OAuth theo skill `heygen-mp3-to-mp4` |
+| HeyGen render lỗi | Kiểm credit qua `mcp__heygen__get_current_user` |
+| Phase 3 kẹt ở bước chờ `source.mp4` > 15 phút | Dừng agent HeyGen; kiểm credit / MCP; chạy lại agent HeyGen thủ công với cùng `voiceover.mp3` (qua cổng 1 lại) — `source.mp4` xuất hiện thì Phase 3 tiếp tục |
+| Agent Phase 3 lỗi | Chạy lại Phase 3 riêng bằng skill `mkt-hyperframe-luxury-realestate-9-16` |
+| `project_folder` không tồn tại | Dừng, in đường dẫn + `ls workspace/data/` |
+| B-roll tên tiếng Việt | Dừng, đổi ASCII trước khi tiếp |
+| Kho SFX BĐS thiếu tệp (`workspace/assets/01_Sound Bất động sản/`) | Không dừng: dùng bộ chuẩn 6 tệp (xem `sfx-bds.md`), báo Hoàng tệp nào thiếu |
+| Chữ overlay tràn hai cạnh | Thiếu `max-width: 960px` + `fitText()` — sửa theo `overlay-template.md` của skill luxury |
+| Render ra khung đen / nửa đen | Selector CSS phải là `[data-composition-id="…"]`, không `#id` |
 
-## SFX library — BĐS broker-creator (13 file)
+## Ví dụ — chế độ BĐS
 
-Source: `workspace/assets/01_Sound Bat dong san/` (folder gốc có dấu Việt + space). Step 0 auto-copy 13 file vào `<workspace>/sfx/` với ASCII rename theo bảng dưới. HyperFrames refs phải dùng tên đã rename (ASCII, no-space, lowercase).
+Hoàng: *"Chạy video BĐS Vinhomes Cao Xà Lá. Project: `workspace/data/cao-xa-la/`. Script: 'Cao Xà Lá — tên ai cũng biết… Bình luận BLOOM em gửi inbox.' B-roll: facade.jpg, architecture.jpg, main-entrance.jpg, overview.jpg."*
 
-### Mapping rename
+1. Step 0 — nhận ra chế độ BĐS, kiểm thư mục + 4 b-roll ASCII, slug `cao-xa-la-bloom`; báo thông số → Hoàng `OK`.
+2. Step 1 — ElevenLabs → `voiceover.mp3` ~60s. Step 2 — Hoàng `OK`.
+3. Step 3 — cùng một message: HeyGen nền + agent Phase 3 (phiên âm, ~15 từ nhấn: Cao Xà Lá, 3 nhà máy, đất vàng, Masterise, 10 tòa, 120 TR/M², hợp lý hơn, 1 tuần, BLOOM…; cổng 2 → Hoàng `OK` → 15 overlay + 3 b-roll insert → dựng → chờ `source.mp4` → lint).
+4. Step 4 — URL Studio. Hoàng `render` → MP4. Tổng ~5 phút (số minh hoạ từ lần chạy mẫu, không cam kết).
 
-| Source filename | Renamed (ASCII) | Bytes |
-|---|---|---|
-| `12120 collapsing building.wav` | `collapse.wav` | 1.57 MB |
-| `Build Up.WAV` | `build-up.wav` | 860 KB |
-| `Camera Shutter.WAV` | `camera-shutter.wav` | 156 KB |
-| `Cyber 11-1.WAV` | `cyber-1.wav` | 356 KB |
-| `Cyber 13-3.WAV` | `cyber-2.wav` | 504 KB |
-| `Digital device.WAV` | `digital-device.wav` | 188 KB |
-| `Film Burn.WAV` | `film-burn.wav` | 119 KB |
-| `Glitch Sound.WAV` | `glitch.wav` | 115 KB |
-| `Pop.WAV` | `pop.wav` | 115 KB |
-| `Sci-fi Monitor.WAV` | `scifi-monitor.wav` | 180 KB |
-| `Sound foot giant.m4a` | `giant-foot.m4a` | 1.77 MB |
-| `UI sound.WAV` | `ui-tap.wav` | 131 KB |
-| `Unobtrusive count.WAV` | `count.wav` | 451 KB |
+## Cải tiến skill
 
-### When-to-use cheat-sheet
+Gặp lỗi mới: thêm một hàng vào bảng trên hoặc `references/kinh-nghiem.md` mục *Nhật ký*, rồi sửa đúng một chỗ. Hợp đồng Phase 3 đổi thì sửa CẢ HAI nơi: bảng ở đây và bảng trong `.claude/agents/mkt-full-video-phase3-packager.md`.
 
-| Group | File | Trigger moment trong script | Cap (max/video) |
-|---|---|---|---|
-| **Impact** | `collapse.wav` | Pain agitation / phá vỡ định kiến / reveal twist (giá tăng, hết quỹ căn, định kiến sai) | 1-2 |
-| **Impact** | `giant-foot.m4a` | Authority entrance — reveal chủ đầu tư (Masterise, Vingroup, Sun) bước vào | 1 |
-| **Build** | `build-up.wav` | 2-4s trước reveal lớn (giá, view, mặt bằng). LUÔN pair với impact phía sau | 2 |
-| **Count** | `count.wav` | Đếm: "1, 2, 3 lý do" / "120→125→130tr/m²". Vol ngầm, không lấn voiceover | 2 |
-| **Text-pop** | `pop.wav` | Text overlay nhỏ: tên phân khu, diện tích, số PN, bullet tiện ích | 6 |
-| **UI** | `ui-tap.wav` | Tap highlight mặt bằng / khoanh tiện ích / icon brand | 4 |
-| **UI** | `camera-shutter.wav` | Chuyển ảnh render → ảnh thực; cú "chụp" reveal view | 2 |
-| **Transition** | `film-burn.wav` | Cut scene cinematic: drone → mặt bằng → căn hộ mẫu | 2 |
-| **Transition** | `glitch.wav` | Before/after: Cao Xà Lá xưa vs Vinhomes mới; quy hoạch then-now | 2 |
-| **Tech** | `cyber-1.wav` | Reveal số liệu ROI / % tăng giá / yield cho thuê (vol ≤ 30%) | 2 |
-| **Tech** | `cyber-2.wav` | Variant nhẹ hơn cyber-1, hiển thị bảng so sánh giá | 2 |
-| **Tech** | `digital-device.wav` | Notification FOMO: "khách book cọc" / "căn vừa bị giữ" | 2 |
-| **Tech** | `scifi-monitor.wav` | Reveal dashboard / biểu đồ tăng giá khu vực 5Y | 1 |
+## Liên quan
 
-### Combo rules (apply trong overlays-outline checkpoint)
-
-- **Total budget**: max 6 SFX firings/video (60s). Quá noise → viewer scroll.
-- **Build → Reveal chain**: `build-up.wav` (3s tail) bắt buộc kết thúc bằng 1 impact SFX (`collapse` / `giant-foot` / `camera-shutter`). Không cho build-up nối text-pop nhẹ.
-- **No-double impact**: chỉ chọn 1 trong 2 impact files mỗi video. Không xếp chồng 2 impact gần nhau (< 4s).
-- **Text-pop pairing**: mỗi overlay punch-white/punch-red có thể pair `pop.wav` HOẶC `ui-tap.wav` — không cả hai.
-- **Tech cluster persona-gated**: `cyber-*` + `scifi-monitor` + `digital-device` chỉ dùng cho persona "đầu tư trẻ" / "ROI buyer". Persona "ở thật" giữ vol 0 hoặc bỏ.
-- **CTA outro**: nếu video chốt bằng CTA "BLOOM gửi inbox" / "comment 1" — có thể dùng `digital-device.wav` 1x làm chime notification.
-
-## Failure modes
-
-| Symptom | Hành động |
-|---|---|
-| Script > 5000 | Stop, yêu cầu split semantic |
-| TTS API fail | Check `<PROVIDER>_API_KEY` trong `.env`, hoặc swap provider |
-| MP3 > 300s | Stop, suggest chunking |
-| HeyGen MCP not connected | `claude mcp list` verify |
-| HeyGen render fail | Check credits qua `mcp__heygen__get_current_user` |
-| HeyGen background agent timeout (Phase 3 stall ở Step 9 wait > 15 min) | Kill HeyGen agent. Check credits / MCP. Re-spawn HeyGen agent thủ công với cùng `voiceover.mp3` → khi source.mp4 land, Phase 3 sẽ tiếp tục |
-| Phase 3 sub-agent fail | Re-run Phase 3 standalone bằng sub-skill |
-| `project_folder` không tồn tại | Stop, in path + `ls workspace/data/` |
-| B-roll filename Vietnamese | Stop, rename ASCII trước khi tiếp |
-| SFX folder `workspace/assets/01_Sound Bat dong san/` thiếu | Stop, in path. User cần restore folder hoặc giảm SFX cues về 4 file legacy |
-| SFX file 404 ở render | Filename còn space/uppercase WAV → rename theo bảng ASCII trong [SFX library](#sfx-library--bđs-broker-creator-14-file) |
-| Text overlay tràn 2 cạnh canvas (vd "HỢP LÝ HƠN!" cụt) | Thiếu `max-width: 960px` + `fitText()` trong overlay-XX.html. Sub-skill template đã có guard; nếu sub-agent skip, mở overlay-XX.html sửa: thêm `max-width: 960px`, `word-break: keep-all`, gọi `fitText(el, 960, 200, 70, 4)` trong `document.fonts.ready.then(run)` BEFORE GSAP timeline |
-| Render output đen top-half | Check CSS selector (phải `[data-composition-id="..."]`, không `#id`) |
-
-## Example — BĐS mode
-
-User:
-> Chạy video BĐS Vinhomes Cao Xà Lá. Project: `workspace/data/cao-xa-la/`. Script: "Cao Xà Lá — tên ai cũng biết, tuần sau gọi khác… Bình luận BLOOM em gửi inbox."
-> B-roll (ASCII): facade.jpg, architecture.jpg, main-entrance.jpg, overview.jpg
-
-Pipeline:
-1. **Step 0** — detect BĐS mode. Set `aesthetic=broker_creator`. Validate folder + 4 b-roll ASCII filenames. Slug `cao-xa-la-bloom`. Báo user OK.
-2. **Step 1** — ElevenLabs (voice Hoàng) → `voiceover.mp3` ~60s.
-3. **Step 2 — CHECKPOINT #1** — user `OK`.
-4. **Step 3 PARALLEL** — Trong 1 message fire 2 agents:
-   - HeyGen runner (background) bắt đầu lip-sync `voiceover.mp3` → `source.mp4` (~3-10 min)
-   - Phase 3 packager (foreground) transcribe `voiceover.mp3`, identify ~15 emphasis words (Cao Xà Lá, tên khác, 3 nhà máy, đất vàng, Masterise, 10 tòa, 120 TR/M², Royal City, Matrix One, hợp lý hơn, 1 tuần, giá tốt nhất, bảng giá, BLOOM…), checkpoint #2 outline → user `OK` → fan-out 15 overlay writers + 3 b-roll inserts (architecture/facade/main-entrance) → scaffold → lint
-   - Phase 3 wait `source.mp4` xuất hiện (thường lúc này HeyGen đã xong vì user mất ~1 min review checkpoint #2) → preview
-5. **Step 4** — Studio URL trả về orchestrator. User `render` → final MP4.
-
-Total ~5 phút wall-clock.
-
-## What this skill does NOT do
-
-- KHÔNG viết script (dùng `mkt-create-script-*` trước)
-- KHÔNG handle script > 5000 ký tự (split semantic)
-- KHÔNG chunk MP3 (single-clip; > 300s → `heygen-short-video`)
-- KHÔNG auto-render MP4 (user gate ở Studio)
-- KHÔNG handle Phase 3 internals (delegate sub-agent)
-- KHÔNG override hard constraints của sub-skills (avatar allowlist, MCP-only, font, etc.)
-
-## References
-
-- **TTS A** — `.claude/skills/mkt-elevenlabs-tts-to-mp3/SKILL.md` (default voice Hoàng)
-- **TTS B** — `.claude/skills/mkt-video-script-to-mp3/SKILL.md` (MiniMax)
-- **HeyGen** — `.claude/skills/heygen-mp3-to-mp4/SKILL.md`
-- **HF broker-creator** — `.claude/skills/mkt-hyperframe-luxury-realestate-9-16/SKILL.md` (visual / animation / SFX / overflow guard / gotchas — source of truth)
-- **Phase 3 sub-agent** — `.claude/agents/mkt-full-video-phase3-packager.md`
-- **SFX assets BĐS** — `workspace/assets/01_Sound Bat dong san/` (14 file gốc; xem [SFX library](#sfx-library--bđs-broker-creator-14-file) bảng rename + mapping when-to-use)
-- **Reference project** — `workspace/content/2026-05-16/cao-xa-la-bloom/` (golden sample broker-creator output)
+- Trước: `mkt-linh-aloha-bds-video-script` (kịch bản) · TTS: `mkt-elevenlabs-tts-to-mp3` (mặc định), `mkt-video-script-to-mp3` (MiniMax) · Phase 2: `heygen-mp3-to-mp4`.
+- Phase 3: agent `.claude/agents/mkt-full-video-phase3-packager.md` + skill `mkt-hyperframe-luxury-realestate-9-16` (thẩm mỹ, SFX); dùng script caption của `mkt-hyperframe-talking-head-video`.
+- Chi tiết: [kinh-nghiem.md](references/kinh-nghiem.md) — điều cần biết (kho SFX thiếu tệp, project mẫu) + nhật ký.
+- Dự án mẫu `workspace/content/2026-05-16/cao-xa-la-bloom/` không có trong repo (thư mục `content/` không được commit).

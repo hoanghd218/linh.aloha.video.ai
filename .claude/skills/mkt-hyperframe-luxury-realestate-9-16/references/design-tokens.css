@@ -71,9 +71,10 @@
   --punch-out-dur:   0.30s;
 
   /* ----- Avatar zoom hook peaks ----- */
-  --zoom-peak-soft: 1.08;
-  --zoom-peak-mid:  1.15;
-  --zoom-peak-hard: 1.20;
+  /* Luật hiện tại: đỉnh 1.04–1.10, KHÔNG bao giờ ≥ 1.15 (bản cũ ghi 1.08 / 1.15 / 1.20 — đã bỏ) */
+  --zoom-peak-soft: 1.05;
+  --zoom-peak-mid:  1.08;
+  --zoom-peak-hard: 1.10;
 }
 
 /* ============================================================
@@ -88,7 +89,9 @@
   line-height: 0.95;
   text-transform: uppercase;
   text-align: center;
-  white-space: nowrap;
+  max-width: 960px;               /* trần cứng — chống tràn canvas 1080px (kèm fitText() trong JS) */
+  word-break: keep-all;           /* không bẻ giữa từ tiếng Việt */
+  overflow-wrap: break-word;      /* thay cho white-space: nowrap (nowrap chỉ dùng tạm khi fitText() đo) */
   paint-order: stroke fill;       /* stroke renders BEHIND fill for cleaner edges */
   will-change: transform, opacity;
 }

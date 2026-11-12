@@ -1,6 +1,6 @@
 # Sound Effects Library
 
-Library at `workspace/assets/reels/sfx/` (full library) — copy 6 needed files into project's `sfx/` folder.
+Nguồn: `assets/sfx/` của skill này (6 tệp). Thư viện đầy đủ cũ `workspace/assets/reels/sfx/` KHÔNG có trong repo — các SFX "thay thế" ở dưới (Wow, tada, boom…) chỉ dùng được khi người dùng tự thả tệp vào `sfx/` của project. Copy 6 tệp cần dùng vào `sfx/` của project.
 
 ## 6 SFX standard mapping (use these by default)
 
@@ -64,7 +64,7 @@ User can drop new MP3 files into project's `sfx/` folder, then add
 
 Verify file exists before referencing:
 ```bash
-[ -f "workspace/video-projects/<slug>/sfx/<file>.mp3" ] && echo OK || echo MISSING
+[ -f "workspace/content/YYYY-MM-DD/<slug>/sfx/<file>.mp3" ] && echo OK || echo MISSING
 ```
 
 ## Why these specific SFX?

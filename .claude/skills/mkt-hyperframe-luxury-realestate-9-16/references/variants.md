@@ -2,6 +2,8 @@
 
 Each text overlay is a complete HF composition wrapped in `<template id="overlay-XX-template">`. Drop CSS vars from `design-tokens.css` `:root` block into each `<style>`. All variants assume canvas `1080 × 1920` (9:16 portrait, HF default), avatar full-frame underneath at z-index 1, overlay mount at z-index 80-90.
 
+> ⚠️ Mẫu rút gọn: các biến thể dưới đây dùng `white-space: nowrap` và CHƯA có `max-width: 960px` + `fitText()`. Trước khi dùng phải áp luật chống tràn chữ (mẫu đầy đủ, bảng cỡ chữ từng biến thể) trong `overlay-template.md`. Hai biến thể `punch-bubble-number` và `punch-neon-outline` chỉ có mô tả ở `overlay-template.md`, không có HTML ở đây.
+
 **Critical rule**: composition root `<div>` must use `data-composition-id="..."` attribute, and ALL CSS selectors must match it as **attribute selector** `[data-composition-id="..."]`, NOT id selector `#...`. HF runtime strips the `id` attribute on mount; `#id` selector fails silently → invisible composition.
 
 ---

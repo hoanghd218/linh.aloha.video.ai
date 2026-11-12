@@ -170,7 +170,7 @@ hàng hiệu · đẳng cấp · tinh hoa · lõi nội đô · quỹ đất và
 - ❌ "ngu", "ham rẻ", "ham lời", "tham"
 - ❌ Câu hỏi có/không khi câu trả lời nghiêng tiêu cực: "có quá xa không?", "có ngột ngạt không?", "có lo ô nhiễm không?"
 
-> Cách reframe — xem mục **"Quy tắc Tiêu đề + Hook A"** trong `SKILL.md`.
+> Cách reframe — xem luật 5 (Tiêu đề / Hook A) trong `SKILL.md`; ví dụ đầy đủ ở `references/kinh-nghiem.md`.
 
 ## Hook A phải có góc nhìn em-Linh — không phải bản tin
 

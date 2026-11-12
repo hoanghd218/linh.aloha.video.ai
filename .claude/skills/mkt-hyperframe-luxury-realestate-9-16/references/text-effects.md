@@ -127,6 +127,8 @@ The CSS `@keyframes kb` continuous ken-burns runs independently — no GSAP need
 
 ## Avatar zoom hooks (parent timeline in index.html)
 
+> ⚠️ LỖI THỜI — các đỉnh 1.15–1.22 và `ZOOM_HOOKS` dạng `{t, peak, dur}` bên dưới đã bị thay bằng luật mới: 3 kiểu `soft2step` / `quickpop` / `doublepop`, đỉnh 1.04–1.10 (KHÔNG ≥ 1.15), khoảng cách tối đa 4s. Dùng `zoom-hooks.md`; phần này chỉ giữ để tham khảo lịch sử.
+
 Subtle punch-in on the avatar at emphasis beats. Lives in the parent index.html's `<script>` block, NOT inside a composition. Goes after the existing tl setup.
 
 ```js

@@ -1,6 +1,6 @@
 # Infographic prompt template — cream-paper editorial for 16:9 video
 
-Adapted from `mkt-landing-presentation-style/references/infographic-prompt-template.md` for **video context** — same Claude AI editorial signature style, but tuned to 7 short-video beat archetypes.
+Adapted from `mkt-landing-presentation-style/references/infographic-prompt-template.md` (skill gốc không có trong repo này) for **video context** — same Claude AI editorial signature style, but tuned to 7 short-video beat archetypes.
 
 The infographic image (`1.png` `2.png` `3.png` …) is embedded inside a slide composition via `<img>` slot (see `composition-patterns.md` § image-slot). When the file exists in the workspace folder, it renders. When missing, a dashed placeholder shows.
 
@@ -49,7 +49,7 @@ Visual style: hand-drawn editorial line illustration in Claude AI marketing aest
 
 ## 7 video beat archetypes — ready-to-use prompts
 
-Each archetype maps a common short-video moment to a metaphor and includes a fully-written prompt example. Copy, replace topic-specific details, paste into `mkt-broll-image`.
+Each archetype maps a common short-video moment to a metaphor and includes a fully-written prompt example. Copy, replace topic-specific details, paste vào công cụ sinh ảnh (AI33 / Nano Banana Pro).
 
 ### Archetype 1 — BEFORE / AFTER (Hook payoff)
 
@@ -334,7 +334,7 @@ When outlining `scenes-outline.json`, decide for each scene whether an infograph
 5. Write all Vietnamese labels with diacritics — every label, every annotation.
 6. Specify exact hex colors for each block.
 7. Save full prompt to `prompts.md` (file under workspace folder).
-8. Optionally generate via `mkt-broll-image`:
+8. (Tham khảo — skill `mkt-broll-image` / `image-post-creator` không có trong repo này, xem SKILL.md Bước 3h; lệnh dưới là của bản gốc) Sinh ảnh qua AI33:
 
 ```bash
 python3 .claude/skills/mkt-broll-image/scripts/generate.py \

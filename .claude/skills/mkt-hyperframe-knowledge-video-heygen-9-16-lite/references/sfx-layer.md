@@ -6,7 +6,9 @@ SFX là layer **trên top voiceover** để nhấn mạnh peak moments — KHÔN
 
 ## SFX library mặc định
 
-Đặt tại `workspace/assets/reels/sfx/`:
+> Thư viện `workspace/assets/reels/sfx/` dưới đây KHÔNG có trong repo này. Tệp có thật: 6 tệp ở `.claude/skills/mkt-hyperframe-talking-head-video/assets/sfx/` (`búng tay`, `camera-flash`, `Discord Notification`, `Laser`, `ting`, `Whoosh`); `boom`, `lung linh`, `SUDDEN SUSPENSE`, `Wow` chỉ dùng được khi Hoàng thả tệp vào. Profile `bds-broker` dùng `profiles/bds-broker/sfx-map.md`.
+
+Thư viện đầy đủ (thiết kế ban đầu, đặt tại `workspace/assets/reels/sfx/`):
 
 | File | Duration | Best use |
 |---|---|---|
@@ -82,7 +84,7 @@ Trong `index.html`, INSIDE `<div id="root">`, AFTER `<audio id="vo">`, BEFORE ti
 
 ## Process
 
-1. Copy SFX vào project: `mkdir -p $OUT/assets/sfx && cp workspace/assets/reels/sfx/*.mp3 $OUT/assets/sfx/`
+1. Copy SFX vào project: `mkdir -p $OUT/assets/sfx && cp .claude/skills/mkt-hyperframe-talking-head-video/assets/sfx/*.mp3 $OUT/assets/sfx/` (6 tệp có thật; tên có dấu cách / dấu tiếng Việt → đổi ASCII khi tham chiếu)
 2. Đọc `beats.json` để biết start_ms / end_ms mỗi beat
 3. Liệt kê 10-15 SFX hits dựa trên decision rules. Không quá 15 cho video 8-9 phút. Ít hơn là OK.
 4. Trong mỗi beat, xác định ms tương đối của moment nhấn (peak word, reveal element). Tính ABSOLUTE time = `beat.start_ms / 1000 + relative_s`.

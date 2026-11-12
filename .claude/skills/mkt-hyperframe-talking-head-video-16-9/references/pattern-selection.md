@@ -1,5 +1,7 @@
 # Pattern selection — which composition for which scene archetype
 
+> **Lưu ý (v1.1):** cột *Composition id* (`fs-lesson-*`, `recap-card`, `fs-cta`) và mục *Custom variants* thuộc generator Python `generate_compositions.py` đã **deprecated**. Pipeline hiện tại: mỗi cảnh là `compositions/scene-{num}.html` do sub-agent LLM viết; tài liệu này chỉ còn giá trị **gợi ý variant theo loại cảnh** (mẫu code: `composition-patterns.md` ở skill orchestrator).
+
 ## Default mapping (5-scene knowledge skeleton)
 
 | Scene archetype | Variant | Composition id | Use when |

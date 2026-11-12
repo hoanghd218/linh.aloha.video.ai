@@ -7,10 +7,10 @@ How the LLM running this skill (Claude in conversation) presents `visual-plan.js
 ```bash
 python3 .claude/skills/mkt-plan-short-video-edit-16-9/scripts/plan_visuals.py \
   --workspace workspace/content/YYYY-MM-DD/<slug>/ \
-  --brand claude
+  --brand generic
 ```
 
-Output: `visual-plan.json` (validated, with default metaphors + tier-letters per archetype).
+Output: `visual-plan.json` (validated, with default metaphors + tier-letters per archetype). Đây chỉ là scaffold mẫu — viết lại theo script thật (SKILL.md bước 6) **trước** khi trình Hoàng; mẫu tóm tắt bên dưới là ví dụ của một video về Claude, không phải nội dung BĐS. (`--brand generic` vì Linh Aloha chưa có palette riêng; `claude` = palette cam Claude.)
 
 ## Step 2 — Render `prompts.md`
 
@@ -115,9 +115,8 @@ For each kind of revision, edit `visual-plan.json` directly via the Edit tool, t
 User says `OK`:
 
 ```bash
-# Re-validate (already done by plan_visuals.py, but no harm)
-python3 .claude/skills/mkt-plan-short-video-edit-16-9/scripts/plan_visuals.py \
-  --workspace <ws> --dry-run > /dev/null
+# Re-validate the EDITED visual-plan.json (plan_visuals.py --dry-run would only rebuild a fresh scaffold,
+# and running it without --dry-run would OVERWRITE the edited plan) — use the loader one-liner in SKILL.md step 6
 
 # Generate scenes.json for editor backward-compat
 python3 .claude/skills/mkt-plan-short-video-edit-16-9/scripts/apply_plan_to_scenes.py \
@@ -135,7 +134,7 @@ Then announce handoff:
 
 Sang editor `mkt-hyperframe-talking-head-video-16-9`:
 - scaffold_project.py sẽ skip manual content fill (đã có scenes.json)
-- generate_compositions.py render 5 compositions
+- orchestrator giao N sub-agent, mỗi cảnh viết `compositions/scene-{num}.html` từ `visual-plan.json` (không dùng `generate_compositions.py` — đã bỏ ở orchestrator 16:9)
 - generate_root_index.py wire SPLIT↔PIP timeline
 - lint + preview
 ```
@@ -146,4 +145,4 @@ Sang editor `mkt-hyperframe-talking-head-video-16-9`:
 - **Don't ask multi-question revisions in one round** — pick the one most-pressing change first.
 - **Don't auto-approve** — even if `--auto` flag, surface 3-line digest so Hoàng can intercept.
 - **Don't skip prompt re-render after metaphor swap** — the old prompt sticks in `prompts.md` and confuses image gen.
-- **Don't drift from validated schema** — every edit must keep `visual-plan.json` schema-valid. Re-run validator (call `plan_visuals.py --dry-run` against the edited file via a small loader script if needed).
+- **Don't drift from validated schema** — every edit must keep `visual-plan.json` schema-valid. Re-run the validator on the edited file with the loader one-liner in SKILL.md step 6 (`validate_plan` from `plan_visuals.py`).

@@ -1,58 +1,81 @@
 {
   "skill": "mkt-full-video-with-11-remotion-heygen",
-  "version": 1,
+  "version": 2,
+  "note": "Viết lại 2026-11-11 cho khớp registry 9 variant hiện tại (bản v1 dùng punch-white, logo-pill, count-up-*, và init bằng symlink — đều đã bỏ). Không eval nào gọi API / render.",
   "tests": [
     {
       "id": "eval-0-variant-pick",
       "name": "Variant picking from short BĐS script + transcript",
-      "intent": "Verify that the Phase 3 packager picks reasonable overlay variants from a short Vietnamese real-estate script.",
-      "prompt": "Bạn là Phase 3 packager. Đọc references/variant-catalog.md trước. Script: \"Cao Xà Lá — tên ai cũng biết. Tuần sau gọi khác. Vinhomes, Masterise, Sun Group cùng triển khai. Giá khởi điểm 120 triệu/m². So với Royal City — hợp lý hơn. Bình luận BLOOM em gửi inbox.\"\n\nTranscript (caption-groups.json, mock timestamps):\n  0.0-1.5  \"Cao Xà Lá — tên ai cũng biết\"\n  1.5-2.5  \"Tuần sau gọi khác.\"\n  2.5-4.5  \"Vinhomes, Masterise, Sun Group cùng triển khai.\"\n  4.5-6.5  \"Giá khởi điểm 120 triệu mét vuông.\"\n  6.5-8.5  \"So với Royal City — hợp lý hơn.\"\n  8.5-11   \"Bình luận BLOOM em gửi inbox.\"\n\nWrite an overlays-outline.json with 5-7 overlays. Each entry: { id, variant, t_start, duration, text/...other props per variant }.\n\nVideo: 11s, 30fps, 1080×1920.",
+      "intent": "Verify that the Phase 3 packager picks reasonable overlay variants from a short Vietnamese real-estate script, using only the 9 current variant names.",
+      "prompt": "Bạn là Phase 3 packager. Đọc references/variant-catalog.md trước. Script: \"Cao Xà Lá — tên ai cũng biết. Tuần sau gọi khác. Vinhomes, Masterise, Sun Group cùng triển khai. Giá khởi điểm 120 triệu/m². So với Royal City — hợp lý hơn. Bình luận BLOOM em gửi inbox.\"\n\nTranscript (caption-groups.json, mock timestamps):\n  0.0-1.5  \"Cao Xà Lá — tên ai cũng biết\"\n  1.5-2.5  \"Tuần sau gọi khác.\"\n  2.5-4.5  \"Vinhomes, Masterise, Sun Group cùng triển khai.\"\n  4.5-6.5  \"Giá khởi điểm 120 triệu mét vuông.\"\n  6.5-8.5  \"So với Royal City — hợp lý hơn.\"\n  8.5-11   \"Bình luận BLOOM em gửi inbox.\"\n\nWrite an overlays-outline.json with 5-7 overlays. Each entry: { id, variant, t_start, duration, text/...other props per variant }. Mọi chữ tiếng Việt phải đủ dấu.\n\nVideo: 11s, 30fps, 1080×1920.",
       "expected_structure": {
         "min_overlays": 5,
         "max_overlays": 8,
-        "required_variants_used": [
-          "punch-white",
-          "punch-yellow"
+        "allowed_variants_only": [
+          "punch",
+          "punch-2line",
+          "price-red-3d",
+          "price-with-brand",
+          "callout-stack",
+          "icon-stack",
+          "broll-image",
+          "comment-bubble",
+          "contact-card"
+        ],
+        "required_variants_used_any_of": [
+          "punch",
+          "punch-2line"
         ],
         "likely_variants": [
+          "price-with-brand",
+          "price-red-3d",
+          "callout-stack",
+          "comment-bubble"
+        ],
+        "forbidden_variants": [
+          "punch-white",
+          "punch-yellow",
           "logo-pill",
           "count-up-money",
           "before-after",
-          "comment-bubble"
+          "glitch-text"
         ],
-        "must_include_cta_overlay_in_last_2s": true
+        "must_include_cta_overlay_in_last_2s": true,
+        "no_unaccented_vietnamese": true
       },
-      "scoring": "Manual review — score 0-3 per category: (1) variant choice is sensible per variant-catalog.md, (2) timestamps align with transcript, (3) text content matches spoken word, (4) CTA at end uses comment-bubble or punch-white BLOOM."
+      "scoring": "Manual review — score 0-3 per category: (1) variant choice is sensible per variant-catalog.md and uses only allowed names, (2) timestamps align with transcript, (3) text content matches spoken word with full diacritics, (4) CTA at end uses comment-bubble (or punch with the keyword BLOOM)."
     },
     {
       "id": "eval-1-validator-deterministic",
-      "name": "validate.py exits non-zero on malformed JSON",
-      "intent": "Verify scripts/validate.py exits non-zero on invalid JSON and zero on golden example.",
-      "prompt": "Run two commands and report exit codes:\n\n1. python3 scripts/validate.py references/examples/cap-may-xai-claude.overlays.json\n   Expected: exit 0, prints 'VALIDATION OK'.\n\n2. Write a temp file /tmp/broken.json with content:\n   {\n     \"aesthetic\": \"broker_creator\",\n     \"video_duration\": 10,\n     \"fps\": 30,\n     \"width\": 1080,\n     \"height\": 1920,\n     \"assets\": { \"source_video\": \"source.mp4\", \"voiceover\": \"voiceover.mp3\" },\n     \"overlays\": [\n       { \"id\": \"o01\", \"variant\": \"logo-pill\", \"t_start\": 0.5, \"duration\": 2.0 }\n     ],\n     \"zoom_hooks\": []\n   }\n   Then run: python3 scripts/validate.py /tmp/broken.json\n   Expected: exit 1, prints error about overlays[0] missing required 'logos' field.\n\nReport: 'PASS' if both exit codes match, 'FAIL' otherwise with diff.",
+      "name": "validate.py exits 0 on a current-format file and 1 on malformed / legacy JSON",
+      "intent": "Verify scripts/validate.py exit codes: 0 for a valid overlays file, 1 for legacy variants and for missing required fields.",
+      "prompt": "Từ thư mục của skill, chạy và báo mã thoát (Windows: `python`; macOS: `python3`):\n\n1. python scripts/validate.py ../../../workspace/remotion-project/public/overlays-general.json\n   Expected: exit 0, in ra 'VALIDATION OK'.\n\n2. python scripts/validate.py references/examples/cap-may-xai-claude.overlays.json\n   Expected: exit 1 — mẫu cũ dùng variant đã bỏ; lỗi nhắc 'deprecated' và 'punch-white'.\n\n3. Ghi một tệp tạm (ngoài thư mục skill) với nội dung:\n   {\n     \"aesthetic\": \"broker_creator\",\n     \"video_duration\": 10,\n     \"fps\": 30,\n     \"width\": 1080,\n     \"height\": 1920,\n     \"assets\": { \"source_video\": \"source.mp4\", \"voiceover\": \"voiceover.mp3\" },\n     \"overlays\": [\n       { \"id\": \"o01\", \"variant\": \"punch\", \"t_start\": 0.5, \"duration\": 2.0 }\n     ],\n     \"zoom_hooks\": []\n   }\n   rồi chạy validate.py trên tệp đó.\n   Expected: exit 1, lỗi nhắc overlays[0] thiếu trường bắt buộc 'text'.\n\nBáo: 'PASS' nếu cả 3 mã thoát khớp, ngược lại 'FAIL' kèm diff.",
       "expected_output": {
         "first_exit": 0,
         "second_exit": 1,
-        "second_error_must_mention": ["overlays[0]", "logos"]
+        "third_exit": 1,
+        "second_error_must_mention": ["deprecated", "punch-white"],
+        "third_error_must_mention": ["overlays[0]", "text"]
       },
-      "scoring": "Binary pass/fail. Both exit codes must match expected."
+      "scoring": "Binary pass/fail. All three exit codes must match expected."
     },
     {
       "id": "eval-2-init-script",
-      "name": "init_project.sh creates symlink farm",
-      "intent": "Given a mock workspace with source.mp4 + voiceover.mp3 + overlays.json, init_project.sh creates remotion-project/ with proper symlinks.",
-      "prompt": "Set up a mock workspace and run init_project.sh:\n\n1. mkdir -p /tmp/mock-workspace/mock-slug\n   cd /tmp/mock-workspace/mock-slug\n   touch source.mp4 voiceover.mp3\n   cp <skill>/references/examples/cap-may-xai-claude.overlays.json overlays.json\n   echo '[]' > caption-groups.json\n\n2. Run: bash <skill>/scripts/init_project.sh /tmp/mock-workspace/mock-slug\n   (Skip npm install — assume node_modules already populated, OR set env SKIP_INSTALL=1 to test linking only. If install runs, that's OK — eval still passes if symlinks correct.)\n\n3. Verify:\n   ls -la /tmp/mock-workspace/mock-slug/remotion-project/\n   ls -la /tmp/mock-workspace/mock-slug/remotion-project/public/assets/\n\n4. Expected symlinks:\n   - remotion-project/src → <skill>/template-project/src\n   - remotion-project/package.json → <skill>/template-project/package.json\n   - remotion-project/public/assets/source.mp4 → /tmp/mock-workspace/mock-slug/source.mp4\n   - remotion-project/public/assets/voiceover.mp3 → ...\n   - remotion-project/public/assets/overlays.json → ...\n   - remotion-project/public/assets/caption-groups.json → ...\n   - remotion-project/public/assets/logos → <skill>/assets/logos\n\nReport: PASS if all 7 symlinks resolve to expected targets, otherwise FAIL with diff.",
+      "name": "init_project.sh copies project data into an existing shared Remotion project",
+      "intent": "Given a mock workspace and an already-existing (mock) Remotion root, init_project.sh only swaps data files into public/ — it does not run npm install and does not use symlinks.",
+      "prompt": "Dựng workspace giả rồi chạy init_project.sh (cần Git Bash trên Windows). Không để script chạy npm install: tạo sẵn thư mục remotion root giả để script coi là 'đã tồn tại'.\n\n1. mkdir -p <tmp>/mock-workspace/mock-slug <tmp>/mock-remotion/public\n   cd <tmp>/mock-workspace/mock-slug\n   touch source.mp4 voiceover.mp3\n   cp <skill>/references/examples/cap-may-xai-claude.overlays.json overlays.json\n   echo '[]' > caption-groups.json\n\n2. Chạy: bash <skill>/scripts/init_project.sh <tmp>/mock-workspace/mock-slug --remotion-root <tmp>/mock-remotion\n\n3. Kiểm: ls -la <tmp>/mock-remotion/public/\n\nExpected (chép tệp thật, không phải symlink):\n   - public/voiceover.mp3\n   - public/source.mp4\n   - public/caption-groups.json\n   - public/overlays.json\n   - public/overlays-general.json  (cùng nội dung overlays.json; template mặc định BDSGeneralTemplate)\n   Output của script có dòng 'Shared Remotion project already exists'.\n\nBáo: PASS nếu đủ 5 tệp và không có symlink nào, ngược lại FAIL kèm diff.",
       "expected_structure": {
-        "must_be_symlinks": [
-          "remotion-project/src",
-          "remotion-project/package.json",
-          "remotion-project/public/assets/source.mp4",
-          "remotion-project/public/assets/voiceover.mp3",
-          "remotion-project/public/assets/overlays.json",
-          "remotion-project/public/assets/caption-groups.json",
-          "remotion-project/public/assets/logos"
-        ]
+        "must_be_regular_files": [
+          "public/voiceover.mp3",
+          "public/source.mp4",
+          "public/caption-groups.json",
+          "public/overlays.json",
+          "public/overlays-general.json"
+        ],
+        "must_not_be_symlinks": true,
+        "npm_install_must_not_run": true
       },
-      "scoring": "Binary pass/fail per symlink. 7/7 = PASS."
+      "scoring": "Binary pass/fail. 5/5 files present as regular files and no npm install = PASS."
     }
   ]
 }

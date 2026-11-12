@@ -1,8 +1,8 @@
-# Variant Catalog — BDSGeneralTemplate (10 overlay variants)
+# Variant Catalog — BDSGeneralTemplate (9 shared overlay variants)
 
-Decision guide for the Phase 3 packager: given an emphasis moment from the transcript, pick exactly one of these 10 variants. The variant name must match `ALLOWED_VARIANTS` in `scripts/validate.py` and `src/overlays/index.tsx` exactly.
+Decision guide for the Phase 3 packager: given an emphasis moment from the transcript, pick exactly one of these 9 variants (older docs say "10" — that counted the `_placement` helper, which is not a variant). The variant name must match `ALLOWED_VARIANTS` in `scripts/validate.py` and `src/overlays/index.tsx` exactly.
 
-**This is authoritative.** If you write a variant name not in this list, `validate.py` will fail.
+**This is authoritative.** If you write a variant name not in this list, `validate.py` will fail. The 5 apartment-detail `scene-*` variants live in the sister skill `mkt-full-video-with-11-remotion-heygen-apartment-detail` (its own `references/variant-catalog.md`); `validate.py` accepts them too.
 
 ---
 
@@ -230,6 +230,21 @@ Full-frame end card. **ALWAYS exactly ONCE per video, at the end.**
 **Convention:** `t_start = video_duration - 6`, `duration = 6`. Set top-level `video_duration` in overlays.json to `voiceover_duration + 3` (gives 3s of silence + 6s contact card = ~9s tail past voiceover end with BGM still playing).
 
 **Without avatar + QR assets:** Skip this overlay; substitute with `comment-bubble` + `punch` CTA. Validator warns if total ≥5 overlays and no contact-card.
+
+---
+
+## Visual style — broker_creator (locked for BDSGeneralTemplate)
+
+| Item | Spec |
+|---|---|
+| Avatar layout | FULL FRAME 1080×1920 (`object-fit: cover`, z-index 1). No split-screen, no PIP |
+| Visual driver | React overlay components configured by JSON (the 9 variants above) |
+| Text style | Mulish 900 italic + Be Vietnam Pro fallback. Brand/project-name moments may use Dancing Script gold calligraphy via `headline_font:"script"` on `punch-2line`. 8-direction text-shadow stroke (safe for Vietnamese diacritics — NOT `-webkit-text-stroke`) |
+| Animation | `Easing.back(2)` 0.35s scale-pop entry + exit fade |
+| Captions | Bottom-center pill (y≈1240–1344). B-roll captions live at y≈1840 (bottom safe zone) |
+| fps / canvas | 30 / 1080×1920 |
+
+Colors, zoom hooks, SFX and BGM: sections below.
 
 ---
 

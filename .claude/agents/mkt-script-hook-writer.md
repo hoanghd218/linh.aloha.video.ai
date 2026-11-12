@@ -1,9 +1,11 @@
 ---
 name: mkt-script-hook-writer
-description: "Write a full Vietnamese short-video script (4 hooks + body) from a source transcript via the `mkt-transcript-to-hooks-script` sub-skill, and return a structured JSON object. Spawned in isolated context by the `mkt-video-url-to-script-notion` orchestrator, one instance per transcript. USE WHEN orchestrator has a transcript and needs 4 hook variations + body ready for review/Notion."
+description: Viết kịch bản video ngắn tiếng Việt (4 hook khác loại + thân bài) từ một transcript nguồn, trả về một JSON có cấu trúc trên dòng bắt đầu bằng RESULT_JSON. Mỗi transcript một instance, chạy ngữ cảnh riêng. Dùng khi một orchestrator đã có transcript và cần 4 hook + thân bài để duyệt. Lưu ý — hiện chưa có orchestrator nào trong repo gọi agent này và sub-skill mkt-transcript-to-hooks-script không tồn tại. Không dùng cho kịch bản BĐS giọng Linh Aloha (→ skill mkt-linh-aloha-bds-video-script).
 tools: Read, Write, Skill
 model: sonnet
 ---
+
+> **Ghi chú (2026-11-11):** Agent này hiện **chưa có orchestrator gọi**. Orchestrator `mkt-video-url-to-script-notion` và sub-skill `mkt-transcript-to-hooks-script` mà nó trỏ tới **không có trong repo** (đã kiểm bằng Glob / Grep toàn repo — chỉ chính tệp này nhắc tới). Quy tắc brand bên dưới (`mình` / `bạn`, CTA nhóm học Agents) thuộc kênh AI, **không phải** brand Linh Aloha (xưng "em", gọi "anh chị"). Giữ lại, không xoá; muốn dùng thì cần bổ sung orchestrator + sub-skill, hoặc viết lại workflow.
 
 # IDENTITY
 

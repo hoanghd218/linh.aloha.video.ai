@@ -13,7 +13,7 @@ HEYGEN_API_KEY=...                            # REST upload
 HEYGEN_AVATAR_LOOKS=look_id_1,look_id_2,...   # pick random — 1 lần gọi = 1 look nhất quán mọi window
 ```
 
-Real values ở `~/Documents/GitHub/hoang-ai-marketing/.env`.
+Chỉ đọc từ `.env` của repo (không in giá trị). Giá trị mẫu trong `.env.example` là stub (`avatar_look_id_1,…`); cách xử lý stub và upload tệp (`.claude/skills/heygen-mp3-to-mp4/scripts/upload_asset.py`) do skill `heygen-mp3-to-mp4` quản.
 
 ## Delegation prompt template
 

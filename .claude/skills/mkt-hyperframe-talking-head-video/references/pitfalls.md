@@ -128,7 +128,7 @@ tl.to("#v-source", { scale: 1.0, duration: 0.55, ease: "power3.out" }, t);
 **Root cause:** SFX file path wrong, OR file missing in `<project>/sfx/`, OR `data-volume` set to 0.
 
 **Fix:**
-1. Verify file exists: `ls workspace/video-projects/<slug>/sfx/`
+1. Verify file exists: `ls workspace/content/YYYY-MM-DD/<slug>/sfx/`
 2. Verify `<audio src="sfx/<file>.mp3">` path (relative to project root, NOT absolute)
 3. Verify `data-volume` is between 0.15 and 0.35
 

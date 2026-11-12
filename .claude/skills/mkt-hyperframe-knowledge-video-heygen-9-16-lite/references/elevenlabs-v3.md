@@ -55,6 +55,8 @@ duration_ms}` shape, and writes both files.
 
 ## Voice IDs
 
+> Giọng thương hiệu của Hoàng đặt qua `ELEVENLABS_VOICE_ID` trong `.env` (xem `.env.example`) và là giọng dùng cho video tiếng Việt. Bảng dưới là giọng tiếng Anh tham khảo; `scripts/tts.py` chỉ rơi về Adam (`pNInz6obpgDQGcFmaJgB`) khi biến này KHÔNG có trong môi trường — khi đó giọng sẽ khác giọng thương hiệu.
+
 These are well-tested for English knowledge / news narration:
 
 | Voice ID                | Name      | Gender | Tone                       |

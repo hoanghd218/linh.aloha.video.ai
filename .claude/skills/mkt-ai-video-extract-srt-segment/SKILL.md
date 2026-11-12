@@ -1,78 +1,64 @@
 ---
 name: mkt-ai-video-extract-srt-segment
-description: "Transcribe an MP3 voiceover into an SRT subtitle file and a word-level segments JSON using local OpenAI Whisper. Input is a single MP3 path; output is `<stem>.srt` + `<stem>_segments.json` written next to the MP3 (or to a custom output dir). USE WHEN the user says 'extract srt from mp3', 'trích srt từ mp3', 'transcribe voiceover', 'tạo file srt và segments', 'whisper transcribe', 'bóc transcript có timestamp', 'extract voiceover segments', 'tách SRT từ audio', or any time a downstream skill (plan-short-video-edit, heygen-remotion-short-video-editor) needs an SRT + word-level segments JSON from a voiceover MP3 and one does not already exist."
+description: Bóc lời từ một voiceover MP3 thành `<stem>.srt` (phụ đề theo đoạn) + `<stem>_segments.json` (mốc thời gian từng từ) bằng Whisper chạy trên máy (lệnh `whisper`, không API trả phí), ghi cạnh MP3, rồi sửa chữ theo script gốc nhưng giữ nguyên mốc giờ. Dùng khi user nói 'extract srt from mp3', 'trích srt từ mp3', 'transcribe voiceover', 'tạo file srt và segments', 'whisper transcribe', 'bóc transcript có timestamp', 'extract voiceover segments', 'tách SRT từ audio', hoặc khi một skill phía sau (mkt-hyperframe-talking-head-video-16-9, mkt-plan-short-video-edit-16-9, caption) cần SRT + segments mà chưa có. Không dùng để tạo giọng đọc (→ mkt-elevenlabs-tts-to-mp3, mkt-video-script-to-mp3), lập kế hoạch hình (→ mkt-plan-short-video-edit-16-9) hay dựng caption / hiệu ứng (→ mkt-hyperframe-talking-head-video*); chỉ nhận MP3.
+argument-hint: "<mp3_path> [--language vi] [--model base] [--output-dir <dir>]"
 ---
 
-# MKT AI Video — Extract SRT + Segments from MP3
+# Bóc SRT + segments từ MP3 (Whisper)
 
-Transcribe a voiceover MP3 into two files used throughout the short-video production pipeline:
+Phiên bản: v1.1 — 2026-11-11
 
-1. **`<stem>.srt`** — standard SRT subtitles (segment-level timestamps, used for captions)
-2. **`<stem>_segments.json`** — word-level timestamps (used for precise SFX placement, word-by-word caption animation, and segment classification downstream)
+Bóc một MP3 voiceover thành hai tệp mà cả pipeline video dùng, **ghi cạnh MP3** (hoặc vào `--output-dir`), tên theo MP3 (`voiceover.mp3` → `voiceover.srt` + `voiceover_segments.json`):
 
-Both files are written **next to the MP3** by default. Filenames follow the MP3 stem — e.g. `voiceover.mp3` → `voiceover.srt` + `voiceover_segments.json`.
+| Đầu vào | Đầu ra |
+|---|---|
+| `mp3_path` (bắt buộc) — đường dẫn MP3, luôn đặt trong dấu nháy | `<stem>.srt` — SRT mức đoạn, dùng làm caption |
+| `language` — mặc định `vi` (`en` cho tiếng Anh) | `<stem>_segments.json` — mốc từng từ, dùng cho SFX đúng chữ, caption từng từ, phân loại đoạn |
+| `model` — `tiny` / `base` / `small` / `medium` / `large`, mặc định `base` | |
+| `output_dir` — mặc định thư mục của MP3 | |
 
-## When to use this skill
+`K=.claude/skills/mkt-ai-video-extract-srt-segment` · `M=<đường dẫn MP3>` (trong pipeline: `workspace/content/YYYY-MM-DD/<slug>/voiceover.mp3`)
 
-- User hands you an MP3 voiceover and asks for SRT / transcript / segments
-- A downstream skill (`plan-short-video-edit`, `heygen-remotion-short-video-editor`, caption rendering) needs word-level timestamps and they don't exist yet
-- You need to regenerate segments for an existing voiceover (e.g. after re-recording)
+## Luật — không được phá
 
-If both output files already exist and are newer than the MP3, prefer reusing them instead of re-running Whisper.
+1. **Chạy trên máy, không gọi API trả phí.** Dùng lệnh `whisper` cục bộ (`pip install openai-whisper`, cần `ffmpeg`). Whisper API trên đám mây (`OPENAI_API_KEY`) chỉ khi user đồng ý — hỏi kèm a / b / c.
+2. **Không ghi đè tệp đã có.** `<stem>.srt` và `_segments.json` đã có (và mới hơn MP3) → dùng lại. Chạy lại chỉ khi user xác nhận — SRT thường đã được sửa chữ theo script (bước 4) và chạy lại sẽ mất phần đó. Hỏi: a. dùng lại · b. ghi đè (`--force`) · c. ghi vào `--output-dir` khác. Script cũng tự dừng nếu tệp đã có.
+3. **Mốc giờ tin được, chữ thì không.** Khi có script gốc (gần như luôn có trong pipeline video) **bắt buộc** sửa chữ theo script (bước 4), giữ nguyên mọi `start` / `end`. Chỉ bỏ qua khi user không có script.
+4. **Không bỏ mảng `words`** của `_segments.json` khi hậu xử lý — giá trị chính của tệp nằm ở mốc từng từ.
+5. **Luôn truyền `--language vi` rõ ràng** cho voiceover tiếng Việt — tự nhận diện đôi khi rơi sang ngôn ngữ khác ở clip ngắn.
+6. **Không viết thêm script phiên âm khác.** Cần đổi hành vi thì sửa `scripts/transcribe_mp3.py` để mọi nơi dùng chung cùng hưởng.
+7. **Báo đường dẫn + số đo thật** (số đoạn, tổng thời lượng) — không tuyên bố xong khi chưa mở thử hai tệp.
 
-## Input
+## Quy trình
 
-| Arg | Required | Default | Notes |
-|-----|----------|---------|-------|
-| `mp3_path` | yes | — | Absolute path to the MP3 file |
-| `language` | no | `vi` | Whisper language code. Use `vi` for Vietnamese voiceovers, `en` for English |
-| `model` | no | `base` | Whisper model size: `tiny` / `base` / `small` / `medium` / `large`. `base` is a good balance for Vietnamese; `small` gives noticeably better Vietnamese accuracy at ~2x the cost |
-| `output_dir` | no | MP3's parent folder | Where to write the SRT + JSON |
+1. **Kiểm tái dùng** (luật 2): có `<stem>.srt` + `<stem>_segments.json` mới hơn `M` chưa. Có → dừng ở đây, báo đường dẫn.
+2. **Chạy** (`uv run` chạy giống nhau trên Windows và macOS):
+   ```bash
+   uv run $K/scripts/transcribe_mp3.py "$M" --language vi --model base
+   uv run $K/scripts/transcribe_mp3.py "$M" --language vi --model small --output-dir <thư mục khác>
+   ```
+   Xong khi in `SRT:`, `Segments:`, `Segments count`, `Total duration`. Script gọi lệnh `whisper` (không thấy trong PATH thì in cách cài).
+3. **Kiểm đầu ra:** mở 20 dòng đầu của SRT và đầu `_segments.json`. SRT bắt đầu `1`, `00:00:00,000 --> 00:00:0X,XXX`, rồi chữ; JSON là mảng, mỗi phần tử có `id`, `start`, `end`, `text`, `words`. Thiếu tệp hoặc rỗng = lần chạy hỏng — đọc lại stderr và báo user, không đi tiếp.
+4. **Sửa chữ theo script** (luật 3):
+   1. Đọc SRT + JSON, giữ nguyên mọi `start` / `end`.
+   2. Ghép từng khối SRT với đoạn script tương ứng theo vị trí.
+   3. Thay chữ Whisper bằng chữ của script cho đoạn đó.
+   4. Chép cùng sửa chữ vào `text` cấp đoạn của `_segments.json`. `words[].word` có thể để nguyên nếu không có phép căn từng từ đáng tin — pipeline chủ yếu dùng mốc từ, không dùng chữ từ.
+   5. Ghi lại cả hai tệp tại chỗ.
 
-## Step 1 — Run the transcription script
+   Lý do: chữ trong SRT được dựng thành caption; chữ sai thì caption sai. Whisper hay làm hỏng tiếng Việt xen thuật ngữ tiếng Anh (ví dụ "Claude Code" → "Clocot", "MCP Servers" → "MCP Service").
+5. **Báo user:**
+   ```
+   SRT:      <đường dẫn>.srt
+   Segments: <đường dẫn>_segments.json
+   Segments count: N
+   Total duration: X.Xs
+   ```
+   Bước sau do user hoặc skill gọi quyết định — thường là `mkt-plan-short-video-edit-16-9` (lập kế hoạch hình) hoặc `mkt-hyperframe-talking-head-video-16-9` (caption).
 
-Reuse the existing Whisper script from the `heygen-short-video` skill — it already implements exactly this behavior, so we don't duplicate code:
+## Định dạng đầu ra
 
-```bash
-uv run .claude/skills/heygen-short-video/scripts/transcribe_mp3.py "<mp3_path>" --language vi --model base
-```
-
-This produces:
-- `<mp3_parent>/<stem>.srt`
-- `<mp3_parent>/<stem>_segments.json`
-
-To write outputs somewhere else, append `--output-dir <path>`.
-
-**Example** — for `workspace/content/2026-04-09/video-short/learn-claude-code/voiceover.mp3`:
-
-```bash
-uv run .claude/skills/heygen-short-video/scripts/transcribe_mp3.py \
-  "workspace/content/2026-04-09/video-short/learn-claude-code/voiceover.mp3" \
-  --language vi --model base
-```
-
-Outputs:
-- `workspace/content/2026-04-09/video-short/learn-claude-code/voiceover.srt`
-- `workspace/content/2026-04-09/video-short/learn-claude-code/voiceover_segments.json`
-
-## Step 2 — Sanity-check the output
-
-After the script finishes, confirm both files exist and have non-trivial content:
-
-```bash
-ls -lh "<output_dir>/<stem>.srt" "<output_dir>/<stem>_segments.json"
-head -20 "<output_dir>/<stem>.srt"
-```
-
-Expected:
-- SRT starts with `1\n00:00:00,000 --> 00:00:0X,XXX\n<text>\n\n`
-- JSON is an array of objects, each with `id`, `start`, `end`, `text`, and a `words` array of `{word, start, end}`
-
-If either file is missing or empty, the run failed — re-read stderr from Step 1 and surface the error to the user rather than silently continuing.
-
-## Output format reference
-
-### `voiceover.srt`
+`voiceover.srt`:
 
 ```
 1
@@ -84,7 +70,7 @@ If either file is missing or empty, the run failed — re-read stderr from Step 
 Nếu bạn mới bắt đầu tìm hiểu Claude Code,
 ```
 
-### `voiceover_segments.json`
+`voiceover_segments.json`:
 
 ```json
 [
@@ -101,39 +87,27 @@ Nếu bạn mới bắt đầu tìm hiểu Claude Code,
 ]
 ```
 
-Word-level timestamps are what make this JSON valuable — downstream skills use them for word-by-word caption animation, per-word SFX cues, and precise segment boundary detection. Do **not** drop the `words` array when post-processing.
+Một số skill phía sau cần **mảng phẳng** `transcript.json` (`[{word, start, end}, …]`), không phải JSON lồng này — orchestrator `mkt-full-video-with-11-hyperframe-heygen-16-9` tự làm bước làm phẳng ở Phase 3a.
 
-## Step 3 — Script-based text correction (REQUIRED when script is available)
+## Lỗi đã gặp
 
-Whisper often mangles Vietnamese mixed with English tech terms (e.g. "Claude Code" → "Clocot", "MCP Servers" → "MCP Service", "prompt" → "PromGtt"). **Always** perform this correction when the original script is available (it almost always is in the video pipeline). Correct the SRT/JSON **text** while preserving all **timestamps**:
+| Triệu chứng | Nguyên nhân | Sửa |
+|---|---|---|
+| Không thấy lệnh `whisper` | chưa cài Whisper cục bộ | `pip install openai-whisper`, cần `ffmpeg` trong PATH |
+| Chữ tiếng Việt xen từ Anh bị sai | Whisper nhận sai thuật ngữ | bước 4 — sửa theo script |
+| Đã có SRT rồi, chạy lại thì chữ đã sửa mất | chạy lại ghi đè | luật 2 — hỏi trước, hoặc ghi sang `--output-dir` khác |
+| Tự nhận diện ra ngôn ngữ sai | clip ngắn | luôn `--language vi` |
+| Cần chữ chính xác hơn | model `base` còn thô | thử `--model small` (chậm hơn, rõ hơn ở tiếng Việt); cao hơn rất tốn thời gian, hiếm khi đáng với video ngắn |
+| Chạy lại hy vọng ra kết quả khác | Whisper ổn định với cùng model + audio | chỉ chạy lại khi đổi model hoặc sửa âm thanh |
 
-1. Read the generated SRT + JSON (keep every `start`/`end` unchanged).
-2. Align each SRT entry against the matching chunk of the original script by position.
-3. Replace the Whisper text with the script text for that chunk.
-4. Mirror the same correction into `voiceover_segments.json` at the segment-level `text` field. Word-level entries can stay as Whisper produced them unless you have a reliable word alignment — it's fine to leave `words[].word` as-is because downstream skills mainly use word timings, not the word strings.
-5. Write both files back in place.
+Chi tiết và các điểm chưa chắc: [references/kinh-nghiem.md](references/kinh-nghiem.md).
 
-**Why**: SRT text is used for rendered captions. Wrong text = wrong captions. Timestamps from Whisper are trustworthy; text is not.
+## Cải tiến skill
 
-Skip this step ONLY if the user explicitly did not provide a script. In the full video pipeline (`mkt-full-ai-video`), the script is always available — so this correction is always performed.
+Gặp lỗi mới → thêm một dòng vào bảng trên và vào `references/kinh-nghiem.md` mục *Nhật ký*; sửa đúng một chỗ (`scripts/transcribe_mp3.py` cho hành vi, `SKILL.md` cho quy trình).
 
-## Tips & gotchas
+## Liên quan
 
-- **Model choice**: `base` handles most clean voiceovers fine. For noisy recordings or heavy accent, jump to `small` or `medium`. Costs rise quickly beyond `small` and rarely pay back for short-form content.
-- **Language**: Always pass `--language vi` explicitly for Vietnamese. Auto-detect occasionally falls back to other languages on short clips.
-- **Reruns**: Whisper is deterministic for the same model + audio, so rerunning only helps if you change the model or fix audio. Don't rerun hoping for better results at the same model size.
-- **Path quoting**: Always quote the MP3 path — workspace folders often contain hyphens, dates, and slashes that will break unquoted shell expansion.
-- **No duplication**: This skill deliberately does **not** ship its own script. If you find yourself about to write a new transcription script, stop — use `heygen-short-video/scripts/transcribe_mp3.py`. If that script needs changes, edit it there so every consumer benefits.
-
-## Hand-off
-
-After both files are saved and verified, report back with:
-
-```
-SRT:      <absolute path>.srt
-Segments: <absolute path>_segments.json
-Segments count: N
-Total duration: X.Xs
-```
-
-Then let the user (or the calling skill) decide the next step — typically `plan-short-video-edit` for production planning, or direct consumption by `heygen-remotion-short-video-editor`.
+- Trước: `mkt-elevenlabs-tts-to-mp3` / `mkt-video-script-to-mp3` (ra `voiceover.mp3`) và script gốc để sửa chữ.
+- Sau: `mkt-plan-short-video-edit-16-9`, `mkt-hyperframe-talking-head-video-16-9` (đọc `voiceover_segments.json` làm caption), orchestrator `mkt-full-video-with-11-hyperframe-heygen-16-9` (Phase 3a).
+- Gần giống nhưng khác việc: `mkt-hyperframe-talking-head-video-16-9/scripts/transcribe_audio.py` ra mảng phẳng `transcript.json`, không ra SRT.

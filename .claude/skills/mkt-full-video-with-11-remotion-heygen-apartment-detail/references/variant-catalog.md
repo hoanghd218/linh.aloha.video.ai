@@ -165,16 +165,16 @@ End card. Always at `t_start = video_duration - 6`, `duration = 6`. Same schema 
 
 ## SFX mapping (deltas vs parent)
 
-Parent skill uses 4-6 SFX cues per 60s. Apartment-detail uses **same budget** but cue placement differs:
+Parent skill uses 4-6 SFX cues per 60s. Apartment-detail uses **same budget** but cue placement differs. File names must exist in the 14-file library `public/sfx/` (`build-up.wav`, `camera-shutter.wav`, `collapse.wav`, `count.wav`, `cyber-1.wav`, `cyber-2.wav`, `digital-device.wav`, `film-burn.wav`, `giant-foot.m4a`, `glitch.wav`, `pop.wav`, `scifi-monitor.wav`, `ting.mp3`, `ui-tap.wav`) — a missing file breaks the render:
 
 | Cue trigger | Recommended SFX |
 |---|---|
-| `scene-spec-row` entry | `swoosh.mp3` (smooth section open) |
-| `scene-apartment-price` (floorplan reveal) | `pop.mp3` |
+| `scene-spec-row` entry | `ting.mp3` |
+| `scene-apartment-price` (floorplan reveal) | `pop.wav` |
 | `scene-finishing-detail` first callout | `ting.mp3` (premium) |
-| `scene-amenity-grid` cells popping | `pop.mp3` once at scene entry |
-| `scene-price-package` highlight tier | `ka-ching.mp3` or `ting.mp3` |
-| `punch` urgency mid-scene | `whoosh.mp3` |
-| `contact-card` entry | `notification.mp3` |
+| `scene-amenity-grid` cells popping | `pop.wav` once at scene entry |
+| `scene-price-package` highlight tier | `ting.mp3` |
+| `punch` urgency mid-scene | `film-burn.wav` (not yet auditioned) |
+| `contact-card` entry | `digital-device.wav` (the sample `overlays-apartment.json` uses `ting.mp3`) |
 
-Budget cap: 6/60s. Reuse files where possible.
+Earlier versions listed `swoosh.mp3`, `whoosh.mp3`, `ka-ching.mp3`, `notification.mp3`, `pop.mp3` — none exist in the library (the sample `overlays-apartment.json` only uses `pop.wav` and `ting.mp3`). Budget cap: 6/60s. Reuse files where possible.

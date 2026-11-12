@@ -1,300 +1,166 @@
 ---
 name: mkt-full-video-with-11-remotion-heygen
-description: End-to-end short-video pipeline (Vietnamese BĐS broker-creator, TikTok/Reels 9:16) — user chỉ đưa script.txt, skill tự lo phần còn lại — TTS qua ElevenLabs/MiniMax → MP3, HeyGen lip-sync → source.mp4, Phase 3 packager tự transcribe + lên plan b-roll + SFX + zoom hooks + text overlay (10 variant từ BDSGeneralTemplate) + contact card cuối + merge vào 1 overlays.json + init Remotion project + open Studio preview. 2 user checkpoint — duyệt MP3 sau Phase 1, duyệt overlays-outline trước khi finalize. JSON-driven, components pre-built (Punch / Punch2Line / PriceRed3D / PriceWithBrand / CalloutStack / IconStack / BrollImage / CommentBubble / ContactCard). Template-based — multiple templates supported (`BDSGeneralTemplate` default cho video review chung về dự án BĐS). USE WHEN user says 'tạo video bđs remotion', 'remotion video pipeline', 'video bds 9:16', 'video review dự án bđs', 'script to remotion mp4', 'video broker creator remotion', 'remotion heygen pipeline', 'react component video bđs', hoặc đưa script BĐS và muốn ra MP4 9:16 preview-ready.
+description: Pipeline Remotion dựng video review dự án BĐS 9:16 (TikTok/Reels) từ script.txt — TTS ElevenLabs/MiniMax → voiceover.mp3 → HeyGen lip-sync → source.mp4 → Phase 3 (Whisper, b-roll, SFX, zoom hook, overlay chữ, contact card) → overlays.json → mở Studio xem trước, KHÔNG tự render. Hỏi xác nhận trước khi tốn credit TTS/HeyGen; 2 cổng duyệt: nghe MP3, duyệt overlays-outline. Dùng khi nói "tạo video bđs remotion", "remotion video pipeline", "video bds 9:16", "video review dự án bđs", "script to remotion mp4", "video broker creator remotion", "remotion heygen pipeline", "react component video bđs", hoặc đưa script BĐS (so sánh dự án, phân khúc, chính sách) muốn ra MP4 9:16. Không dùng cho: review chi tiết 1 căn hộ — mặt bằng, finishing, bảng giá tier (→ mkt-full-video-with-11-remotion-heygen-apartment-detail); pipeline HyperFrames 9:16/16:9 (→ mkt-full-video-with-11-hyperframe-heygen, -16-9); đã có MP3 (→ heygen-mp3-to-mp4); chưa có kịch bản (→ mkt-linh-aloha-bds-video-script).
+argument-hint: "[đường-dẫn script.txt] [slug] [--template BDSGeneralTemplate]"
 ---
 
-# mkt-full-video-with-11-remotion-heygen
+# Video review dự án BĐS 9:16 — Remotion + HeyGen (script → preview)
 
-End-to-end orchestrator: **script.txt → preview-ready TikTok/Reels MP4 9:16 via Remotion + BDSGeneralTemplate**.
+Phiên bản: v1.1 — 2026-11-11
 
-User chỉ đưa script. Skill tự lo: TTS (ElevenLabs default), HeyGen avatar lip-sync, Whisper transcribe, plan b-roll + SFX + zoom hooks + text overlays + contact card, merge thành 1 `overlays.json`, init Remotion project, open Studio cho user preview. KHÔNG auto-render MP4.
+Orchestrator: người dùng chỉ đưa `script.txt`; skill lo TTS → HeyGen lip-sync → Phase 3 (Whisper, kế hoạch b-roll + SFX + zoom hook + chữ overlay + contact card, gộp thành `overlays.json`) → nạp dự án Remotion → báo URL Studio. **Dừng ở xem trước, không tự render MP4.** `$ARGUMENTS` (nếu có) = đường dẫn script hoặc slug; thiếu thì hỏi ở bước 0.
 
-3 phase, 2 user checkpoints:
-1. **MP3 checkpoint** (orchestrator) — user duyệt voiceover sau Phase 1
-2. **Overlays-outline checkpoint** (Phase 3 sub-agent) — user duyệt danh sách overlay + b-roll + timestamps + variants trước khi finalize
-
-## Templates available
-
-| Template | Use case | Components |
-|---|---|---|
-| **`BDSGeneralTemplate`** (default) | Video review chung về 1 dự án BĐS (so sánh dự án, giới thiệu phân khúc, chính sách bán hàng, virtual tour) | 10 overlay variants — see [variant-catalog.md](references/variant-catalog.md) |
-
-Tương lai có thể thêm templates khác (e.g. `BDSLuxuryTemplate`, `EcommerceTemplate`) bằng cách tạo `templates/<NewName>/` cùng cấu trúc và update `init_project.sh --template <NewName>`.
-
-## Khi nào dùng
-
-- User có 1 script Việt/Anh ≤ 5000 ký tự muốn ra video TikTok/Reels 9:16
-- Niche BĐS — broker-creator aesthetic (avatar full-frame + punchy text overlays + b-roll project images + contact card cuối)
-- Sẵn sàng cung cấp `broll/` (project images) + `logos/` (avatar.jpg + qr-contact.jpg) trong workspace
-- Muốn preview trong Remotion Studio trước khi render MP4
-
-**Không dùng nếu:**
-- User muốn HyperFrames thay vì Remotion → dùng `mkt-full-video-with-11-hyperframe-heygen`
-- Đã có MP3 sẵn → `heygen-mp3-to-mp4`
-- Đã có MP4 + cần edit → spawn Phase 3 packager riêng với mp4 sẵn
-- Script > 5000 ký tự → user split semantic
-- Video 16:9 ngang → `mkt-full-video-with-11-hyperframe-heygen-16-9`
-
-## Pipeline overview
-
-```
-script.txt (user duy nhất phải đưa)
-   │
-   ▼
-Phase 1  ── ElevenLabs TTS ──► voiceover.mp3
-   │
-   ▼  CHECKPOINT #1 — user duyệt MP3
-   │  OK
-   ▼
-─── Fire 2 agents PARALLEL (1 message) ─────────────────────────────────
-   │
-   ├─ Phase 2 (BACKGROUND) ── heygen-mp3-to-mp4 ──► source.mp4 (3-10 min)
-   │
-   └─ Phase 3 (FOREGROUND) ── mkt-full-video-phase3-remotion-packager
-              │
-              ├─ Whisper transcribe (voiceover.mp3) → transcript-cleaned.json
-              ├─ Group captions → caption-groups.json
-              ├─ **Align caption text to script.txt** (source of truth) — fix Whisper mis-hears (brand, dấu thanh, số) while keeping Whisper's timing
-              ├─ Identify emphasis moments (12-20 per 60s)
-              ├─ Pick variants từ 10-name registry per variant-catalog.md
-              ├─ Map b-roll images → broll-image overlays (1 per 10-15s)
-              ├─ Pick 4-6 SFX cues per BĐS library
-              ├─ Plan 15-22 zoom hooks (≤4s gap)
-              ├─ Plan contact-card END (avatar + QR + hotline, t = duration - 6)
-              ├─ CHECKPOINT #2 — user duyệt overlays-outline.json
-              ├─ Merge tất cả vào 1 overlays.json (KHÔNG file riêng broll-inserts.json)
-              ├─ Run scripts/validate.py — fix errors
-              ├─ Wait for source.mp4 (joins HeyGen background)
-              ├─ Run scripts/init_project.sh <workspace> [--template BDSGeneralTemplate]
-              │     ├─ first run: copy template → workspace/remotion-project/ + npm install
-              │     └─ subsequent: only swap data into shared public/ (fast, no npm install)
-              └─ Echo Studio URL — DON'T auto-open browser
-   │
-   ▼
-User mở Studio preview → `render` → `cd workspace/remotion-project && npm run render-final`
-```
-
-Wall-clock savings: HeyGen render (~3-10 min) overlaps Phase 3 transcribe + outline + checkpoint review (~1-3 min). Tổng pipeline ~5 min thay vì ~8.
-
-## Inputs
-
-| Param | Required | Format / Default |
-|---|---|---|
-| Script text | Yes | File path `.txt`/`.md` hoặc inline. ≤ 5000 ký tự |
-| Slug | No | Auto-derive 5 từ đầu script. Lowercase ASCII dash |
-| Broll folder | No | User trỏ folder chứa project images (ASCII filenames). Skill copy sang `workspace/broll/`. Nếu không có → bỏ qua b-roll overlays. |
-| Logos folder | No | Cần `avatar.jpg` + `qr-contact.jpg` cho contact-card. Skill copy sang `workspace/logos/`. Nếu thiếu → skip contact-card, dùng comment-bubble CTA. |
-| `template` | No | Default `BDSGeneralTemplate`. Future: `BDSLuxuryTemplate`, ... |
-| `tts_provider` | No | `elevenlabs` (default, voice Hoàng) hoặc `minimax` |
-| `voice_id` | No | CLI `--voice_id <id>`. Default từ `.env` |
-| `auto_overlays` | No | Skip checkpoint #2. Default `false` |
-| `hotline` | No | Phone number cho contact-card. Hỏi user nếu thiếu. |
-| `brand_name` | No | Tên người gọi điện (e.g. "EM LINH ALOHA") cho contact-card |
-
-## Workspace layout (post-init)
-
-**SHARED Remotion project model** — ONE `workspace/remotion-project/` is shared across ALL per-project workspaces. Per-project folder keeps its data; init swaps that data into the shared `public/` when user wants to preview/render.
-
-```
-workspace/
-├── remotion-project/                # ← SHARED, one for all projects
-│   ├── src/                         # 10 components + Root + Video + Avatar + ...
-│   ├── public/                      # Active project's data (swapped per init)
-│   │   ├── voiceover.mp3            # ← current project
-│   │   ├── source.mp4               # ← current project
-│   │   ├── overlays.json            # ← current project
-│   │   ├── caption-groups.json      # ← current project
-│   │   ├── broll/                   # ← current project
-│   │   ├── logos/                   # ← current project
-│   │   ├── bgm/coconut-groove.wav   # ← template default (preserved)
-│   │   └── sfx/<14 files>           # ← template default (preserved unless workspace overrides)
-│   ├── node_modules/                # npm install ONCE (~150MB, shared forever)
-│   ├── package.json + tsconfig + remotion.config
-│   └── renders/                     # MP4 output — name as <slug>-draft.mp4 / <slug>-final.mp4
-│
-└── content/YYYY-MM-DD/<slug>/       # ← per-project workspace, keeps its own data
-    ├── script.txt                   # input
-    ├── voiceover.mp3                # Phase 1
-    ├── source.mp4                   # Phase 2
-    ├── transcript.json              # Phase 3 (Whisper raw)
-    ├── transcript-cleaned.json      # Phase 3 (typo fix)
-    ├── caption-groups.json          # Phase 3 (3-5 words/group)
-    ├── overlays-outline.json        # Pre-checkpoint preview
-    ├── overlays.json                # FINAL — merged single source of truth
-    ├── broll/                       # User project images (ASCII filenames)
-    └── logos/                       # avatar.jpg + qr-contact.jpg
-```
-
-**Init behavior — 2 modes:**
-- **First run** (no `workspace/remotion-project/`): copy template src + public defaults + npm install (~30-90s one-time)
-- **Subsequent runs**: skip template copy + skip npm install. Only swap data files (voiceover.mp3, source.mp4, overlays.json, caption-groups.json, broll/, logos/) into shared `public/`. `bgm/` + `sfx/` preserved.
-
-**Why shared?** Saves ~150MB × N node_modules disk + skips npm install for every project after the first. Trade-off: only ONE project preview at a time. To switch projects, re-run `init_project.sh <other-project-workspace>` (fast).
-
-**Files at ROOT of `public/`, NOT in `public/assets/`** — Root.tsx defines TWO compositions: `BdsGeneralReview` fetches `staticFile('overlays-general.json')`, `BdsApartmentDetail` fetches `staticFile('overlays-apartment.json')`. `init_project.sh` writes BOTH `overlays.json` (workspace contract) AND the template-matched name (`-general.json` or `-apartment.json`) so the right composition picks it up. See [lessons-learned.md § 2](references/lessons-learned.md) and [§ 6](references/lessons-learned.md).
-
-## Workflow
-
-### Step 0 — Setup
-
-1. Validate `len(script) ≤ 5000`. Vượt → stop, yêu cầu split.
-2. Derive slug (5 từ đầu → lowercase ASCII dash) nếu thiếu.
-3. Detect optional inputs: `broll/`, `logos/avatar.jpg`, `logos/qr-contact.jpg`, hotline, brand_name. Hỏi user nếu thiếu CRITICAL (hotline + brand_name cho contact-card).
-4. Validate TTS provider key trong `.env`.
-5. Tạo `workspace/content/YYYY-MM-DD/<slug>/`. Save `script.txt`.
-6. Copy b-roll + logos vào workspace (ASCII rename nếu cần).
-7. Báo user: workspace path, provider, b-roll count, logos available, template name.
-
-### Step 1 — Phase 1: Script → MP3
-
-```bash
-# ElevenLabs (default, voice Hoàng)
-uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py \
-  --file <workspace>/script.txt \
-  -o <workspace>/voiceover.mp3
-```
-
-Filename inviolable: `voiceover.mp3`. Check duration ≤ 300s.
-
-### Step 2 — CHECKPOINT #1: user nghe MP3
-
-```markdown
-## Voiceover ready
-**File:** <workspace>/voiceover.mp3
-**Duration:** <X>s · **Size:** <Y>MB · **Provider:** elevenlabs
-
-Reply:
-- `OK` / `tiếp` → chạy Phase 2 + 3 parallel
-- `regen` + lý do → tweak voice và regen
-- `sửa script` + nội dung → save lại rerun Phase 1
-```
-
-**Stop. Đợi user.**
-
-### Step 3 — Phase 2 + Phase 3 PARALLEL (1 message, 2 agents)
-
-**Agent A — HeyGen background:**
-```
-subagent_type: general-purpose
-run_in_background: true
-prompt: |
-  Invoke /heygen-mp3-to-mp4 với:
-  - mp3: <workspace>/voiceover.mp3
-  - output: <workspace>/source.mp4
-  Filename `source.mp4` inviolable.
-```
-
-**Agent B — Phase 3 packager foreground:**
-```
-subagent_type: mkt-full-video-phase3-remotion-packager
-prompt: |
-  workspace_dir: <workspace>
-  slug: <slug>
-  script_text: <full text>
-  template: BDSGeneralTemplate
-  broll_list: <list of files in workspace/broll/>
-  logos: { avatar: logos/avatar.jpg, qr: logos/qr-contact.jpg }
-  contact: { name: "<brand_name>", hotline: "<hotline>" }
-  auto_overlays: false
-  audio_source: voiceover.mp3
-  source_mp4_pending: true
-
-  Run Phase 3 per your agent definition.
-  Skill folder: .claude/skills/mkt-full-video-with-11-remotion-heygen/
-  Return Studio URL (don't auto-open browser).
-```
-
-### Step 4 — Hand off
-
-```markdown
-## Pipeline DONE — preview ready
-**Workspace:** <workspace>
-**Phase 1 (<provider>):** voiceover.mp3 — <D>s, <S>MB
-**Phase 2 (HeyGen):** source.mp4 — <D>s, <S>MB
-**Phase 3:** <N> overlays (incl. <K> broll-image, 1 contact-card), <Z> zoom hooks, <S>/6 SFX cues
-**Studio:** http://localhost:3000  (mở browser xem)
-**Render:** `cd <workspace>/remotion-project && npm run render-final`
-```
-
-**Stop.** Không auto-render. Không auto-open browser.
-
-## Critical orchestration rules
-
-1. **2 checkpoints, 1 orchestrator gate** — Orchestrator stop ở MP3. Outline checkpoint do Phase 3 quản. Render gate ở Studio.
-2. **Path conventions inviolable** — `voiceover.mp3`, `source.mp4`, `overlays.json`, `caption-groups.json`. Template fetches by exact name via `staticFile()`.
-3. **Files at root of `public/`** — NOT in `public/assets/`. Root.tsx fetches `overlays-general.json` (BdsGeneralReview composition) or `overlays-apartment.json` (BdsApartmentDetail). `init_project.sh` is template-aware — writes the workspace's `overlays.json` to BOTH `public/overlays.json` and the matched template name. See [lessons-learned.md § 6](references/lessons-learned.md).
-4. **HeyGen: MCP cho create/poll, REST v3 cho upload** — `mcp__heygen__create_video_from_avatar` + `mcp__heygen__get_video`; upload MP3 qua `scripts/upload_asset.py` (`POST /v3/assets`). KHÔNG gọi endpoint v1/v2 (`/v2/video/generate`, `upload.heygen.com/v1/asset`) — sunset 2026-10-31.
-5. **Voice ID trong `.env`** — override per-call qua `--voice_id`.
-6. **Script length hard cap 5000** — fail fast Step 0.
-7. **MP3 duration ≤ 300s** — HeyGen cap.
-8. **Phase 3 isolation** — sub-agent context riêng, variant-catalog + lessons-learned loaded vào sub-agent.
-9. **Phase 2 + 3 parallel kickoff** — sau CHECKPOINT #1, fire HeyGen background + Phase 3 foreground trong 1 message.
-10. **Avatar full-frame always** — `<Avatar>` is full 1080×1920 object-fit cover. No split-screen, no PIP.
-11. **Template src/ READ-ONLY for sub-agent** — packager writes JSON only, never edits `.tsx` files.
-12. **Use 10-name variant registry** — `punch | punch-2line | price-red-3d | price-with-brand | callout-stack | icon-stack | broll-image | comment-bubble | contact-card`. NO `punch-white/red/yellow`, `glitch-text`, `count-up-*`. See [lessons-learned.md § 1](references/lessons-learned.md).
-13. **One overlays.json, all merged** — b-roll, contact-card, text overlays all inside `overlays[]` array. NO separate `broll-inserts.json`. See [lessons-learned.md § 5](references/lessons-learned.md).
-14. **Contact-card always at end** if avatar+QR assets present. `t_start = video_duration - 6`, `duration = 6`. `video_duration = voiceover_duration + 3` for tail playout.
-15. **BGM auto-wired** — `public/bgm/coconut-groove.wav` loop volume 0.12 in `Video.tsx`. Don't add second BGM.
-
-## Visual style — broker_creator (LOCKED for BDSGeneralTemplate)
-
-| Tiêu chí | Spec |
+| Đầu vào | Đầu ra |
 |---|---|
-| Avatar layout | FULL FRAME 1080×1920 (object-fit cover, z-index 1) |
-| Visual driver | 10 React overlay components (JSON-configured) |
-| Variants (10) | Punch (with color prop), Punch2Line, PriceRed3D, PriceWithBrand, CalloutStack, IconStack, BrollImage, CommentBubble, ContactCard, _placement helper |
-| Text style | Mulish 900 italic + Be Vietnam Pro fallback. Brand/project name moments can use Dancing Script gold calligraphy via `headline_font:"script"` on `punch-2line`. 8-direction text-shadow stroke (Vietnamese diacritics safe — NOT `-webkit-text-stroke`) |
-| Color palette | Semantic: Gold `#f4b324` (brand/developer) · Green `#2bb24c` (project name + positive) · Blue `#1f7ae0` (setup/category labels) · Red `#e63946` (numbers/%/scarcity) · White `#ffffff` (neutral) · Yellow `#ffd60a` (legacy accent) · Black stroke `#000`. Per-line color via `subtitle_color` (punch-2line) + `setup_color` (callout-stack). Full mapping in [variant-catalog.md § Color palette](references/variant-catalog.md) |
-| Animation | `Easing.back(2)` 0.35s scale-pop entry + exit fade |
-| Zoom palette | 4 types (soft2step / quickpop / doublepop / zoomout), peaks 1.04-1.10 |
-| Captions | Bottom-center pill (y≈1240-1344). B-roll captions live at y≈1840 (bottom safe zone) |
-| BGM | coconut-groove.wav loop, volume 0.12 |
-| fps / canvas | 30 / 1080×1920 |
+| `script.txt` (≤ 5000 ký tự). Tuỳ chọn: `broll/*.jpg` (tên ASCII), `logos/avatar.jpg` + `logos/qr-contact.jpg`, hotline, `brand_name` | Trong `workspace/content/YYYY-MM-DD/<slug>/`: `voiceover.mp3` · `source.mp4` · `transcript-cleaned.json` · `caption-groups.json` · `overlays-outline.json` · **`overlays.json`** (bản cuối). Dữ liệu được nạp vào `workspace/remotion-project/public/` + URL Studio `http://localhost:3000`. MP4 chỉ ra khi người dùng bảo render: `workspace/remotion-project/renders/<slug>-draft.mp4` / `-final.mp4` |
 
-Full variant decision tree: [`references/variant-catalog.md`](references/variant-catalog.md).
-JSON schema worked example: [`references/overlays-schema.md`](references/overlays-schema.md).
-Bake-in fixes: [`references/lessons-learned.md`](references/lessons-learned.md).
+## Dùng skill nào
 
-## SFX library — BĐS broker-creator (14 file, default in template)
-
-`templates/BDSGeneralTemplate/public/sfx/` — auto-copied per workspace. Workspace can override by placing own `sfx/` folder. Mapping cheat sheet in [`variant-catalog.md § SFX cues`](references/variant-catalog.md#sfx-cues--14-file-bđs-library-budget--6-per-video).
-
-**Budget: ≤ 6 cues per 60s video.** Validator warns if higher.
-
-## Failure modes
-
-| Symptom | Hành động |
+| Video | Skill |
 |---|---|
-| Script > 5000 | Stop, yêu cầu split semantic |
-| TTS API fail | Check `<PROVIDER>_API_KEY` trong `.env` |
-| MP3 > 300s | Stop, chunking |
-| HeyGen render fail | `mcp__heygen__get_current_user` credits check |
-| HeyGen timeout Phase 3 stall > 15 min | Kill HeyGen agent, re-spawn |
-| Caption text mis-spelled brand names (Master rise / Lumiêre / Cửa số) | `align_to_script.py` chưa chạy hoặc skip do alignment ratio < 0.5. Verify `transcript-aligned.json` tồn tại + caption-groups.json text khớp `script.txt`. Nếu skip vì ratio thấp → script không match audio, kiểm tra TTS output |
-| `validate.py` error `unknown variant 'punch-white'` | Packager dùng tên cũ — fix to `punch` + color. See [lessons-learned.md § 1](references/lessons-learned.md) |
-| `validate.py` error `assets.voiceover: must be non-empty` | Add `"voiceover": "voiceover.mp3"` to `assets` |
-| Render output 245 KB / 5s exact | Root.tsx hit FALLBACK — `public/overlays-general.json` (or `-apartment.json`) not found. Run `init_project.sh` |
-| Studio shows previous project's first overlay (e.g. video về dự án A nhưng caption "3 ĐIỀU MÊ" của dự án B) | `init_project.sh` chưa sync template-aware filename. Re-run `init_project.sh <workspace>` (now writes both `overlays.json` + `overlays-general.json`). See [lessons-learned.md § 6](references/lessons-learned.md) |
-| `'Audio' is deprecated` warning | Use `Html5Audio` (already done in template). See [lessons-learned.md § 3](references/lessons-learned.md) |
-| B-roll caption cuts mid-word ("MASTERI/SE") | `BrollImage.tsx` already fixed with `wordBreak: 'keep-all'`. If still happens, single word too long → shrink fontSize |
-| B-roll missing from render | Packager didn't merge `broll-inserts.json` into `overlays.json`. See [lessons-learned.md § 5](references/lessons-learned.md) |
-| Contact card missing at end | Packager didn't emit `contact-card` overlay. Add manually with `t_start = duration - 6` |
-| `npm install` fail | Check Node ≥ 18, `npm doctor` |
-| Studio shows "overlays.json not found" page | `init_project.sh` chưa chạy hoặc workspace data missing |
-| Render slow / OOM | Lower `--concurrency` flag, drop CRF to 23, ensure no other Chromium running |
-| Render file too large for TikTok upload (>287MB web limit) | Run `npm run render-draft` (crf 28) instead of `render-final` (crf 18) |
+| So sánh 2+ dự án, giới thiệu phân khúc, chính sách bán hàng chung, hook urgency, listicle "Top N điểm cộng", virtual tour | **skill này** (composition `BdsGeneralReview`) |
+| Walkthrough chi tiết **1 căn hộ**: diện tích / hướng / view, mặt bằng từng layout, close-up nội thất + finishing brand, grid tiện ích, bảng giá theo tier | `mkt-full-video-with-11-remotion-heygen-apartment-detail` — dùng chung Phase 1 + 2 + Phase 3 transcribe với skill này, chỉ khác lập kế hoạch overlay |
+| Đã có MP3, chỉ cần avatar MP4 | `heygen-mp3-to-mp4` |
+| Đã có MP4, cần dựng overlay | gọi riêng agent Phase 3 với `source.mp4` có sẵn (bỏ bước 1–2) |
+| Muốn HyperFrames thay Remotion (9:16) / video ngang 16:9 | `mkt-full-video-with-11-hyperframe-heygen` / `mkt-full-video-with-11-hyperframe-heygen-16-9` |
+| Chưa có kịch bản | `mkt-linh-aloha-bds-video-script` |
+| Script > 5000 ký tự | người dùng tách theo ý, mỗi phần một video |
 
-## References
+Template: `BDSGeneralTemplate` (mặc định) — code React + ~35 MB âm thanh ở `templates/BDSGeneralTemplate/`, **để nguyên, không sửa `src/` từ pipeline**. Thêm template mới = tạo `templates/<Tên>/` cùng cấu trúc rồi gọi `init_project.sh --template <Tên>`.
 
-- **TTS A** — `.claude/skills/mkt-elevenlabs-tts-to-mp3/SKILL.md` (default Hoàng voice)
-- **TTS B** — `.claude/skills/mkt-video-script-to-mp3/SKILL.md` (MiniMax)
-- **HeyGen** — `.claude/skills/heygen-mp3-to-mp4/SKILL.md`
-- **Phase 3 sub-agent** — `.claude/agents/mkt-full-video-phase3-remotion-packager.md`
-- **Remotion best practices** — `.claude/skills/remotion-best-practices/SKILL.md` (load via Skill tool when editing template TSX)
-- **Variant catalog (decision guide)** — [`references/variant-catalog.md`](references/variant-catalog.md)
-- **JSON schema (worked examples)** — [`references/overlays-schema.md`](references/overlays-schema.md)
-- **Lessons learned (5 anti-patterns)** — [`references/lessons-learned.md`](references/lessons-learned.md)
-- **Default template** — [`templates/BDSGeneralTemplate/`](templates/BDSGeneralTemplate/)
-- **init_project.sh** — [`scripts/init_project.sh`](scripts/init_project.sh)
-- **validate.py** — [`scripts/validate.py`](scripts/validate.py)
-- **HyperFrames equivalent (for comparison)** — `.claude/skills/mkt-full-video-with-11-hyperframe-heygen/SKILL.md`
+## Tham số
+
+| Tham số | Bắt buộc | Mặc định / định dạng |
+|---|---|---|
+| Script | Có | Đường dẫn `.txt` / `.md` hoặc chữ dán thẳng; ≤ 5000 ký tự |
+| `slug` | Không | 5 từ đầu của script, chữ thường ASCII, nối bằng gạch ngang |
+| `broll/` | Không | Thư mục ảnh dự án (tên ASCII) → chép sang `$W/broll/`. Không có → bỏ overlay b-roll |
+| `logos/` | Không | Cần `avatar.jpg` + `qr-contact.jpg` cho contact card → `$W/logos/`. Thiếu → bỏ contact card, dùng `comment-bubble` làm CTA |
+| `hotline`, `brand_name` | Cần nếu có contact card | Hỏi người dùng nếu thiếu (vd `brand_name`: "EM LINH ALOHA") |
+| `tts_provider` | Không | `elevenlabs` (mặc định) hoặc `minimax` |
+| `voice_id` | Không | `--voice_id <id>`; mặc định lấy từ `.env` |
+| `auto_overlays` | Không | `false` — `true` bỏ checkpoint #2 (chỉ khi người dùng nói rõ) |
+| `template` | Không | `BDSGeneralTemplate` |
+
+## Luật — không được phá
+
+1. **Cổng xác nhận trước khi tốn tiền** — TTS và HeyGen đều tính credit. Bước 0 báo kịch bản + provider + giọng rồi chờ `OK` mới gọi TTS; `OK` ở checkpoint #1 chính là lệnh cho HeyGen chạy (ghi rõ điều đó trong tin nhắn checkpoint); tạo lại MP3 hay video HeyGen → hỏi lại, không tự thử lại. Hỏi luôn kèm phương án a / b / c.
+2. **Giữ 2 checkpoint có sẵn** — #1 nghe MP3 (orchestrator dừng chờ) · #2 duyệt `overlays-outline.json` trước khi finalize (agent Phase 3 giữ). Không tự render MP4, không tự mở trình duyệt, không đăng bài — render là cổng riêng ở Studio.
+3. **Khoá API chỉ đọc từ `.env`** (`ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `MINIMAX_API_KEY`, `HEYGEN_API_KEY`, `HEYGEN_AVATAR_LOOKS` — xem `.env.example`) — không in giá trị, không chép sang tệp khác.
+4. **Không bịa số / pháp lý BĐS** — giá, %, diện tích, mật độ, tiến độ, chính sách trên overlay lấy đúng từ `script.txt`; thiếu thì bỏ overlay đó, ghi "chưa có". Hotline và `brand_name` do người dùng đưa; thiếu thì hỏi, không lấy số trong JSON ví dụ.
+5. **Chữ overlay tiếng Việt đủ dấu** (`TÒA`, `M²`), chép từ `script.txt`; mỗi kiểu overlay có hạn độ dài chữ (vd `price-red-3d` ≤ 12 ký tự) — chữ không dấu / quá dài là lỗi hay gặp, xem [lessons-learned.md](references/lessons-learned.md) mục 7.
+6. **Brand Linh Aloha** — xưng "em", gọi "anh chị"; câu mở và CTA theo skill kịch bản `mkt-linh-aloha-bds-video-script` (chỉ nhắc, không chép lại ở đây).
+7. **Đường dẫn** — tương đối từ gốc repo, không `C:\Users\…` hay `/Users/…`. Tệp `.sh` chạy bằng Git Bash trên Windows; Python: `python` (Windows) / `python3` (macOS); script TTS và HeyGen chạy bằng `uv run`.
+8. **Tên tệp bất biến** — `voiceover.mp3`, `source.mp4`, `overlays.json`, `caption-groups.json`; template tìm đúng tên qua `staticFile()`, ở GỐC `public/` (không phải `public/assets/`).
+9. **Phase 2 giao trọn cho `heygen-mp3-to-mp4`** — nó tự upload MP3 (REST v3, `.claude/skills/heygen-mp3-to-mp4/scripts/upload_asset.py`), tạo video và poll qua HeyGen MCP. Skill này không gọi tay HeyGen; không dùng endpoint v1/v2 (HeyGen đã ngừng).
+10. **Giới hạn cứng** — script ≤ 5000 ký tự; MP3 ≤ 300 giây (HeyGen). Vượt → dừng ở bước 0/1, yêu cầu tách, không tự cắt.
+11. **Song song sau checkpoint #1** — HeyGen (nền) + Phase 3 (tiền cảnh) khởi chạy trong MỘT message.
+12. **Avatar full-frame 1080×1920** — không chia đôi màn, không PIP. Contact card đúng MỘT lần ở cuối nếu có avatar + QR: `t_start = video_duration − 6`, `duration = 6`, `video_duration = thời lượng MP3 + 3`.
+13. **Packager chỉ ghi JSON** — không sửa `.tsx`; chỉ dùng 9 tên variant ở [variant-catalog.md](references/variant-catalog.md); MỘT `overlays.json` gộp b-roll + contact card + chữ (không `broll-inserts.json`) — [lessons-learned.md](references/lessons-learned.md) mục 1 và 5.
+14. **Âm thanh** — BGM `coconut-groove.wav` đã gắn sẵn (volume 0.12) trong `Video.tsx`, không thêm BGM thứ hai; SFX ≤ 6 cue / 60 giây.
+15. **Xong việc → báo đường dẫn tệp ra + số đo thật** (thời lượng, dung lượng, số overlay, kết quả `validate.py`); chưa chạy bước kiểm thì không nói "xong".
+
+## Quy trình
+
+Đặt `K=.claude/skills/mkt-full-video-with-11-remotion-heygen` · `W=workspace/content/YYYY-MM-DD/<slug>` · `R=workspace/remotion-project`.
+
+**0. Chuẩn bị + cổng xác nhận trước TTS.**
+   - Đếm ký tự `script.txt` (≤ 5000); tạo `$W/`, lưu `script.txt`; chép `broll/`, `logos/` vào `$W/` (đổi tên ASCII nếu cần).
+   - Kiểm hotline + `brand_name` (thiếu thì hỏi) và khoá TTS có trong `.env` (chỉ kiểm có / không, không in).
+   - Báo: workspace, số ký tự, provider + giọng, số ảnh b-roll, có / không logos, template; hỏi `OK` kèm a / b / c (a. ElevenLabs giọng mặc định · b. MiniMax · c. sửa script trước).
+   - Xong khi: người dùng trả lời `OK` cho đúng một phương án.
+
+**1. Phase 1 — script → MP3.**
+   ```bash
+   uv run .claude/skills/mkt-elevenlabs-tts-to-mp3/scripts/text_to_mp3.py --file $W/script.txt -o $W/voiceover.mp3
+   uv run .claude/skills/heygen-mp3-to-mp4/scripts/check_duration.py "$W/voiceover.mp3"   # in "OK <giây>"
+   ```
+   MiniMax → cách gọi ở `.claude/skills/mkt-video-script-to-mp3/SKILL.md`. Xong khi: `voiceover.mp3` có mặt và `check_duration.py` in `OK` (≤ 300 giây).
+
+**2. Checkpoint #1 — người dùng nghe MP3.** Gửi đúng mẫu rồi **dừng chờ**:
+   ```markdown
+   ## Voiceover xong
+   **Tệp:** <W>/voiceover.mp3 · **Thời lượng:** <X>s · **Dung lượng:** <Y> MB · **Provider:** <elevenlabs|minimax>
+
+   Trả lời:
+   - `OK` / `tiếp` → chạy HeyGen (TỐN CREDIT HeyGen) + Phase 3 song song
+   - `regen` + lý do → chỉnh giọng, tạo lại (tốn credit TTS lần nữa)
+   - `sửa script` + nội dung → lưu lại, chạy lại Phase 1
+   ```
+
+**3. Phase 2 + Phase 3 song song** (một message, hai agent). Trước khi gọi agent B, Glob `.claude/agents/mkt-full-video-phase3-remotion-packager.md`; **không thấy → dừng, hỏi người dùng** (a. chờ có agent · b. giao `general-purpose` với brief theo mục *Phase 3 làm gì* bên dưới).
+   ```
+   Agent A — subagent_type: general-purpose · run_in_background: true
+     Gọi /heygen-mp3-to-mp4: mp3 = <W>/voiceover.mp3 · output = <W>/source.mp4 (tên `source.mp4` bất biến).
+     Lỗi → báo lại, KHÔNG tự tạo video thứ hai (mỗi lần tạo tốn credit).
+
+   Agent B — subagent_type: mkt-full-video-phase3-remotion-packager
+     workspace_dir: <W> · slug · script_text · template: BDSGeneralTemplate
+     broll_list: <tệp trong $W/broll> · logos: { avatar: logos/avatar.jpg, qr: logos/qr-contact.jpg }
+     contact: { name: "<brand_name>", hotline: "<hotline>" }
+     auto_overlays: false · audio_source: voiceover.mp3 · source_mp4_pending: true
+     Skill folder: .claude/skills/mkt-full-video-with-11-remotion-heygen/ — trả URL Studio, không mở trình duyệt.
+   ```
+
+   **Phase 3 làm gì** (đặc tả cho agent; HeyGen render song song nên tổng thời gian chủ yếu là thời gian HeyGen):
+   1. Whisper transcribe `voiceover.mp3` → `transcript.json` → `transcript-cleaned.json`; nhóm phụ đề 3–5 từ → `caption-groups.json`. Helper có sẵn ở skill khác: `.claude/skills/mkt-hyperframe-talking-head-video/scripts/clean_transcript.py`, `.claude/skills/mkt-hyperframe-talking-head-video-16-9/scripts/transcribe_audio.py`.
+   2. **Căn chữ phụ đề theo `script.txt`** (nguồn sự thật) — sửa Whisper nghe sai tên thương hiệu / dấu thanh / số, giữ mốc thời gian của Whisper: `.claude/skills/mkt-hyperframe-talking-head-video/scripts/align_to_script.py` → `transcript-aligned.json`.
+   3. Chọn 12–20 khoảnh khắc nhấn / 60 giây → variant theo cây quyết định ở [variant-catalog.md](references/variant-catalog.md) → 1 b-roll / 10–15 giây → 4–6 SFX → 15–22 zoom hook (cách nhau ≤ 4 giây) → contact card cuối.
+   4. Ghi `overlays-outline.json` → **checkpoint #2** (người dùng duyệt danh sách overlay + b-roll + mốc thời gian + variant) → gộp MỘT `overlays.json` → `validate.py` → chờ `source.mp4` → `bash $K/scripts/init_project.sh $W` → trả URL Studio.
+
+**4. Kiểm sau Phase 3** (orchestrator tự chạy).
+   ```bash
+   python $K/scripts/validate.py $W/overlays.json        # exit 0; Windows: python/py · macOS: python3
+   ```
+   Xong khi: (a) `validate.py` exit 0; (b) overlay đầu tiên của `$R/public/overlays-general.json` đúng hook của script này, không phải video trước ([lessons-learned.md](references/lessons-learned.md) mục 6); (c) có đúng 1 `contact-card` nếu có avatar + QR, có `broll-image` nếu có b-roll, SFX ≤ 6; (d) `source.mp4` đã nằm trong `$R/public/`.
+
+**5. Bàn giao — dừng ở đây.**
+   ```markdown
+   ## Pipeline xong — sẵn sàng xem trước
+   **Workspace:** <W>
+   **Phase 1 (<provider>):** voiceover.mp3 — <D>s, <S> MB
+   **Phase 2 (HeyGen):** source.mp4 — <D>s, <S> MB
+   **Phase 3:** <N> overlay (gồm <K> broll-image, 1 contact-card), <Z> zoom hook, <S>/6 SFX
+   **Studio:** http://localhost:3000 — chọn composition `BdsGeneralReview`
+   **Render (khi người dùng bảo):** `npx remotion render <CompositionId> …` (lệnh ở dưới)
+   ```
+   Render chỉ khi người dùng bảo (lấy `<CompositionId>` bằng `grep -n 'id=' $R/src/Root.tsx`):
+   ```bash
+   cd $R && npx remotion render <CompositionId> renders/<slug>-draft.mp4 --crf 28 --concurrency 2   # bản nhẹ
+   cd $R && npx remotion render <CompositionId> renders/<slug>-final.mp4 --crf 18                    # bản cuối
+   ```
+   Cấu trúc thư mục, hai chế độ của `init_project.sh`, mô hình dự án dùng chung: [workspace-layout.md](references/workspace-layout.md).
+
+## Chi tiết nằm ở references/
+
+| Cần | Đọc |
+|---|---|
+| Chọn variant overlay (cây quyết định, trường từng variant, bảng màu, zoom hook, thư viện SFX 14 tệp, BGM, phong cách khoá) | [variant-catalog.md](references/variant-catalog.md) |
+| Schema `overlays.json` + ví dụ đủ bộ | [overlays-schema.md](references/overlays-schema.md) |
+| 9 lỗi render đã gặp + checklist cho packager | [lessons-learned.md](references/lessons-learned.md) |
+| Bố cục workspace, `init_project.sh`, lệnh sau init | [workspace-layout.md](references/workspace-layout.md) |
+| Bảng lỗi đầy đủ, việc chưa khớp, nhật ký | [kinh-nghiem.md](references/kinh-nghiem.md) — đọc trước mỗi lần chạy |
+
+## Lỗi hay gặp
+
+| Triệu chứng | Nguyên nhân → cách sửa |
+|---|---|
+| Script > 5000 ký tự / MP3 > 300 giây | Dừng, yêu cầu tách theo ý (HeyGen giới hạn 5 phút) |
+| HeyGen render lỗi | Kiểm credit bằng `mcp__heygen__get_current_user`; lỗi lặp lại → hỏi người dùng (tạo lại tốn credit) |
+| `validate.py`: `unknown variant 'punch-white'` (hoặc `logo-pill`, `count-up-*`, `glitch-text`) | Packager dùng tên cũ → `punch` + `color` ([lessons-learned.md](references/lessons-learned.md) mục 1) |
+| Studio hiện overlay của VIDEO CŨ (vd caption dự án khác) | `public/overlays-general.json` chưa đổi → chạy lại `bash $K/scripts/init_project.sh $W` ([lessons-learned.md](references/lessons-learned.md) mục 6) |
+| Render ra 245 KB / đúng 5 giây | Root rơi vào FALLBACK: thiếu `public/overlays-general.json` (hoặc `-apartment.json`) → chạy `init_project.sh` |
+| `npm start` / `remotion: not found` | Chưa có `node_modules` (clone mới; `init_project.sh` bỏ qua `npm install` khi `$R` đã có) → `cd $R && npm install` |
+| Máy mới chạy lần đầu mất composition căn hộ | Template chuẩn chưa có `BdsApartmentDetail` — xem *Chưa khớp* ở [kinh-nghiem.md](references/kinh-nghiem.md) |
+
+## Cải tiến skill
+
+Gặp lỗi mới hoặc đổi cách làm → ghi một dòng vào `references/kinh-nghiem.md` (mục *Nhật ký*) và sửa **đúng một chỗ** (SKILL.md này, `references/`, hoặc `scripts/`). Lỗi sinh ra do packager → ghi vào `references/lessons-learned.md` và checklist cuối tệp đó. Kiểm lại: `evals/evals.json`.
+
+## Liên quan
+
+- **Biến thể:** `mkt-full-video-with-11-remotion-heygen-apartment-detail` (review chi tiết 1 căn hộ).
+- **Đứng trước:** `mkt-linh-aloha-bds-video-script` / `mkt-vn-short-video-script` (kịch bản) · `mkt-kie-broll-image-generator` (ảnh b-roll).
+- **TTS:** `mkt-elevenlabs-tts-to-mp3` (mặc định) · `mkt-video-script-to-mp3` (MiniMax). **HeyGen:** `heygen-mp3-to-mp4`.
+- **Agent Phase 3:** `.claude/agents/mkt-full-video-phase3-remotion-packager.md` (nhóm khác phụ trách).
+- **Đối chiếu HyperFrames:** `mkt-full-video-with-11-hyperframe-heygen`.

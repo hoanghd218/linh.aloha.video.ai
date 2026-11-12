@@ -44,7 +44,7 @@ Map by scene `kind`:
 | Cream paper bg | `#F0EEE6` | Infographic image background |
 | Slate ink | `#1f2937` (approx) | Infographic text |
 
-This palette is for the `1.png` `2.png` `3.png` cream infographic images — generated separately via `mkt-broll-image` using Claude AI editorial style. Do NOT use cream as a slide pane background.
+This palette is for the `1.png` `2.png` `3.png` cream infographic images — generated separately using Claude AI editorial style (skill sinh ảnh gốc `mkt-broll-image` / `image-post-creator` không có trong repo này — xem SKILL.md Bước 3h). Do NOT use cream as a slide pane background.
 
 ## Typography
 
@@ -343,8 +343,7 @@ Compositions are **fixed 1200×1080** native (slides) and **1920×1080** root. N
 
 ## Accessibility (production)
 
-- Skip caption mount by default (slide carries the message visually + voiceover audio).
-- If user explicitly asks for captions, mount them on top of the slide-mount area (left pane, bottom 200px), NOT over the avatar — uses `mkt-hyperframe-talking-head-video` style word-by-word.
+- Phụ đề: orchestrator mặc định BẬT khi có `compositions/captions.html` (xem `auto-baked-patterns.md` mục 5) — overlay giữa đáy sân khấu `bottom: 100px`, z-index 28 (trên slide, dưới khung avatar); tắt bằng `--no-captions`. Slide vẫn tự mang thông điệp bằng hình + giọng avatar.
 - `prefers-reduced-motion` respect: optionally wrap all GSAP `tl.to` motion in a check. Default skill ignores this — videos are inherently motion content.
 
 ## File structure for a composition

@@ -12,10 +12,14 @@ Exit codes:
 
 Stdlib only. No external deps.
 
-Validates against BDSGeneralTemplate's 10-variant registry:
+Validates against the 9 shared variants of BDSGeneralTemplate:
     punch, punch-2line, price-red-3d, price-with-brand, callout-stack,
     icon-stack, broll-image, comment-bubble, contact-card
-    (+ deprecated aliases warned)
+plus the 5 apartment-detail scene variants (used by overlays-apartment.json of the
+sister skill mkt-full-video-with-11-remotion-heygen-apartment-detail):
+    scene-spec-row, scene-apartment-price, scene-finishing-detail,
+    scene-amenity-grid, scene-price-package
+(+ deprecated aliases are rejected with a hint)
 
 Designed for deterministic, machine-friendly error messages with full paths
 (e.g. `overlays[3].text`) so a sub-agent can fix one item at a time.
@@ -28,6 +32,13 @@ import re
 import sys
 from typing import Any
 
+# Windows consoles default to cp1252 and crash on the ✗ / ⚠ markers below.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 # ─── Registry ───────────────────────────────────────────────────────────────
 ALLOWED_VARIANTS = {
     "punch",
@@ -39,6 +50,21 @@ ALLOWED_VARIANTS = {
     "broll-image",
     "comment-bubble",
     "contact-card",
+    # apartment-detail scenes (full-screen, z-index 60)
+    "scene-spec-row",
+    "scene-apartment-price",
+    "scene-finishing-detail",
+    "scene-amenity-grid",
+    "scene-price-package",
+}
+
+# Full-frame variants (z-index 60, below text overlays at z-index 80).
+SCENE_VARIANTS = {
+    "scene-spec-row",
+    "scene-apartment-price",
+    "scene-finishing-detail",
+    "scene-amenity-grid",
+    "scene-price-package",
 }
 
 # Variants from the old skill version. Map → suggested new variant for the
@@ -75,6 +101,12 @@ VARIANT_REQS: dict[str, tuple[set[str], set[str]]] = {
     "broll-image":      ({"image_path"},                        {"caption"}),
     "comment-bubble":   ({"comment_text"},                      {"username"}),
     "contact-card":     ({"avatar_path", "qr_path"},            {"name", "cta_text", "hotline", "bg_color", "accent"}),
+    # apartment-detail scenes — mirror workspace/remotion-project/src/overlays/index.tsx
+    "scene-spec-row":         ({"title", "rows"},               {"subtitle", "title_color", "bg_color"}),
+    "scene-apartment-price":  ({"title", "images"},             {"subtitle", "icon", "title_color", "subtitle_color", "bg_color", "image_fit"}),
+    "scene-finishing-detail": ({"image_path", "callouts"},      {"title"}),
+    "scene-amenity-grid":     ({"title", "cells"},              {"subtitle", "title_color", "bg_color"}),
+    "scene-price-package":    ({"title", "tiers"},              {"subtitle", "footer", "title_color", "bg_color"}),
 }
 
 OVERLAY_COMMON = {"id", "variant", "t_start", "duration"}
@@ -157,6 +189,30 @@ def validate_overlay(o: Any, idx: int, video_duration: float, errors: list[str],
         if hotline and not isinstance(hotline, str):
             _err(errors, f"{path}.hotline", f"must be string, got {type(hotline).__name__}")
 
+    if variant in SCENE_VARIANTS:
+        # Array fields must be non-empty lists; counts follow apartment-detail variant-catalog.md.
+        list_field, lo, hi = {
+            "scene-spec-row":         ("rows", 3, 6),
+            "scene-apartment-price":  ("images", 1, None),
+            "scene-finishing-detail": ("callouts", 1, 4),
+            "scene-amenity-grid":     ("cells", 3, 6),
+            "scene-price-package":    ("tiers", 2, 4),
+        }[variant]
+        items = o.get(list_field)
+        if list_field in o:
+            if not isinstance(items, list) or not items:
+                _err(errors, f"{path}.{list_field}", "must be a non-empty array")
+            else:
+                if len(items) < lo or (hi is not None and len(items) > hi):
+                    rng = f"{lo}-{hi}" if hi is not None else f"{lo}+"
+                    _warn(warnings, f"{path}.{list_field}", f"{len(items)} item(s) — recommended {rng} for '{variant}'")
+                if variant == "scene-price-package":
+                    n_hl = sum(1 for t in items if isinstance(t, dict) and t.get("highlight") is True)
+                    if n_hl > 1:
+                        _warn(warnings, f"{path}.tiers", f"{n_hl} tiers have highlight:true — keep exactly 1")
+        if _is_number(duration) and duration < 4:
+            _warn(warnings, f"{path}.duration", f"{duration}s — full-screen scenes need >= 4s for reading time")
+
 
 def validate_zoom_hook(h: Any, idx: int, video_duration: float, errors: list[str], warnings: list[str]) -> None:
     path = f"zoom_hooks[{idx}]"
@@ -235,6 +291,9 @@ def detect_overlap_warnings(overlays: list[dict], warnings: list[str]) -> None:
         b_start, b_end, b_idx, b_id, b_var = sortable[i + 1]
         # Skip if either is broll-image — different z-index from text overlays
         if a_var == "broll-image" or b_var == "broll-image":
+            continue
+        # Skip a scene (z=60) paired with a text overlay (z=80) — intentional layering.
+        if (a_var in SCENE_VARIANTS) != (b_var in SCENE_VARIANTS):
             continue
         if b_start < a_end - 0.05:
             _warn(

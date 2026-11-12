@@ -37,3 +37,15 @@ Editor đã guard:
 - [ ] `prompts.md` tồn tại (planner luôn viết khi có infographic slot)
 - [ ] Nếu `infographic_mode=now` → mọi `N.png` đã gen TRƯỚC khi `lint_and_preview.py` chạy
 - [ ] Studio mở được tại `http://localhost:3002`
+
+## Bổ sung — checklist trước khi render (chuyển từ SKILL.md bản cũ)
+
+- [ ] `npx hyperframes lint` — 0 lỗi (cảnh báo được)
+- [ ] Mỗi `slide-mount` có `data-start` + `data-duration`
+- [ ] 6 tệp SFX tồn tại trong `sfx/`
+- [ ] `index.html`: `slide-mount` không có `!important` trên `width`
+- [ ] `compositions/scene-1.html … scene-N.html` đều có `[data-composition-id="scene-{N}"]` và `window.__timelines["scene-{N}"]`
+- [ ] Composition KHÔNG nhúng `image-slot` — ảnh giấy kem chỉ ở lớp gốc `#broll-N`
+- [ ] Viền khung avatar claude-orange (không trắng); brand mark ở góc trên-trái, không che slide
+- [ ] `compositions/yt-lower-third.html`: tên kênh + số subscriber đúng thương hiệu đang làm video, hoặc đã chạy `generate_root_index.py --no-yt-lower-third`
+- [ ] Phụ đề: bản cuối dùng `captions.json` biên từ `script.txt` (không dùng Whisper thô cho tiếng Việt)

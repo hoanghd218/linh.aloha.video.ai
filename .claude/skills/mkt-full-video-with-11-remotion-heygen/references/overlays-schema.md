@@ -2,7 +2,7 @@
 
 The Phase 3 packager writes **one** `overlays.json` per workspace. Remotion's `calculateMetadata` in [`src/Root.tsx`](../templates/BDSGeneralTemplate/src/Root.tsx) reads it directly via `staticFile('overlays.json')` (NOT `assets/overlays.json` — see [`lessons-learned.md`](lessons-learned.md)).
 
-Validate with: `python3 scripts/validate.py path/to/overlays.json`
+Validate with: `python scripts/validate.py path/to/overlays.json` (Windows: `python` or `py`; macOS/Linux: `python3`). Exit 0 = OK, 1 = errors.
 
 ---
 
@@ -170,7 +170,7 @@ A 109s BĐS comparison video (Royal City vs Metropolis vs Masterise Cao Xà Lá)
 }
 ```
 
-A golden sample lives at [`examples/linh-lumiere-comparison.overlays.json`](examples/) (29 overlays, 21 zoom hooks, 6 SFX cues, 112.41s) — written by the Phase 3 packager for the linh-lumiere-comparison project.
+The full 29-overlay / 21-hook / 6-cue sample for `linh-lumiere-comparison` (112.41s) mentioned in earlier versions is NOT stored in the repo. `examples/cap-may-xai-claude.overlays.json` is an OLD-format sample (deprecated variants) kept only as a "must fail validation" test case. For a current-format sample, read `workspace/remotion-project/public/overlays-general.json` (passes `validate.py` with 0 errors).
 
 ---
 

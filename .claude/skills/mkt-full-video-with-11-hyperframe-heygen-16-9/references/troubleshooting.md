@@ -1,23 +1,12 @@
 # Troubleshooting
 
-Pitfalls orchestrator-level. Editor pitfalls (composition HTML, GSAP, lint config) đã document trong [`mkt-hyperframe-talking-head-video-16-9/SKILL.md`](../../mkt-hyperframe-talking-head-video-16-9/SKILL.md) "Common pitfalls" section (L272-292) — không lặp lại ở đây.
+Pitfalls orchestrator-level. Editor pitfalls (composition HTML, GSAP, lint config) đã document trong [`mkt-hyperframe-talking-head-video-16-9`](../../mkt-hyperframe-talking-head-video-16-9/SKILL.md) (mục "Luật" và `references/kinh-nghiem.md` của skill đó) — không lặp lại ở đây.
 
 ## Orchestrator-specific
 
 ### Sub-skill path resolution
 
-Orchestrator gọi script ở 2 path khác nhau giữa repo:
-
-| Repo | Skill install path |
-|---|---|
-| `claudeclaw-os` | `.claude/skills/<skill-name>/scripts/...` |
-| `hoang-ai-marketing` | `.claude/skills/<skill-name>/scripts/...` (project-local) hoặc `~/.claude/skills/<skill-name>/scripts/...` (user global) |
-
-**Resolution order trong orchestrator commands:**
-1. Project-local: `.claude/skills/<skill-name>/scripts/...` (relative tới CWD = workspace folder OR git root)
-2. User global: `~/.claude/skills/<skill-name>/scripts/...`
-
-Nếu cả 2 fail → báo user `<skill-name> not installed` và stop.
+Mọi lệnh chạy từ gốc repo với `.claude/skills/<tên-skill>/scripts/...` (đường dẫn tương đối). Không tìm thấy thì thử bản cài toàn cục `~/.claude/skills/<tên-skill>/scripts/...`; cả hai đều không có → báo `<tên-skill> chưa cài` và dừng. Lưu ý: `scaffold_project.py` còn tự tìm `apply_plan_to_scenes.py` ở đường dẫn cứng của máy khác — xem `kinh-nghiem.md` (mục `scenes.json` bị ghi đè).
 
 ### Script > 5000 chars
 
@@ -53,7 +42,7 @@ python3 .claude/skills/mkt-hyperframe-talking-head-video-16-9/scripts/detect_sce
 
 Nếu `infographic_mode=now`, image gen phải chạy TRƯỚC `lint_and_preview.py`. Sai thứ tự → preview Studio show broken-image icons (vì `<img onerror>` đã remove element nhưng layout reflow sau khi gen sẽ khác).
 
-**Đúng:** Phase 3b plan → CP2 → apply_plan + scaffold + generate_compositions + generate_root_index → infographic gen → scaffold_infographic_slots (chỉ inject onerror fallback) → lint_and_preview.
+**Đúng:** Phase 3 plan → CP2 → scaffold + apply_plan + fan-out sub-agent + generate_root_index → infographic gen → lint_and_preview. (`generate_compositions.py` và `scaffold_infographic_slots.py` đã deprecated.)
 
 ### HeyGen render 1280×720 landscape
 
@@ -77,7 +66,7 @@ Nếu HeyGen avatar đặc biệt (height khác hoặc face position khác) → 
 
 | Symptom | Skill xử lý |
 |---|---|
-| Script chưa viết, chỉ có topic | `mkt-create-script-storytelling-video` (chạy trước rồi quay lại skill này) |
+| Script chưa viết, chỉ có topic | `mkt-linh-aloha-bds-video-script` / `mkt-vn-short-video-script` (chạy trước rồi quay lại skill này) |
 | Đã có MP3 sẵn, không cần Phase 1 | `heygen-mp3-to-mp4` rồi `mkt-hyperframe-talking-head-video-16-9` standalone |
 | Cần TikTok/Reels vertical 9:16 | `mkt-full-video-with-11-hyperframe-heygen` (sibling) |
 | Cần video montage / music video không talking-head | KHÔNG dùng skill này — talking-head spine là core assumption |

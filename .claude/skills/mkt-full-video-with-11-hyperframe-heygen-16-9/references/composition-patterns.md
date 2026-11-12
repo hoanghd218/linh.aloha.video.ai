@@ -550,6 +550,8 @@ tl.from(R + ' .col li', { y: 14, opacity: 0, duration: 0.35, stagger: 0.10 }, 1.
 
 ## 8. image-slot (cream infographic embed)
 
+> **DEPRECATED trong pipeline 16:9** — ảnh giấy kem nằm ở lớp gốc `#broll-N`; KHÔNG nhúng `image-slot` vào composition (SKILL.md, luật 8). Mẫu giữ lại chỉ để tham khảo.
+
 **When:** Want to show a hand-drawn editorial cream-paper metaphor inside the slide. Sits below the title or between rows.
 
 **Aspect:** 16:9 default. Optional 4:3 if image is square-ish.
@@ -581,7 +583,7 @@ GSAP (entrance):
 tl.from(R + ' .image-slot', { y: 30, opacity: 0, duration: 0.55, ease: 'power3.out' }, t);
 ```
 
-**Note:** sub-skill `mkt-broll-image` uses AI33 / Nano Banana Pro at 16:9 (NO 16:10 support). Aspect locked.
+**Note:** nhà cung cấp ảnh AI33 / Nano Banana Pro dùng khổ 16:9 (không hỗ trợ 16:10) — khổ cố định. Skill sinh ảnh `mkt-broll-image` của bản gốc không có trong repo này.
 
 ---
 
@@ -596,4 +598,4 @@ tl.from(R + ' .image-slot', { y: 30, opacity: 0, duration: 0.55, ease: 'power3.o
 | "Comment X / Lưu video / Subscribe" | comment-terminal |
 | "X có 3 tính năng" | stats 3-card |
 | "X dùng cho A, Y dùng cho B" | comparison 2-col |
-| "Hình dung như ___" / metaphor moment | image-slot |
+| "Hình dung như ___" / metaphor moment | (ảnh giấy kem ở lớp gốc `#broll-N` — không nhúng image-slot) |

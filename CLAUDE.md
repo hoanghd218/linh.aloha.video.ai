@@ -28,6 +28,8 @@ Repo **Linh Aloha Video AI** — dây chuyền AI làm video BĐS hàng hiệu c
 | Dự án mới chỉ có ảnh phối cảnh 3D / video có kho tư liệu thật | `mkt-edit-video-bds-linh-hoat` · `mkt-hyperframe-heygen-bds-proof-first-9-16` |
 | **Video thô chị Linh quay sẵn** → cắt khoảng lặng, chọn hiệu ứng từng cảnh bằng hình, chốt storyboard, dựng (chạy trên máy, không tốn credit) | `mkt-autoedit-video-9-16` |
 | Clip bản đồ vị trí & kết nối (ảnh vệ tinh Esri, tuyến đường, thẻ km/phút) — cần toạ độ dự án do chị Linh đưa | `mkt-map-location-video` (cần tiện ích Claude in Chrome) |
+| Tên dự án → **kho cảnh trám** (cào video YouTube, cắt clip 4–20 s có nhãn, chỉ mục, ghi nguồn; không tốn credit) | `mkt-kho-canh-tram` |
+| Kho cảnh + lời em Linh → video **"bay một vòng"** 9:16 (flycam + motion HyperFrames, end card Linh + hotline, nhạc tự tổng hợp, 8 SFX) | `mkt-bds-flycam-motion-9-16` (chỉ giọng ElevenLabs tốn credit) |
 
 Skill nào chồng lấn thì phần "Không dùng cho…" trong description chỉ rõ skill đúng.
 

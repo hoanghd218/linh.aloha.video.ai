@@ -1,0 +1,103 @@
+{
+  "_ghi_chu": "Cấu hình mẫu = video OCP2-3 #01 Bay 60 giây (2026-11-12), đã đổi sang thương hiệu Linh Aloha. Lời/phụ đề mẫu là của bản #01 — thay bằng lời viết theo mkt-linh-aloha-bds-video-script. Giải thích từng khoá ở references/cau-hinh.md. Mốc giây tính trên voice.wav đã giãn (nguon/moc.json). cta.hotline: số do chị Linh cung cấp, để trống thì không hiện.",
+  "slug": "ocp23-bay-60-giay",
+  "kho": "~/Library/CloudStorage/GoogleDrive-*/My Drive/Chị Linh/Kho cảnh Ocean Park 2-3 (2026-11-12)",
+  "brand": { "name": "LINH ALOHA", "tag": "BĐS HÀNG HIỆU", "avatar": "assets/img/linh.jpg" },
+  "voice": "assets/audio/voice.wav",
+  "moc": "nguon/moc.json",
+  "bgm": { "file": "assets/audio/bgm-duck.wav", "volume": 0.34 },
+
+  "scenes": [
+    { "at": 0,    "src": "OP102", "ss": 8.0,  "c0": 0.63, "c1": 0.60 },
+    { "at": 6.6,  "src": "OP067", "ss": 3.0,  "c0": 0.56, "c1": 0.64, "tr": "zoom" },
+    { "at": 12.0, "src": "OP099", "ss": 2.0,  "c0": 0.42, "c1": 0.48, "tr": "whip" },
+    { "at": 16.2, "src": "OP100", "ss": 3.0,  "c0": 0.35, "c1": 0.65, "tr": "fade" },
+    { "at": 21.0, "src": "OP101", "ss": 2.0,  "c0": 0.47, "c1": 0.53, "tr": "zoom" },
+    { "at": 25.2, "src": "OP103", "ss": 3.0,  "c0": 0.53, "c1": 0.57, "tr": "whip" },
+    { "at": 27.6, "src": "OP115", "ss": 0.5,  "c0": 0.43, "c1": 0.47, "tr": "whip" },
+    { "at": 30.0, "src": "OP104", "ss": 2.0,  "c0": 0.48, "c1": 0.52, "tr": "whipU" },
+    { "at": 33.6, "src": "OP042", "ss": 3.0,  "c0": 0.41, "c1": 0.45, "tr": "zoom" },
+    { "at": 36.0, "src": "OP061", "ss": 0.0,  "c0": 0.50, "c1": 0.54, "tr": "whip", "max": 3.97 },
+    { "at": 39.6, "src": "OP009", "ss": 2.0,  "c0": 0.30, "c1": 0.70, "tr": "zoom" },
+    { "at": 45.0, "src": "OP118", "ss": 0.5,  "c0": 0.43, "c1": 0.47, "tr": "fade" },
+    { "at": 47.4, "src": "OP009", "ss": 8.0,  "c0": 0.60, "c1": 0.45, "tr": "fade" },
+    { "at": 52.2, "src": "OP102", "ss": 10.0, "c0": 0.50, "c1": 0.55, "tr": "fade", "blur": true, "max": 6.8 }
+  ],
+
+  "hook": {
+    "until": 6.6,
+    "setup": ["ĐÂY", "KHÔNG", "PHẢI"],
+    "big": "CHÂU ÂU.",
+    "strike": true,
+    "kicker": "ĐÂY LÀ",
+    "boxes": ["VĂN GIANG,", "HƯNG YÊN"],
+    "counter": { "label": "✈&nbsp;Bay cùng em Linh", "to": 60, "unit": "GIÂY" },
+    "times": { "setup": [0.17, 0.27, 0.41], "big": 0.64, "strike": 1.72, "kicker": 1.88, "boxes": [1.92, 2.42], "counter": 3.27, "count": 4.7, "out": 6.2 }
+  },
+
+  "hud": { "from": 3.55, "to": 52.2, "total": "01:00" },
+
+  "zones": [
+    { "at": 6.6,  "until": 9.0,   "title": "CỬA NGÕ CAO TỐC",   "sub": "OCEAN PARK 2", "mm": "Cửa ngõ cao tốc" },
+    { "at": 12.0, "until": 15.75, "title": "ĐẠI LỘ SHOPHOUSE",  "sub": "OCP2-3",       "mm": "Đại lộ shophouse" },
+    { "at": 21.0, "until": 24.95, "title": "KÊNH KIỂU VENICE",  "sub": "OCP2-3",       "mm": "Kênh kiểu Venice" },
+    { "at": 30.0, "until": 33.5,  "title": "QUẢNG TRƯỜNG",      "sub": "OCP2-3",       "mm": "Quảng trường" },
+    { "at": 39.6, "until": 42.5,  "title": "TOÀN CẢNH LIỀN KỀ", "sub": "OCP2-3",       "mm": "Toàn cảnh liền kề" }
+  ],
+
+  "tags": [
+    ["Tòa tháp xanh · lối vào", 9.15, 11.8],
+    ["Cầu đi bộ màu hồng", 16.05, 20.85],
+    ["Thuyền buồm gỗ", 25.3, 27.45],
+    ["Thuyền gondola", 27.65, 29.85],
+    ["Cột tượng đài · đài phun nước", 33.75, 35.85],
+    ["Vincom Mega Mall", 36.1, 39.4],
+    ["Vịnh biển · mái vòm trắng", 42.75, 44.85],
+    ["Khi lên đèn", 45.05, 47.2]
+  ],
+
+  "credits": [
+    ["Tư liệu flycam: YouTube · Bảo nguyễn HY (đăng 02/2026)", 0.4, 45.0],
+    ["Tư liệu: YouTube · Hoa Trà Vinhomes (đăng 10/2025)", 45.0, 47.4],
+    ["Tư liệu flycam: YouTube · Bảo nguyễn HY (đăng 02/2026)", 47.4, 52.1]
+  ],
+
+  "captions": {
+    "3": "Điểm 1, cửa ngõ. | Rời cao tốc là thấy ngay | tòa tháp xanh, | đánh dấu lối vào [Ocean Park 2].",
+    "4": "Điểm 2, đại lộ [shophouse]. | Hai bên là dãy nhà phố | sơn đủ màu.",
+    "5": "Và cây cầu đi bộ [màu hồng] | bắc ngang đại lộ.",
+    "6": "Đứng trên cầu nhìn xuống, | cả con phố như một [bức tranh].",
+    "7": "Điểm 3, con kênh kiểu [Venice]. | Nước xanh uốn giữa | hai dãy phố sắc màu.",
+    "8": "Giữa kênh, một chiếc | [thuyền buồm gỗ] đang neo.",
+    "9": "Có cả thuyền [gondola] | chở khách dạo quanh kênh.",
+    "10": "Điểm 4, [quảng trường]. | Cổng vòm hồng mở ra | khoảng sân rộng.",
+    "11": "Cột [tượng đài] cao vút | giữa vòng xoay đài phun nước.",
+    "12": "Và trung tâm thương mại | [Vincom Mega Mall] | nằm ngay bên đại lộ.",
+    "13": "Điểm 5, nhìn từ trên cao. | Các dãy [liền kề] xếp thẳng tắp, | xa xa là [vịnh biển] | và mái vòm trắng.",
+    "14": "Tối xuống, | cả khu phố [lên đèn]."
+  },
+  "syl": { "Ocean": 2, "shophouse": 2, "Venice": 3, "gondola": 3, "Vincom": 2, "Mega": 2 },
+
+  "recap": {
+    "at": 47.4,
+    "map": true,
+    "lines": [
+      { "text": "60 giây chỉ đủ thấy bề mặt.", "at": 47.72, "size": "s" },
+      { "text": "Khu nào thuộc [phân khu] nào?", "at": 49.12, "kw_at": 49.9, "size": "l" },
+      { "text": "→ Phải xem trên [bản đồ]", "at": 50.84, "kw_at": 51.42, "size": "m" }
+    ]
+  },
+
+  "cta": {
+    "at": 52.2,
+    "lead": ["Inbox", "em", "Linh", "chữ"],
+    "lead_at": [52.3, 52.48, 52.92, 53.2],
+    "keyword": "BẢN ĐỒ",
+    "keyword_at": 53.35,
+    "line": "Em gửi anh chị bản đồ phân khu",
+    "line_at": 53.72,
+    "hotline": "",
+    "zalo": "",
+    "footer": "Ocean Park 2 · Ocean Park 3 · Văn Giang, Hưng Yên"
+  }
+}

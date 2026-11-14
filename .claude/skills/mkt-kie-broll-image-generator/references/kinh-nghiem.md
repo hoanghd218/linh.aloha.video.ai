@@ -25,3 +25,4 @@ Chỉ ghi điều đã có trong skill hoặc đã gặp thật; không bịa l�
 ## Nhật ký
 
 - 2026-11-11 — tối ưu theo chuẩn skill video (v1.1): bỏ đường dẫn tuyệt đối theo máy (thư mục cá nhân của một máy cụ thể) ở bước kiểm khoá, thay bằng `.env` gốc repo; thêm luật cổng xác nhận tiền, luật ảnh AI là minh hoạ, luật không ghi đè; ghi thêm tham số `--image_input` (đã có trong script, trước chưa ghi); thêm bảng Đầu vào → Đầu ra, "xong khi" từng bước; dời mã lỗi phụ sang tệp này.
+- 2026-11-14: description trỏ "cần video b-roll" sang skill mới `mkt-kho-canh-tram` (cào clip YouTube dự án).
